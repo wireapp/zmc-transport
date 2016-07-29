@@ -1045,7 +1045,7 @@
     // We'll run this a few times, since the time interval is randomly shifted, and we want to try a few outcomes:
     for (int i = 0; i < 7; ++i) {
         // given
-        NSTimeInterval const interval = 0.05;
+        NSTimeInterval const interval = 0.10;
         self.sut.timeUntilRetryModeWhenRateLimited = interval;
         
         // when
