@@ -49,7 +49,7 @@ private var _instance : BackgroundActivityFactory? = BackgroundActivityFactory()
         return ZMBackgroundActivity.beginBackgroundActivityWithName(name, groupQueue: mainGroupQueue)
     }
     
-    @objc public func backgroundActibity(withName name: String, expirationHandler handler:(Void -> Void)) -> ZMBackgroundActivity?
+    @objc public func backgroundActivity(withName name: String, expirationHandler handler:(Void -> Void)) -> ZMBackgroundActivity?
     {
         guard let mainGroupQueue = mainGroupQueue else { return nil }
         return ZMBackgroundActivity.beginBackgroundActivityWithName(name, groupQueue: mainGroupQueue, expirationHandler: handler)
