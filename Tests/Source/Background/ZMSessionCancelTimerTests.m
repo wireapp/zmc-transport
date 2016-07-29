@@ -124,7 +124,7 @@
     
     // expect
     [[(OCMockObject *)backgroundActivityFactory expect] backgroundActivityWithName:OCMOCK_ANY];
-    [[[[(OCMockObject *)backgroundActivityFactory expect] classMethod] andReturn:backgroundActivityFactory] instance];
+    [[[[(OCMockObject *)backgroundActivityFactory expect] classMethod] andReturn:backgroundActivityFactory] sharedInstance];
     
     // when
     [sut start];
@@ -158,7 +158,7 @@
     }] endActivity];
     
     id factory = [OCMockObject mockForClass:BackgroundActivityFactory.class];
-    [[[[factory stub] andReturn:factory] classMethod] instance];
+    [[[[factory stub] andReturn:factory] classMethod] sharedInstance];
     [[[factory stub] andReturn:activity] backgroundActivityWithName:OCMOCK_ANY];
 
     // when
@@ -194,7 +194,7 @@
     }] endActivity];
 
     id factory = [OCMockObject mockForClass:BackgroundActivityFactory.class];
-    [[[[factory stub] andReturn:factory] classMethod] instance];
+    [[[[factory stub] andReturn:factory] classMethod] sharedInstance];
     [[[factory stub] andReturn:activity] backgroundActivityWithName:OCMOCK_ANY];
 
     

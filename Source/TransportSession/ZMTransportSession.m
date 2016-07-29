@@ -236,7 +236,7 @@ static NSInteger const DefaultMaximumRequests = 6;
     if (self) {
         self.baseURL = baseURL;
         self.websocketURL = websocketURL;
-        [[BackgroundActivityFactory instance] setMainGroupQueue:mainGroupQueue];
+        [[BackgroundActivityFactory sharedInstance] setMainGroupQueue:mainGroupQueue];
         
         self.workQueue = queue;
         _workGroup = group;
@@ -566,7 +566,7 @@ static NSInteger const DefaultMaximumRequests = 6;
 
 - (void)enterBackground;
 {
-    ZMBackgroundActivity *enterActivity = [[BackgroundActivityFactory instance] backgroundActivityWithName:@"ZMTransportSession.enterBackground"];
+    ZMBackgroundActivity *enterActivity = [[BackgroundActivityFactory sharedInstance] backgroundActivityWithName:@"ZMTransportSession.enterBackground"];
     ZMLogInfo(@"<%@: %p> %@", self.class, self, NSStringFromSelector(_cmd));
     NSOperationQueue *queue = self.workQueue;
     ZMSDispatchGroup *group = self.workGroup;
@@ -606,7 +606,7 @@ static NSInteger const DefaultMaximumRequests = 6;
 
 - (void)prepareForSuspendedState;
 {
-    ZMBackgroundActivity *activity = [[BackgroundActivityFactory instance] backgroundActivityWithName:@"enqueue access token"];
+    ZMBackgroundActivity *activity = [[BackgroundActivityFactory sharedInstance] backgroundActivityWithName:@"enqueue access token"];
     [self.urlSessionSwitch.currentSession countTasksWithCompletionHandler:^(NSUInteger count) {
         if (0 < count) {
             [self sendAccessTokenRequest];

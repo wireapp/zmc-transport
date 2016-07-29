@@ -477,7 +477,7 @@ typedef NS_ENUM(NSUInteger, ZMTransportRequestSessionType) {
 {
     ZMTaskIdentifier *taskIdentifier = [ZMTaskIdentifier identifierWithIdentifier:identifier sessionIdentifier:sessionIdentifier];
     NSString *label = [NSString stringWithFormat:@"Task created handler of REQ %@ %@ -> %@ ", self.methodAsString, self.path, taskIdentifier];
-    ZMBackgroundActivity *creationActivity = [[BackgroundActivityFactory instance ] backgroundActivityWithName:NSStringFromSelector(_cmd)];
+    ZMBackgroundActivity *creationActivity = [[BackgroundActivityFactory sharedInstance] backgroundActivityWithName:NSStringFromSelector(_cmd)];
     ZMSDispatchGroup *handlerGroup = [ZMSDispatchGroup groupWithLabel:@"ZMTransportRequest task creation handler"];
     
     for (ZMTaskCreatedHandler *handler in self.taskCreatedHandlers) {
@@ -523,7 +523,7 @@ typedef NS_ENUM(NSUInteger, ZMTransportRequestSessionType) {
 {
     response.startOfUploadTimestamp = self.startOfUploadTimestamp;
 
-    ZMBackgroundActivity *completeActivity = [[BackgroundActivityFactory instance] backgroundActivityWithName:NSStringFromSelector(_cmd)];
+    ZMBackgroundActivity *completeActivity = [[BackgroundActivityFactory sharedInstance] backgroundActivityWithName:NSStringFromSelector(_cmd)];
     ZMSDispatchGroup *group = response.dispatchGroup;
     ZMSDispatchGroup *group2 = [ZMSDispatchGroup groupWithLabel:@"ZMTransportRequest"];
     [group2 enter];

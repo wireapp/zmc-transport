@@ -57,7 +57,7 @@ ZM_EMPTY_ASSERTING_INIT();
 
 - (void)start;
 {
-    self.activity = [[BackgroundActivityFactory instance] backgroundActivityWithName:NSStringFromClass(self.class)];
+    self.activity = [[BackgroundActivityFactory sharedInstance] backgroundActivityWithName:NSStringFromClass(self.class)];
     [self.timer fireAfterTimeInterval:self.timeout];
 }
 
