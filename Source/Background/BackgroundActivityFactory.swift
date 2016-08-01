@@ -21,7 +21,7 @@ private var _instance : BackgroundActivityFactory? = BackgroundActivityFactory()
 
 @objc public class BackgroundActivityFactory: NSObject {
     
-    public var mainGroupQueue : ZMSGroupQueue?
+    public var mainGroupQueue : ZMSGroupQueue? = nil
     
     @objc public class func sharedInstance() -> BackgroundActivityFactory
     {
@@ -35,13 +35,6 @@ private var _instance : BackgroundActivityFactory? = BackgroundActivityFactory()
     {
         _instance = nil
     }
-    
-    override init()
-    {
-        self.mainGroupQueue = nil
-        super.init()
-    }
-
     
     @objc public func backgroundActivity(withName name: String) -> ZMBackgroundActivity?
     {
