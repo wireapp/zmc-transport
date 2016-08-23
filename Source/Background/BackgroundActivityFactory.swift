@@ -16,12 +16,14 @@
 // along with this program. If not, see http://www.gnu.org/licenses/.
 //
 
+import UIKit
 
 private var _instance : BackgroundActivityFactory? = BackgroundActivityFactory() // swift automatically dispatch_once make this thread safe
 
 @objc public class BackgroundActivityFactory: NSObject {
     
     public var mainGroupQueue : ZMSGroupQueue? = nil
+    public var application : UIApplication? = nil
     
     @objc public class func sharedInstance() -> BackgroundActivityFactory
     {
@@ -38,14 +40,14 @@ private var _instance : BackgroundActivityFactory? = BackgroundActivityFactory()
     
     @objc public func backgroundActivity(withName name: String) -> ZMBackgroundActivity?
     {
-        guard let mainGroupQueue = mainGroupQueue else { return nil }
-        return ZMBackgroundActivity.beginBackgroundActivityWithName(name, groupQueue: mainGroupQueue)
+        guard let mainGroupQueue = mainGroupQueue, let application = application  else { return nil }
+        return ZMBackgroundActivity.beginBackgroundActivityWithName(name, groupQueue: mainGroupQueue, application: application)
     }
     
     @objc public func backgroundActivity(withName name: String, expirationHandler handler:(Void -> Void)) -> ZMBackgroundActivity?
     {
-        guard let mainGroupQueue = mainGroupQueue else { return nil }
-        return ZMBackgroundActivity.beginBackgroundActivityWithName(name, groupQueue: mainGroupQueue, expirationHandler: handler)
+        guard let mainGroupQueue = mainGroupQueue, let application = application else { return nil }
+        return ZMBackgroundActivity.beginBackgroundActivityWithName(name, groupQueue: mainGroupQueue, expirationHandler: handler, application: application)
     }
     
 }
