@@ -2566,7 +2566,7 @@ static __weak FakeReachability *currentReachability;
     NSURLSessionTask *expectedTask = [NSURLSessionTask new];
     id backgroundSessionMock = [OCMockObject mockForClass:ZMURLSession.class];
     [[(id)backgroundSessionMock expect] isBackgroundSession];
-    [[[backgroundSessionMock stub] andReturn:[NSURLSessionConfiguration backgroundSessionConfigurationWithIdentifier:self.name]] configuration];
+    [(NSURLSession *)[[backgroundSessionMock stub] andReturn:[NSURLSessionConfiguration backgroundSessionConfigurationWithIdentifier:self.name]] configuration];
     [[[(id)self.URLSessionSwitch stub] andReturn:backgroundSessionMock] backgroundSession];
     [[(id)self.URLSession expect] taskWithRequest:OCMOCK_ANY bodyData:OCMOCK_ANY transportRequest:foregroundRequest];
     [[(id)backgroundSessionMock expect] taskWithRequest:OCMOCK_ANY bodyData:OCMOCK_ANY transportRequest:backgroundRequest];
