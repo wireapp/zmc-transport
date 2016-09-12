@@ -56,7 +56,7 @@
 
 - (void)setUp {
     [super setUp];
-#if !TARGET_OS_IPHONE && TARGET_IPHONE_SIMULATOR
+#if TARGET_IPHONE_SIMULATOR
     [ZMPersistentCookieStorage setDoNotPersistToKeychain:YES];
 #endif
     NSURL *baseURL = [NSURL URLWithString:@"http://www.example.com"];
