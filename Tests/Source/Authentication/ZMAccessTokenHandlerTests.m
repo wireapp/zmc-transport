@@ -57,6 +57,8 @@
 - (void)setUp {
     [super setUp];
     
+    [ZMPersistentCookieStorage setDoNotPersistToKeychain:YES];
+    
     NSURL *baseURL = [NSURL URLWithString:@"http://www.example.com"];
 
     self.taskCount = 0;
