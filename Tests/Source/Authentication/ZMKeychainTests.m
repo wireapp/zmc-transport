@@ -19,7 +19,7 @@
 
 @import ZMTesting;
 @import XCTest;
-=
+
 #import "ZMKeychain.h"
 
 @interface ZMKeychainTests : XCTestCase
