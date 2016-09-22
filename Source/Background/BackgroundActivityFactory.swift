@@ -20,12 +20,12 @@ import UIKit
 
 private var _instance : BackgroundActivityFactory? = BackgroundActivityFactory() // swift automatically dispatch_once make this thread safe
 
-@objc public class BackgroundActivityFactory: NSObject {
+@objc open class BackgroundActivityFactory: NSObject {
     
-    public var mainGroupQueue : ZMSGroupQueue? = nil
-    public var application : UIApplication? = nil
+    open var application : UIApplication? = nil
+    open var mainGroupQueue : ZMSGroupQueue? = nil
     
-    @objc public class func sharedInstance() -> BackgroundActivityFactory
+    @objc open class func sharedInstance() -> BackgroundActivityFactory
     {
         if _instance == nil {
             _instance = BackgroundActivityFactory()
@@ -33,21 +33,21 @@ private var _instance : BackgroundActivityFactory? = BackgroundActivityFactory()
         return _instance!
     }
     
-    @objc public class func tearDownInstance()
+    @objc open class func tearDownInstance()
     {
         _instance = nil
     }
     
-    @objc public func backgroundActivity(withName name: String) -> ZMBackgroundActivity?
-    {
-        guard let mainGroupQueue = mainGroupQueue, let application = application  else { return nil }
-        return ZMBackgroundActivity.beginBackgroundActivityWithName(name, groupQueue: mainGroupQueue, application: application)
-    }
-    
-    @objc public func backgroundActivity(withName name: String, expirationHandler handler:(Void -> Void)) -> ZMBackgroundActivity?
+    @objc open func backgroundActivity(withName name: String) -> ZMBackgroundActivity?
     {
         guard let mainGroupQueue = mainGroupQueue, let application = application else { return nil }
-        return ZMBackgroundActivity.beginBackgroundActivityWithName(name, groupQueue: mainGroupQueue, expirationHandler: handler, application: application)
+        return ZMBackgroundActivity.begin(withName: name, groupQueue: mainGroupQueue, application: application)
+    }
+    
+    @objc open func backgroundActivity(withName name: String, expirationHandler handler:@escaping ((Void) -> Void)) -> ZMBackgroundActivity?
+    {
+        guard let mainGroupQueue = mainGroupQueue, let application = application else { return nil }
+        return ZMBackgroundActivity.begin(withName: name, groupQueue: mainGroupQueue, expirationHandler: handler, application: application)
     }
     
 }

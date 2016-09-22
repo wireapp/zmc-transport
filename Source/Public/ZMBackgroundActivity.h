@@ -19,6 +19,8 @@
 
 #import <Foundation/Foundation.h>
 
+NS_ASSUME_NONNULL_BEGIN
+
 @protocol ZMSGroupQueue;
 
 @class UIApplication;
@@ -32,7 +34,7 @@
 
 + (instancetype)beginBackgroundActivityWithName:(NSString *)taskName
                                      groupQueue:(id<ZMSGroupQueue>)groupQueue
-                              expirationHandler:(void (^)(void))handler
+                              expirationHandler:(nullable void (^)(void))handler
                                     application:(UIApplication *)application;
 
 /**
@@ -41,3 +43,5 @@
 - (void)endActivity;
 
 @end
+
+NS_ASSUME_NONNULL_END

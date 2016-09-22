@@ -20,6 +20,8 @@
 @import Foundation;
 @import ZMCSystem;
 
+
+
 @protocol ZMTransportData;
 
 typedef NS_ENUM(NSInteger, ZMUpdateEventsPolicy) {
@@ -34,10 +36,6 @@ typedef NS_ENUM(NSInteger, ZMUpdateEventSource) {
     ZMUpdateEventSourcePushNotification,
     ZMUpdateEventSourceDownload
 };
-
-// taken from: https://github.com/wearezeta/galley/blob/master/galley-types/src/Galley/Types.hs
-// and https://github.com/wearezeta/brig/blob/master/brig/src/Brig/IO/Intra.hs#L139-L159
-// and https://github.com/wearezeta/belfry/blob/master/belfry-types/src/Belfry/Types/Event.hs
 
 typedef NS_ENUM(NSUInteger, ZMUpdateEventType) {
     
@@ -88,7 +86,7 @@ typedef NS_ENUM(NSUInteger, ZMUpdateEventType) {
 @property (nonatomic, readonly, copy, nonnull) NSDictionary *payload;
 @property (nonatomic, readonly) ZMUpdateEventType type;
 @property (nonatomic, readonly) ZMUpdateEventSource source;
-@property (nonatomic, readonly, copy, nonnull) NSUUID *uuid;
+@property (nonatomic, readonly, copy, nullable) NSUUID *uuid;
 
 /// True if the event will not appear in the notification stream
 @property (nonatomic, readonly) BOOL isTransient;
@@ -112,10 +110,10 @@ typedef NS_ENUM(NSUInteger, ZMUpdateEventType) {
 + (nullable NSArray<ZMUpdateEvent *> *)eventsArrayFromTransportData:(nonnull id<ZMTransportData>)transportData source:(ZMUpdateEventSource)source;
 
 /// Creates an update event
-+ (nonnull instancetype)eventFromEventStreamPayload:(nonnull id<ZMTransportData>)payload uuid:(nullable NSUUID *)uuid;
++ (nullable instancetype)eventFromEventStreamPayload:(nonnull id<ZMTransportData>)payload uuid:(nullable NSUUID *)uuid;
 
 /// Creates an update event that was encrypted and it's now decrypted
-+ (nullable instancetype)decryptedUpdateEventFromEventStreamPayload:(nonnull id<ZMTransportData>)payload uuid:(nullable NSUUID *)uuid source:(ZMUpdateEventSource)source;
++ (nullable instancetype)decryptedUpdateEventFromEventStreamPayload:(nonnull id<ZMTransportData>)payload uuid:(nullable NSUUID *)uuid transient:(BOOL)transient source:(ZMUpdateEventSource)source;
 
 + (ZMUpdateEventType)updateEventTypeForEventTypeString:(nonnull NSString *)string;
 + (nullable NSString *)eventTypeStringForUpdateEventType:(ZMUpdateEventType)type;
