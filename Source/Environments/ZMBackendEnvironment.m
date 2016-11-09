@@ -37,6 +37,22 @@ static NSString * const ZMBackendEnvironmentSettingsKeyBackendWSHost        = @"
 static NSString * const ZMBackendEnvironmentSettingsKeyBlacklistEndpoint    = @"env_blacklist_endpoint";
 static NSString * const ZMBackendEnvironmentSettingsKeyFrontendHost         = @"env_frontend_host";
 
+static NSString * const ProductionBackendHost = @"prod-nginz-https.wire.com";
+static NSString * const ProductionBackendWSHost = @"prod-nginz-ssl.wire.com";
+static NSString * const ProductionFrontendHost = @"wire.com";
+
+static NSString * const StagingBackendHost = @"staging-nginz-https.zinfra.io";
+static NSString * const StagingBackendWSHost = @"staging-nginz-ssl.zinfra.io";
+static NSString * const StagingFrontendHost = @"staging-website.zinfra.io";
+
+static NSString * const EdgeBackendHost = @"edge-nginz-https.zinfra.io";
+static NSString * const EdgeBackendWSHost = @"edge-nginz-ssl.zinfra.io";
+static NSString * const EdgeFrontendHost = @"edge-website.zinfra.io";
+
+static NSString * const ZMBlacklistEndPoint_IOS = @"clientblacklist.wire.com/prod/ios";
+static NSString * const ZMBlacklistEndPoint_IOS_Staging = @"clientblacklist.wire.com/staging/ios";
+static NSString * const ZMBlacklistEndPoint_IOS_Edge = @"clientblacklist.wire.com/edge/ios";
+
 
 static dispatch_queue_t environmentIsolationQueue()
 {
@@ -58,12 +74,46 @@ static NSMutableDictionary *environmentSettings()
     return settings;
 }
 
+static NSDictionary *defaultEnvironmentSettings()
+{
+    static NSDictionary *settings;
+    static dispatch_once_t onceToken;
+    dispatch_once(&onceToken, ^{
+        settings = @{
+                     BackendEnvironmentTypeProduction : @{
+                             ZMBackendEnvironmentSettingsKeyBackendHost: ProductionBackendHost,
+                             ZMBackendEnvironmentSettingsKeyBackendWSHost: ProductionBackendWSHost,
+                             ZMBackendEnvironmentSettingsKeyFrontendHost: ProductionFrontendHost,
+                             ZMBackendEnvironmentSettingsKeyBlacklistEndpoint: ZMBlacklistEndPoint_IOS
+                             },
+                     BackendEnvironmentTypeStaging : @{
+                             ZMBackendEnvironmentSettingsKeyBackendHost: StagingBackendHost,
+                             ZMBackendEnvironmentSettingsKeyBackendWSHost: StagingBackendWSHost,
+                             ZMBackendEnvironmentSettingsKeyFrontendHost: StagingFrontendHost,
+                             ZMBackendEnvironmentSettingsKeyBlacklistEndpoint: ZMBlacklistEndPoint_IOS_Staging
+                             },
+                     BackendEnvironmentTypeEdge : @{
+                             ZMBackendEnvironmentSettingsKeyBackendHost: EdgeBackendHost,
+                             ZMBackendEnvironmentSettingsKeyBackendWSHost: EdgeBackendWSHost,
+                             ZMBackendEnvironmentSettingsKeyFrontendHost: EdgeFrontendHost,
+                             ZMBackendEnvironmentSettingsKeyBlacklistEndpoint: ZMBlacklistEndPoint_IOS_Edge
+                             }
+                     };
+    });
+    return settings;
+}
+
 static NSDictionary *getSettingsForEnvironmentType(ZMBackendEnvironmentType key)
 {
     __block NSDictionary *value;
     dispatch_sync(environmentIsolationQueue(), ^{
         value = [environmentSettings() objectForKey:@(key)];
     });
+    
+    if (value == nil) {
+        value = [defaultEnvironmentSettings() objectForKey:@(key)];
+    }
+    
     return value;
 }
 
