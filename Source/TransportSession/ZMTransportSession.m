@@ -522,7 +522,7 @@ static NSInteger const DefaultMaximumRequests = 6;
     // If this requests needed authentication, but the access token wasn't valid, fail it:
     if (request.needsAuthentication && (httpResponse.statusCode == 401)) {
         NSDictionary *userInfo = @{NSLocalizedDescriptionKey: @"Request requiring authentication finished with 404 response. Make sure there is an access token."};
-        NSError *tryAgainError = [NSError errorWithDomain:ZMTransportSessionErrorDomain code:ZMTransportSessionErrorCodeTryAgainLater userInfo:userInfo];
+        NSError *tryAgainError = [NSError tryAgainLaterErrorWithUserInfo:userInfo];
         ZMTransportResponse *tryAgainResponse = [ZMTransportResponse responseWithTransportSessionError:tryAgainError];
         [request completeWithResponse:tryAgainResponse];
     } else {
@@ -702,7 +702,8 @@ static NSInteger const DefaultMaximumRequests = 6;
 {
     ZMTransportRequest *request = item.transportRequest;
     if (request != nil) {
-        NSError *error = [NSError errorWithDomain:ZMTransportSessionErrorDomain code:ZMTransportSessionErrorCodeTryAgainLater userInfo:nil];
+        NSDictionary *userInfo = @{NSLocalizedDescriptionKey: @"Temporarily rejecting item to sync."};
+        NSError *error = [NSError tryAgainLaterErrorWithUserInfo:userInfo];
         ZMTransportResponse *tryAgainRespose = [ZMTransportResponse responseWithTransportSessionError:error];
         [request completeWithResponse:tryAgainRespose];
         [self decrementNumberOfRequestsInProgressAndNotifyOperationLoop:YES];
