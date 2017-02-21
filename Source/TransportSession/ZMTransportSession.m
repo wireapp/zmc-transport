@@ -29,7 +29,6 @@
 #import "ZMTransportRequest+Internal.h"
 #import "ZMPersistentCookieStorage.h"
 #import "ZMPushChannelConnection.h"
-#import "TransportTracing.h"
 #import "ZMTaskIdentifierMap.h"
 #import "ZMReachability.h"
 #import "Collections+ZMTSafeTypes.h"
@@ -51,9 +50,6 @@ static NSString* ZMLogTag ZM_UNUSED = ZMT_LOG_TAG_NETWORK;
 NSString * const ZMTransportSessionReachabilityChangedNotificationName = @"ZMTransportSessionReachabilityChanged";
 
 NSString * const ZMTransportSessionNewRequestAvailableNotification = @"ZMTransportSessionNewRequestAvailable";
-
-NSString * const ZMTransportSessionShouldKeepWebsocketOpenNotificationName = @"ZMTransportSessionShouldKeepWebsocketOpenNotification";
-NSString * const ZMTransportSessionShouldKeepWebsocketOpenKey = @"shouldKeepWebsocketOpen";
 
 static NSString * const TaskTimerKey = @"task";
 static NSString * const SessionTimerKey = @"session";
@@ -99,16 +95,6 @@ static NSInteger const DefaultMaximumRequests = 6;
 
 @property (nonatomic) id<RequestRecorder> requestLoopDetection;
 
-- (void)signUpForNotifications;
-
-@end
-
-
-
-@interface ZMTransportSession (ApplicationStates)
-
-@property (nonatomic, readonly) BOOL isActive;
-- (void)updateActivity;
 @end
 
 
@@ -292,7 +278,6 @@ static NSInteger const DefaultMaximumRequests = 6;
                                                              initialAccessToken:initialAccessToken
 
                                    ];
-        [self signUpForNotifications];
         ZM_WEAK(self);
         self.requestLoopDetection = [[RequestLoopDetection alloc] initWithTriggerCallback:^(NSString * _Nonnull path) {
             ZM_STRONG(self);
@@ -336,9 +321,7 @@ static NSInteger const DefaultMaximumRequests = 6;
 - (void)setAccessTokenRenewalFailureHandler:(ZMCompletionHandlerBlock)handler;
 {
     [self.accessTokenHandler setAccessTokenRenewalFailureHandler:handler];
-    if (self.accessTokenHandler.hasAccessToken) {
-        [self.pushChannel scheduleOpenPushChannel];
-    }
+
 }
 
 - (void)setAccessTokenRenewalSuccessHandler:(ZMAccessTokenHandlerBlock)handler
@@ -538,7 +521,6 @@ static NSInteger const DefaultMaximumRequests = 6;
     }
     
     if (request.responseWillContainAccessToken) {
-        //ZMTraceAuthRequestWillContainToken(request.path);
         [self.accessTokenHandler processAccessTokenResponse:response taskIdentifier:task.taskIdentifier];
     }
     
@@ -585,24 +567,19 @@ static NSInteger const DefaultMaximumRequests = 6;
     NOT_USED(handler);
     [self.requestScheduler sessionDidReceiveAccessToken:self];
     
-    [self.pushChannel scheduleOpenPushChannel];
+    self.pushChannel.accessToken = self.accessToken;
 }
 
-@synthesize applicationIsBackgrounded = _applicationIsBackgrounded;
+- (void)handlerDidClearAccessToken:(ZMAccessTokenHandler *)handler
+{
+    NOT_USED(handler);
+    self.pushChannel.accessToken = nil;
+}
+
 - (void)setApplicationIsBackgrounded:(BOOL)newFlag;
 {
     _applicationIsBackgrounded = newFlag;
-    [self updateActivity];
-}
-
-@synthesize shouldKeepWebsocketOpen = _shouldKeepWebsocketOpen;
-- (void)setShouldKeepWebsocketOpen:(BOOL)newFlag;
-{
-    BOOL const old = self.isActive;
-    _shouldKeepWebsocketOpen = newFlag;
-    if (old != self.isActive) {
-        [self updateActivity];
-    }
+    self.pushChannel.isAppInBackground = newFlag;
 }
 
 - (void)enterBackground;
@@ -638,6 +615,7 @@ static NSInteger const DefaultMaximumRequests = 6;
         [group enter];
         [queue addOperationWithBlock:^{
             self.applicationIsBackgrounded = NO;
+            [self.requestScheduler applicationWillEnterForeground];
             [self.urlSessionSwitch switchToForegroundSession];
             self.requestScheduler.schedulerState = ZMTransportRequestSchedulerStateNormal; // TODO MARCO test
             [group leave];
@@ -667,25 +645,6 @@ static NSInteger const DefaultMaximumRequests = 6;
     }
 }
 
-- (void)shouldKeepWebsocketOpen:(NSNotification *)notification
-{
-    NSOperationQueue *queue = self.workQueue;
-    ZMSDispatchGroup *group = self.workGroup;
-    if ((queue != nil) && (group != nil)) {
-        [group enter];
-        [queue addOperationWithBlock:^{
-            self.shouldKeepWebsocketOpen = [notification.userInfo[ZMTransportSessionShouldKeepWebsocketOpenKey] boolValue];
-            [group leave];
-        }];
-    }
-}
-
-- (void)signUpForNotifications;
-{
-    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(shouldKeepWebsocketOpen:) name:ZMTransportSessionShouldKeepWebsocketOpenNotificationName object:nil];
-}
-
-
 @end
 
 
@@ -713,9 +672,7 @@ static NSInteger const DefaultMaximumRequests = 6;
 - (void)sendSchedulerItem:(id<ZMTransportRequestSchedulerItemAsRequest>)item;
 {
     if (item.isPushChannelRequest) {
-        if (self.accessTokenHandler.hasAccessToken && self.isActive) {
-            [self.pushChannel createPushChannelWithAccessToken:self.accessToken clientID:self.clientID];
-        }
+        [self.pushChannel establishConnection];
     } else {
         [self sendTransportRequest:item.transportRequest];
     }
@@ -736,7 +693,7 @@ static NSInteger const DefaultMaximumRequests = 6;
 - (void)schedulerIncreasedMaximumNumberOfConcurrentRequests:(ZMTransportRequestScheduler *)scheduler;
 {
     ZMLogDebug(@"%@ Notify new request" , NSStringFromSelector(_cmd));
-    [self.pushChannel scheduleOpenPushChannel];
+    [self.pushChannel attemptToOpen];
     [ZMTransportSession notifyNewRequestsAvailable:scheduler];
 }
 
@@ -813,7 +770,6 @@ static NSInteger const DefaultMaximumRequests = 6;
 
 - (void)reachabilityDidChange:(ZMReachability *)reachability;
 {
-    ZMTraceTransportSessionReachability(1, reachability.mayBeReachable);
     ZMLogInfo(@"reachabilityDidChange -> mayBeReachable = %@", reachability.mayBeReachable ? @"YES" : @"NO");
     [self.requestScheduler reachabilityDidChange:reachability];
     [self.pushChannel reachabilityDidChange:reachability];
@@ -853,20 +809,15 @@ static NSInteger const DefaultMaximumRequests = 6;
 
 @implementation ZMTransportSession (PushChannel)
 
-- (void)openPushChannelWithConsumer:(id<ZMPushChannelConsumer>)consumer groupQueue:(id<ZMSGroupQueue>)groupQueue;
+- (void)configurePushChannelWithConsumer:(id<ZMPushChannelConsumer>)consumer groupQueue:(id<ZMSGroupQueue>)groupQueue;
 {
     [self.pushChannel setPushChannelConsumer:consumer groupQueue:groupQueue];
+
 }
 
-- (void)closePushChannelAndRemoveConsumer;
+- (id<ZMPushChannel>)pushChannel
 {
-    [self.pushChannel closeAndRemoveConsumer];
-}
-
-- (void)restartPushChannel
-{
-    [self.pushChannel close];
-    [self.pushChannel scheduleOpenPushChannel];
+    return _pushChannel;
 }
 
 @end
@@ -936,38 +887,6 @@ static NSInteger const DefaultMaximumRequests = 6;
 - (BOOL)isPushChannelRequest;
 {
     return NO;
-}
-
-@end
-
-
-
-@implementation ZMTransportSession (ApplicationStates)
-
-
-- (BOOL)isActive;
-{
-    return !self.applicationIsBackgrounded || self.shouldKeepWebsocketOpen;
-}
-
-- (void)updateActivity;
-{
-    if (self.isActive) {
-        [self didBecomeActive];
-    } else {
-        [self didBecomeInactive];
-    }
-}
-
-- (void)didBecomeActive;
-{
-    [self.pushChannel scheduleOpenPushChannel];
-    [self.requestScheduler applicationWillEnterForeground];
-}
-
-- (void)didBecomeInactive;
-{
-    [self.pushChannel close];
 }
 
 @end

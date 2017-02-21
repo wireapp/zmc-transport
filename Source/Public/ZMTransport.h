@@ -54,3 +54,4 @@ FOUNDATION_EXPORT const unsigned char TransportVersionString[];
 #import <ZMTransport/ZMUpdateEvent.h>
 #import <ZMTransport/ZMTaskIdentifier.h>
 #import <ZMTransport/ZMRequestCancellation.h>
+#import <ZMTransport/ZMPushChannel.h>

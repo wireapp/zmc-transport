@@ -28,6 +28,7 @@
 @protocol ZMAccessTokenHandlerDelegate <NSObject>
 
 - (void)handlerDidReceiveAccessToken:(ZMAccessTokenHandler *)handler;
+- (void)handlerDidClearAccessToken:(ZMAccessTokenHandler *)handler;
 
 @end
 

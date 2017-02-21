@@ -22,7 +22,6 @@
 
 #import "ZMAccessTokenHandler.h"
 #import "ZMAccessToken.h"
-#import "TransportTracing.h"
 #import "ZMTransportResponse.h"
 #import "ZMTransportData.h"
 #import "ZMTransportCodec.h"
@@ -124,6 +123,8 @@ static NSTimeInterval const GraceperiodToRenewAccessToken = 40;
     if (_accessToken != nil) {
         self.lastKnownAccessToken = accessToken;
         [self.delegate handlerDidReceiveAccessToken:self];
+    } else {
+        [self.delegate handlerDidClearAccessToken:self];
     }
 }
 
@@ -170,7 +171,6 @@ static NSTimeInterval const GraceperiodToRenewAccessToken = 40;
 {
     Require(URLSession != nil);
     if (self.currentAccessTokenTask != nil) {
-        ZMTraceTransportSessionAccessTokenRequest(100, (int) 0, self.currentAccessTokenTask.taskIdentifier);
         return;
     }
     
@@ -191,7 +191,6 @@ static NSTimeInterval const GraceperiodToRenewAccessToken = 40;
     [self setRequestHeaderFieldsWithLastKnownAccessToken:request];
     self.currentAccessTokenTask = [URLSession taskWithRequest:request bodyData:nil transportRequest:nil];
     ZMLogInfo(@"----> Access token request: %@ %@ \n %@ \n %@", request.HTTPMethod, request.URL, request.allHTTPHeaderFields, request.HTTPBody);
-    ZMTraceTransportSessionAccessTokenRequest(0, 0, self.currentAccessTokenTask.taskIdentifier);
 
     [self.backoff performBlock:^{
         [self.currentAccessTokenTask resume];
@@ -213,26 +212,16 @@ static NSTimeInterval const GraceperiodToRenewAccessToken = 40;
 
 - (void)didCompleteAccessTokenRequestWithTask:(NSURLSessionTask *)task data:(NSData *)data session:(ZMURLSession *)session shouldRetry:(BOOL)shouldRetry
 {
-    NSUInteger const taskIdentifier = task.taskIdentifier;
     ZMLogInfo(@"<---- Access token task completed: %@ // %@", task, task.error);
     
     NSError *transportError = [NSError transportErrorFromURLTask:task expired:NO];
     ZMTransportResponse *response = [self transportResponseFromURLResponse:task.response data:data error:transportError];
-    ZMTraceTransportSessionAccessTokenRequest(1, (int) response.HTTPStatus, task.taskIdentifier);
-    ZMTraceTransportSessionAccessTokenRequest(12, (int) transportError.code, task.taskIdentifier);
     BOOL needToResend = [self processAccessTokenResponse:response taskIdentifier:task.taskIdentifier];
     
     // We can only re-send once we've cleared out the current
     self.currentAccessTokenTask = nil;
-    if (needToResend) {
-        if (shouldRetry){
-            ZMTraceTransportSessionAccessTokenRequest(101, (int) response.result, taskIdentifier);
-            [self sendAccessTokenRequestWithURLSession:session];
-        } else {
-            ZMTraceTransportSessionAccessTokenRequest(102, (int) response.result, taskIdentifier);
-        }
-    } else {
-        ZMTraceTransportSessionAccessTokenRequest(103, (int) response.result, taskIdentifier);
+    if (needToResend && shouldRetry) {
+        [self sendAccessTokenRequestWithURLSession:session];
     }
     
     [self updateBackoffWithResponse:response];
@@ -268,13 +257,12 @@ static NSTimeInterval const GraceperiodToRenewAccessToken = 40;
 
 
 
-- (BOOL)processAccessTokenResponse:(ZMTransportResponse *)response taskIdentifier:(NSUInteger)taskIdentifier;
+- (BOOL)processAccessTokenResponse:(ZMTransportResponse *)response taskIdentifier:(NSUInteger __unused)taskIdentifier;
 {
     ZMLogInfo(@"<---- Access token response: %@", response);
     
     BOOL needsToReRun = YES;
     BOOL didFail = NO;
-    self.accessToken = nil;
     
     ZMAccessToken *newToken;
     if (response.result == ZMTransportResponseStatusSuccess) {
@@ -291,22 +279,15 @@ static NSTimeInterval const GraceperiodToRenewAccessToken = 40;
         if ( ! didFail) {
             self.accessToken = newToken;
             ZMLogInfo(@"New access token <%@: %p>", self.accessToken.class, self.accessToken);
-            ZMTraceTransportSessionAccessTokenRequest(3, 0, taskIdentifier);
             [self notifyTokenSuccess:newToken];
         }
-        ZMTraceTransportSessionAccessTokenRequest(2, (int) expiresIn, taskIdentifier);
         
     } else if (response.result == ZMTransportResponseStatusPermanentError &&
                response.HTTPStatus != EnhanceYourCalmStatusCode &&
                response.HTTPStatus != TooManyRequestsStatusCode)
     {
         didFail = YES;
-        ZMTraceTransportSessionAccessTokenRequest(4, 0, taskIdentifier);
         needsToReRun = NO;
-    } else if ((response.result != ZMTransportResponseStatusPermanentError) &&
-               (response.result != ZMTransportResponseStatusTryAgainLater))
-    {
-        ZMTraceTransportSessionAccessTokenRequest(5, 0, taskIdentifier);
     }
 
     
@@ -317,7 +298,6 @@ static NSTimeInterval const GraceperiodToRenewAccessToken = 40;
         [self notifyTokenFailure:response];
     }
     
-    //ZMTraceAuthTokenResponse(response.HTTPStatus, newToken != nil);
     return needsToReRun;
 }
 

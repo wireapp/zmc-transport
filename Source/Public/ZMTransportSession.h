@@ -35,6 +35,7 @@ NS_ASSUME_NONNULL_BEGIN
 @protocol ZMPushChannelConsumer;
 @protocol ZMSGroupQueue;
 @protocol ZMKeyValueStore;
+@protocol ZMPushChannel;
 @class ZMURLSessionSwitch;
 @class ZMTransportRequest;
 
@@ -54,8 +55,8 @@ typedef NS_ENUM(NSInteger, ZMTransportSessionErrorCode) {
 extern NSString * const ZMTransportSessionReachabilityChangedNotificationName;
 extern NSString * const ZMTransportSessionNewRequestAvailableNotification;
 
-extern NSString * const ZMTransportSessionShouldKeepWebsocketOpenNotificationName;
-extern NSString * const ZMTransportSessionShouldKeepWebsocketOpenKey;
+//extern NSString * const ZMTransportSessionShouldKeepWebsocketOpenNotificationName;
+//extern NSString * const ZMTransportSessionShouldKeepWebsocketOpenKey;
 
 
 
@@ -76,7 +77,6 @@ extern NSString * const ZMTransportSessionShouldKeepWebsocketOpenKey;
 @property (nonatomic, readonly) NSOperationQueue *workQueue;
 @property (nonatomic, assign) NSInteger maximumConcurrentRequests;
 @property (nonatomic, readonly) ZMPersistentCookieStorage *cookieStorage;
-@property (nonatomic) NSString *clientID;
 @property (nonatomic, copy) void (^requestLoopDetectionCallback)(NSString*);
 
 - (instancetype)initWithBaseURL:(NSURL *)baseURL
@@ -121,11 +121,9 @@ extern NSString * const ZMTransportSessionShouldKeepWebsocketOpenKey;
 
 @interface ZMTransportSession (PushChannel)
 
-- (void)openPushChannelWithConsumer:(id<ZMPushChannelConsumer>)consumer groupQueue:(id<ZMSGroupQueue>)groupQueue;
-- (void)closePushChannelAndRemoveConsumer;
+@property (nonatomic, readonly) id<ZMPushChannel> pushChannel;
 
-/// Close push channel and open it again.
-- (void)restartPushChannel;
+- (void)configurePushChannelWithConsumer:(id<ZMPushChannelConsumer>)consumer groupQueue:(id<ZMSGroupQueue>)groupQueue;
 
 @end
 
