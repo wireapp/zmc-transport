@@ -62,7 +62,6 @@ static NSTimeInterval const GraceperiodToRenewAccessToken = 40;
 @property (nonatomic) NSOperationQueue *workQueue;
 @property (nonatomic) ZMSDispatchGroup *group;
 
-@property (nonatomic) ZMAccessToken *lastKnownAccessToken;
 @end
 
 
@@ -85,7 +84,6 @@ static NSTimeInterval const GraceperiodToRenewAccessToken = 40;
         self.workQueue = queue;
         self.backoff = backoff ?: [[ZMExponentialBackoff alloc] initWithGroup:self.group workQueue:self.workQueue];
         self.accessToken = initialAccessToken;
-        self.lastKnownAccessToken = initialAccessToken;
     }
     return self;
 }
@@ -121,7 +119,6 @@ static NSTimeInterval const GraceperiodToRenewAccessToken = 40;
     [self didChangeValueForKey:@"accessToken"];
     
     if (_accessToken != nil) {
-        self.lastKnownAccessToken = accessToken;
         [self.delegate handlerDidReceiveAccessToken:self];
     } else {
         [self.delegate handlerDidClearAccessToken:self];
@@ -130,8 +127,8 @@ static NSTimeInterval const GraceperiodToRenewAccessToken = 40;
 
 - (void)setRequestHeaderFieldsWithLastKnownAccessToken:(NSMutableURLRequest *)request
 {
-    NSString *token = self.lastKnownAccessToken.token;
-    NSString *type = self.lastKnownAccessToken.type;
+    NSString *token = self.accessToken.token;
+    NSString *type = self.accessToken.type;
     if (token == nil || type == nil) {
         return;
     }

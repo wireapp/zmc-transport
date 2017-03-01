@@ -30,11 +30,9 @@
 /// This class is responsible for opening and closing the push channel connection to the backend.
 @interface ZMTransportPushChannel : NSObject <ZMReachabilityObserver, ZMPushChannel>
 
-/// Updating will call attemptToOpen
-@property (nonatomic) BOOL isAppInBackground;
-
 /// When set not to nil an attempt open the push channel will be made
 @property (nonatomic) ZMAccessToken *accessToken;
+@property (nonatomic, weak) id <ZMNetworkStateDelegate> networkStateDelegate;
 
 - (instancetype)initWithScheduler:(ZMTransportRequestScheduler *)scheduler userAgentString:(NSString *)userAgentString URL:(NSURL *)URL;
 - (instancetype)initWithScheduler:(ZMTransportRequestScheduler *)scheduler userAgentString:(NSString *)userAgentString URL:(NSURL *)URL pushChannelClass:(Class)pushChannelClass NS_DESIGNATED_INITIALIZER;
@@ -43,7 +41,10 @@
 - (void)closeAndRemoveConsumer;
 - (void)establishConnection;
 
+/// Will open the push channel if all required conditions are met
+- (void)attemptToOpen;
 
-@property (nonatomic, weak) id <ZMNetworkStateDelegate> networkStateDelegate;
+/// Will close the push channel until @c attemptToOpen is called
+- (void)close;
 
 @end

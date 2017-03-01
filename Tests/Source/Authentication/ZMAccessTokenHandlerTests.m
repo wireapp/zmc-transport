@@ -808,15 +808,15 @@
         [self.sut sendAccessTokenRequestWithURLSession:self.urlSession];
     }
     
-    // create a consumable task that resets the accessToken
+    // create a consumable task that will fail to update the accessToken
     {
         id task  = [self mockURLSessionTaskWithStatusCode:500 error:nil hasTransportData:YES];
         [self.sut sendAccessTokenRequestWithURLSession:self.urlSession];
-        [self.sut consumeRequestWithTask:task data:nil session:self.urlSession shouldRetry:YES];
-        XCTAssertNil(self.sut.accessToken);
+        [self.sut consumeRequestWithTask:task data:nil session:self.urlSession shouldRetry:NO];
+        XCTAssertNotNil(self.sut.accessToken);
     }
     
-    // even though the accessToken is nil, it should use the last known accesstoken for setting the header
+    // even though the accessToken didn't refresh, it should use the last known accesstoken for setting the header
     {
         // expect
         [[self.urlSession expect] taskWithRequest:[OCMArg checkWithBlock:^BOOL(NSURLRequest *request) {

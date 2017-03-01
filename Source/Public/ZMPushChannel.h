@@ -23,13 +23,7 @@
 /// When set not to nil an attempt open the push channel will be made
 @property (nonatomic, nullable) NSString *clientID;
 
-/// If set to YES the push channel can be opened while the app is in the background. Updating will call attemptToOpen.
-@property (nonatomic) BOOL allowToBeOpenInBackground;
-
-/// Will open the push channel if all required conditions are met
-- (void)attemptToOpen;
-
-/// Will close the push channel until @c attemptToOpen is called
-- (void)close;
+/// When set to YES the push channel will try to remain open.
+@property (nonatomic) BOOL keepOpen;
 
 @end

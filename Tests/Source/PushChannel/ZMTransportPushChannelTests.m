@@ -82,6 +82,7 @@ static FakePushChannelConnection *currentFakePushChannelConnection;
     [[[self.scheduler stub] andCall:@selector(schedulerPerformGroupedBlock:) onObject:self] performGroupedBlock:OCMOCK_ANY];
     [self verifyMockLater:self.scheduler];
     self.sut = (id) [[ZMTransportPushChannel alloc] initWithScheduler:self.scheduler userAgentString:self.userAgentString URL:self.pushChannelURL pushChannelClass:FakePushChannelConnection.class];
+    self.sut.keepOpen = YES;
 }
 
 - (void)tearDown
@@ -509,92 +510,18 @@ static FakePushChannelConnection *currentFakePushChannelConnection;
     XCTAssertEqual(currentFakePushChannelConnection.closeCounter, 0u);
 }
 
-#pragma mark Application State
-
-- (void)testThatItDoesNotOpenThePushChannel_whileAppIsInBackground_whenAttemtToOpenIsCalled
+- (void)testThatItOpensThePushChannel_whenKeepOpenIsSetToTrue
 {
     // given
     [self setupConsumerAndScheduler];
     [self setupClientIDAndAccessToken];
-    self.sut.isAppInBackground = YES;
-    
-    // expect
-    [(ZMTransportRequestScheduler *)[self.scheduler reject] addItem:OCMOCK_ANY];
-    
-    // when
-    [self.sut attemptToOpen];
-}
-
-- (void)testThatItOpensThePushChannel_whileAppIsNotInBackground_whenAttemtToOpenIsCalled
-{
-    // given
-    [self setupConsumerAndScheduler];
-    [self setupClientIDAndAccessToken];
-    self.sut.isAppInBackground = NO;
+    self.sut.keepOpen = NO;
     
     // expect
     [(ZMTransportRequestScheduler *)[self.scheduler expect] addItem:OCMOCK_ANY];
     
     // when
-    [self.sut attemptToOpen];
-}
-
-- (void)testThatItOpensThePushChannel_whileAppIsInBackgroundAndWeAllowIt_whenAttemtToOpenIsCalled
-{
-    // given
-    [self setupConsumerAndScheduler];
-    [self setupClientIDAndAccessToken];
-    self.sut.isAppInBackground = YES;
-    self.sut.allowToBeOpenInBackground = YES;
-    
-    // expect
-    [(ZMTransportRequestScheduler *)[self.scheduler expect] addItem:OCMOCK_ANY];
-    
-    // when
-    [self.sut attemptToOpen];
-}
-
-- (void)testThatItOpensThePushChannel_whileAppIsNotInBackgroundAndWeAllowIt_whenAttemtToOpenIsCalled
-{
-    // given
-    [self setupConsumerAndScheduler];
-    [self setupClientIDAndAccessToken];
-    self.sut.isAppInBackground = NO;
-    self.sut.allowToBeOpenInBackground = YES;
-    
-    // expect
-    [(ZMTransportRequestScheduler *)[self.scheduler expect] addItem:OCMOCK_ANY];
-    
-    // when
-    [self.sut attemptToOpen];
-}
-
-- (void)testThatItOpensThePushChannel_whenAppIsNotInBackgroundIsSetToFalse
-{
-    // given
-    [self setupConsumerAndScheduler];
-    [self setupClientIDAndAccessToken];
-    self.sut.isAppInBackground = NO;
-    
-    // expect
-    [(ZMTransportRequestScheduler *)[self.scheduler expect] addItem:OCMOCK_ANY];
-    
-    // when
-    self.sut.isAppInBackground = YES;
-}
-
-- (void)testThatItOpensThePushChannel_whenAllowToBeOpenInBackgroundIsSetToTrue
-{
-    // given
-    [self setupConsumerAndScheduler];
-    [self setupClientIDAndAccessToken];
-    self.sut.isAppInBackground = YES;
-    
-    // expect
-    [(ZMTransportRequestScheduler *)[self.scheduler expect] addItem:OCMOCK_ANY];
-    
-    // when
-    self.sut.allowToBeOpenInBackground = YES;
+    self.sut.keepOpen = YES;
 }
 
 - (void)testThatItOpensThePushChannel_whenAccessTokenIsSet
@@ -625,27 +552,14 @@ static FakePushChannelConnection *currentFakePushChannelConnection;
     [self.sut setClientID:self.clientID];
 }
 
-- (void)testThatItClosesThePushChannel_whenAppIsInBackgroundIsSetToTrue
+- (void)testThatItClosesThePushChannel_whenKeepOpenIsSetToFalse
 {
     // given
     [self openPushChannel];
+    self.sut.keepOpen = YES;
     
     // when
-    self.sut.isAppInBackground = YES;
-    
-    // then
-    XCTAssertEqual(currentFakePushChannelConnection.closeCounter, 1u);
-}
-
-- (void)testThatItClosesThePushChannel_whenAllowToBeOpenInBackgroundIsSetToFalse
-{
-    // given
-    [self openPushChannel];
-    self.sut.allowToBeOpenInBackground = YES;
-    self.sut.isAppInBackground = YES;
-    
-    // when
-    self.sut.allowToBeOpenInBackground = NO;
+    self.sut.keepOpen = NO;
     
     // then
     XCTAssertEqual(currentFakePushChannelConnection.closeCounter, 1u);

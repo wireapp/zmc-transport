@@ -51,7 +51,7 @@ static NSString* ZMLogTag ZM_UNUSED = ZMT_LOG_TAG_PUSHCHANNEL;
 @implementation ZMTransportPushChannel
 
 @synthesize clientID = _clientID;
-@synthesize allowToBeOpenInBackground = _allowToBeOpenInBackground;
+@synthesize keepOpen = _keepOpen;
 
 - (void)setClientID:(NSString *)clientID
 {
@@ -69,9 +69,9 @@ static NSString* ZMLogTag ZM_UNUSED = ZMT_LOG_TAG_PUSHCHANNEL;
     [self attemptToOpen];
 }
 
-- (void)setAllowToBeOpenInBackground:(BOOL)allowToBeOpenInBackground
+- (void)setKeepOpen:(BOOL)keepOpen
 {
-    _allowToBeOpenInBackground = allowToBeOpenInBackground;
+    _keepOpen = keepOpen;
     
     [self closeIfNotAllowedToBeOpen];
     [self attemptToOpen];
@@ -144,9 +144,7 @@ ZM_EMPTY_ASSERTING_INIT();
 
 - (BOOL)shouldBeOpen
 {
-    BOOL allowToBeOpen = !self.isAppInBackground || self.allowToBeOpenInBackground;
-    
-    return !(self.clientID == nil || self.accessToken == nil || self.consumer == nil || !allowToBeOpen);
+    return !(self.clientID == nil || self.accessToken == nil || self.consumer == nil || !self.keepOpen);
 }
 
 - (void)establishConnection
@@ -168,14 +166,6 @@ ZM_EMPTY_ASSERTING_INIT();
     } else {
         [self.pushChannel checkConnection];
     }
-}
-
-- (void)setIsAppInBackground:(BOOL)isAppInBackground
-{
-    _isAppInBackground = isAppInBackground;
-    
-    [self closeIfNotAllowedToBeOpen];
-    [self attemptToOpen];
 }
 
 @end

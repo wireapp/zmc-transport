@@ -210,9 +210,7 @@ static NSString *JSONContentType = @"application/json";
 
 - (void)setPushChannelConsumer:(id<ZMPushChannelConsumer>)consumer groupQueue:(id<ZMSGroupQueue>)groupQueue;
 
-//- (void)createPushChannelWithAccessToken:(ZMAccessToken *)accessToken clientID:(NSString *)clientID;
 - (void)closeAndRemoveConsumer;
-//- (void)scheduleOpenPushChannel;
 - (void)reachabilityDidChange:(ZMReachability *)reachability;
 
 
@@ -220,8 +218,7 @@ static NSString *JSONContentType = @"application/json";
 @property (nonatomic) ZMTransportRequestScheduler *scheduler;
 @property (nonatomic, copy) NSString *userAgentString;
 @property (nonatomic) NSURL *URL;
-@property (nonatomic) BOOL isAppInBackground;
-@property (nonatomic) BOOL allowToBeOpenInBackground;
+@property (nonatomic) BOOL keepOpen;
 
 @property (nonatomic) ZMAccessToken *lastAccessToken;
 @property (nonatomic) NSString *lastClientID;
@@ -2358,42 +2355,6 @@ static __weak FakeReachability *currentReachability;
     countHandler(0);
     WaitForAllGroupsToBeEmpty(0.5);
 }
-
-
-- (void)testThatItUpdatesTheApplicationStateForThePushChannelWhenTheApplicationSuspends;
-{
-    // given
-    [[(id)self.URLSessionSwitch stub] switchToBackgroundSession];
-    [[(id)self.URLSessionSwitch stub] switchToForegroundSession];
-    XCTAssertFalse(currentFakePushChannel.isAppInBackground);
-    
-    // when
-    [self.sut enterBackground];
-    WaitForAllGroupsToBeEmpty(0.5);
-    
-    // then
-    XCTAssertTrue(currentFakePushChannel.isAppInBackground);
-}
-
-- (void)testThatUpdatesTheApplicationStateForThePushChannelWhenTheApplicationWillEnterForeground;
-{
-    // given
-    [[(id)self.URLSessionSwitch stub] switchToBackgroundSession];
-    [[(id)self.URLSessionSwitch stub] switchToForegroundSession];
-    
-    // when
-    [self.sut enterBackground];
-    WaitForAllGroupsToBeEmpty(0.5);
-    XCTAssertTrue(currentFakePushChannel.isAppInBackground);
-    
-    // when
-    [self.sut enterForeground];
-    WaitForAllGroupsToBeEmpty(0.5);
-    
-    // then
-    XCTAssertFalse(currentFakePushChannel.isAppInBackground);
-}
-
 
 - (void)testThatItNotifiesTheSchedulerWhenTheApplicationWillEnterForeground;
 {

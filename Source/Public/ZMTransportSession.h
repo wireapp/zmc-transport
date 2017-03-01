@@ -55,11 +55,6 @@ typedef NS_ENUM(NSInteger, ZMTransportSessionErrorCode) {
 extern NSString * const ZMTransportSessionReachabilityChangedNotificationName;
 extern NSString * const ZMTransportSessionNewRequestAvailableNotification;
 
-//extern NSString * const ZMTransportSessionShouldKeepWebsocketOpenNotificationName;
-//extern NSString * const ZMTransportSessionShouldKeepWebsocketOpenKey;
-
-
-
 /// Return type for an enqueue operation
 @interface ZMTransportEnqueueResult : NSObject
 

@@ -576,12 +576,6 @@ static NSInteger const DefaultMaximumRequests = 6;
     self.pushChannel.accessToken = nil;
 }
 
-- (void)setApplicationIsBackgrounded:(BOOL)newFlag;
-{
-    _applicationIsBackgrounded = newFlag;
-    self.pushChannel.isAppInBackground = newFlag;
-}
-
 - (void)enterBackground;
 {
     ZMBackgroundActivity *enterActivity = [[BackgroundActivityFactory sharedInstance] backgroundActivityWithName:@"ZMTransportSession.enterBackground"];
