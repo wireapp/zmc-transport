@@ -21,7 +21,7 @@
 @import WireUtilities;
 @import UIKit;
 
-#import <ZMTransport/ZMTransport-Swift.h>
+#import <WireTransport/WireTransport-Swift.h>
 
 #import "ZMTransportSession+internal.h"
 #import "ZMTransportCodec.h"

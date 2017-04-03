@@ -22,7 +22,7 @@
 @import ImageIO;
 @import MobileCoreServices;
 
-#import <ZMTransport/ZMTransport-Swift.h>
+#import <WireTransport/WireTransport-Swift.h>
 
 #import "ZMTransportRequest+Internal.h"
 #import "ZMTransportData.h"

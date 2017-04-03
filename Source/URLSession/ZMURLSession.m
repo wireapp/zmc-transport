@@ -29,7 +29,7 @@
 #import "ZMTransportRequest+Internal.h"
 #import "ZMTLogging.h"
 #import "ZMTransportResponse.h"
-#import <ZMTransport/ZMTransport-Swift.h>
+#import <WireTransport/WireTransport-Swift.h>
 
 
 

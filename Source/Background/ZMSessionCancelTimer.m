@@ -20,7 +20,7 @@
 @import WireSystem;
 @import WireUtilities;
 
-#import <ZMTransport/ZMTransport-Swift.h>
+#import <WireTransport/WireTransport-Swift.h>
 
 #import "ZMSessionCancelTimer.h"
 #import "ZMURLSession.h"

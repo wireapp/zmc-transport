@@ -19,7 +19,7 @@
 
 @import XCTest;
 @import WireTesting;
-@import ZMTransport;
+@import WireTransport;
 @import WireSystem;
 @import WireUtilities;
 

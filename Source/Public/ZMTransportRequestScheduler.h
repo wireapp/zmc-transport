@@ -20,7 +20,7 @@
 #import <Foundation/Foundation.h>
 #import <WireSystem/WireSystem.h>
 #import <WireUtilities/WireUtilities.h>
-#import <ZMTransport/ZMReachability.h>
+#import <WireTransport/ZMReachability.h>
 
 NS_ASSUME_NONNULL_BEGIN
 
