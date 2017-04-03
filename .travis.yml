@@ -5,7 +5,7 @@ env:
 
 language: ruby
 cache: bundler
-rvm: 2.0.0
+rvm: 2.4.0
 
 notifications:
   email:
