@@ -19,8 +19,8 @@
 
 @import XCTest;
 @import ZMTransport;
-@import ZMCSystem;
-@import ZMTesting;
+@import WireSystem;
+@import WireTesting;
 @import OCMock;
 
 #import "ZMURLSession.h"

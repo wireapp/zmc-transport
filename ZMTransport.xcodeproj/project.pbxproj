@@ -50,14 +50,8 @@
 		546E8A031B33015000DD1042 /* ZMTransportSessionTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 546E89D91B33015000DD1042 /* ZMTransportSessionTests.m */; };
 		546E8A051B33015000DD1042 /* ZMURLSessionSwitchTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 546E89DB1B33015000DD1042 /* ZMURLSessionSwitchTests.m */; };
 		546E8A071B33015000DD1042 /* ZMURLSessionTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 546E89DC1B33015000DD1042 /* ZMURLSessionTests.m */; };
-		5477121F1B751FA300223568 /* ZMCSystem.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 5477121A1B751FA300223568 /* ZMCSystem.framework */; };
-		547712231B751FA300223568 /* ZMUtilities.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 5477121C1B751FA300223568 /* ZMUtilities.framework */; };
 		547712251B751FA700223568 /* ocmock.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 547712191B751FA300223568 /* ocmock.framework */; };
-		547712271B751FAB00223568 /* ZMTesting.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 5477121B1B751FA300223568 /* ZMTesting.framework */; };
 		547712291B751FD000223568 /* ocmock.framework in CopyFiles */ = {isa = PBXBuildFile; fileRef = 547712191B751FA300223568 /* ocmock.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
-		5477122A1B751FD000223568 /* ZMCSystem.framework in CopyFiles */ = {isa = PBXBuildFile; fileRef = 5477121A1B751FA300223568 /* ZMCSystem.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
-		5477122B1B751FD000223568 /* ZMTesting.framework in CopyFiles */ = {isa = PBXBuildFile; fileRef = 5477121B1B751FA300223568 /* ZMTesting.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
-		5477122C1B751FD000223568 /* ZMUtilities.framework in CopyFiles */ = {isa = PBXBuildFile; fileRef = 5477121C1B751FA300223568 /* ZMUtilities.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		5499FFBE1B31C66D00835C8B /* ZMDataBuffer.h in Headers */ = {isa = PBXBuildFile; fileRef = 5499FF6E1B31C66C00835C8B /* ZMDataBuffer.h */; };
 		5499FFC01B31C66D00835C8B /* ZMDataBuffer.m in Sources */ = {isa = PBXBuildFile; fileRef = 5499FF6F1B31C66C00835C8B /* ZMDataBuffer.m */; };
 		5499FFC21B31C66D00835C8B /* ZMNetworkSocket.h in Headers */ = {isa = PBXBuildFile; fileRef = 5499FF701B31C66C00835C8B /* ZMNetworkSocket.h */; };
@@ -138,6 +132,12 @@
 		BF453F1A1CC6377200403E1C /* ZMRequestCancellation.h in Headers */ = {isa = PBXBuildFile; fileRef = BF453F191CC6377200403E1C /* ZMRequestCancellation.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		BF453F1D1CC63C4800403E1C /* ZMTaskIdentifier.h in Headers */ = {isa = PBXBuildFile; fileRef = BF453F1B1CC63C4800403E1C /* ZMTaskIdentifier.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		BF453F1E1CC63C4800403E1C /* ZMTaskIdentifier.m in Sources */ = {isa = PBXBuildFile; fileRef = BF453F1C1CC63C4800403E1C /* ZMTaskIdentifier.m */; };
+		BF73CCB01E9290D700FA3003 /* WireUtilities.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = BF73CCAE1E9290D700FA3003 /* WireUtilities.framework */; };
+		BF73CCB11E9290D700FA3003 /* WireSystem.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = BF73CCAF1E9290D700FA3003 /* WireSystem.framework */; };
+		BF73CCB21E9290FA00FA3003 /* WireUtilities.framework in CopyFiles */ = {isa = PBXBuildFile; fileRef = BF73CCAE1E9290D700FA3003 /* WireUtilities.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		BF73CCB31E9290FA00FA3003 /* WireSystem.framework in CopyFiles */ = {isa = PBXBuildFile; fileRef = BF73CCAF1E9290D700FA3003 /* WireSystem.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		BF73CCB51E92910D00FA3003 /* WireTesting.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = BF73CCB41E92910D00FA3003 /* WireTesting.framework */; };
+		BF73CCB61E92911D00FA3003 /* WireTesting.framework in CopyFiles */ = {isa = PBXBuildFile; fileRef = BF73CCB41E92910D00FA3003 /* WireTesting.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		BFC6403C1D2CFE3300886274 /* ZMTransportRequest+AssetGet.h in Headers */ = {isa = PBXBuildFile; fileRef = BFC6403B1D2CFE3300886274 /* ZMTransportRequest+AssetGet.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		BFEC39671CC6423700591F36 /* ZMTaskIdentifierTests.m in Sources */ = {isa = PBXBuildFile; fileRef = BFEC39661CC6423700591F36 /* ZMTaskIdentifierTests.m */; };
 		CE3677691D48B4BA00A8015A /* BackgroundActivityFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE3677681D48B4BA00A8015A /* BackgroundActivityFactory.swift */; };
@@ -180,10 +180,10 @@
 			dstPath = "";
 			dstSubfolderSpec = 10;
 			files = (
+				BF73CCB61E92911D00FA3003 /* WireTesting.framework in CopyFiles */,
+				BF73CCB21E9290FA00FA3003 /* WireUtilities.framework in CopyFiles */,
+				BF73CCB31E9290FA00FA3003 /* WireSystem.framework in CopyFiles */,
 				547712291B751FD000223568 /* ocmock.framework in CopyFiles */,
-				5477122A1B751FD000223568 /* ZMCSystem.framework in CopyFiles */,
-				5477122B1B751FD000223568 /* ZMTesting.framework in CopyFiles */,
-				5477122C1B751FD000223568 /* ZMUtilities.framework in CopyFiles */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -273,9 +273,6 @@
 		547712171B751F7900223568 /* warnings-debug.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = "warnings-debug.xcconfig"; sourceTree = "<group>"; };
 		547712181B751F7900223568 /* warnings.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = warnings.xcconfig; sourceTree = "<group>"; };
 		547712191B751FA300223568 /* ocmock.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = ocmock.framework; path = Carthage/Build/iOS/ocmock.framework; sourceTree = "<group>"; };
-		5477121A1B751FA300223568 /* ZMCSystem.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = ZMCSystem.framework; path = Carthage/Build/iOS/ZMCSystem.framework; sourceTree = "<group>"; };
-		5477121B1B751FA300223568 /* ZMTesting.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = ZMTesting.framework; path = Carthage/Build/iOS/ZMTesting.framework; sourceTree = "<group>"; };
-		5477121C1B751FA300223568 /* ZMUtilities.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = ZMUtilities.framework; path = Carthage/Build/iOS/ZMUtilities.framework; sourceTree = "<group>"; };
 		5499FF6E1B31C66C00835C8B /* ZMDataBuffer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ZMDataBuffer.h; sourceTree = "<group>"; };
 		5499FF6F1B31C66C00835C8B /* ZMDataBuffer.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ZMDataBuffer.m; sourceTree = "<group>"; };
 		5499FF701B31C66C00835C8B /* ZMNetworkSocket.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ZMNetworkSocket.h; sourceTree = "<group>"; };
@@ -359,6 +356,9 @@
 		BF453F191CC6377200403E1C /* ZMRequestCancellation.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ZMRequestCancellation.h; sourceTree = "<group>"; };
 		BF453F1B1CC63C4800403E1C /* ZMTaskIdentifier.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ZMTaskIdentifier.h; sourceTree = "<group>"; };
 		BF453F1C1CC63C4800403E1C /* ZMTaskIdentifier.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ZMTaskIdentifier.m; sourceTree = "<group>"; };
+		BF73CCAE1E9290D700FA3003 /* WireUtilities.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = WireUtilities.framework; path = Carthage/Build/iOS/WireUtilities.framework; sourceTree = "<group>"; };
+		BF73CCAF1E9290D700FA3003 /* WireSystem.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = WireSystem.framework; path = Carthage/Build/iOS/WireSystem.framework; sourceTree = "<group>"; };
+		BF73CCB41E92910D00FA3003 /* WireTesting.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = WireTesting.framework; path = Carthage/Build/iOS/WireTesting.framework; sourceTree = "<group>"; };
 		BFC6403B1D2CFE3300886274 /* ZMTransportRequest+AssetGet.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "ZMTransportRequest+AssetGet.h"; sourceTree = "<group>"; };
 		BFEC39661CC6423700591F36 /* ZMTaskIdentifierTests.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ZMTaskIdentifierTests.m; sourceTree = "<group>"; };
 		CE3677681D48B4BA00A8015A /* BackgroundActivityFactory.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BackgroundActivityFactory.swift; sourceTree = "<group>"; };
@@ -384,8 +384,8 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				547712231B751FA300223568 /* ZMUtilities.framework in Frameworks */,
-				5477121F1B751FA300223568 /* ZMCSystem.framework in Frameworks */,
+				BF73CCB01E9290D700FA3003 /* WireUtilities.framework in Frameworks */,
+				BF73CCB11E9290D700FA3003 /* WireSystem.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -393,7 +393,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				547712271B751FAB00223568 /* ZMTesting.framework in Frameworks */,
+				BF73CCB51E92910D00FA3003 /* WireTesting.framework in Frameworks */,
 				547712251B751FA700223568 /* ocmock.framework in Frameworks */,
 				3E88BCB31B1F35DF00232589 /* ZMTransport.framework in Frameworks */,
 			);
@@ -503,11 +503,11 @@
 		3E88BDE01B1F44FB00232589 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				BF73CCB41E92910D00FA3003 /* WireTesting.framework */,
+				BF73CCAE1E9290D700FA3003 /* WireUtilities.framework */,
+				BF73CCAF1E9290D700FA3003 /* WireSystem.framework */,
 				BF3A7A6A1D8C01D30034FF40 /* CoreImage.framework */,
 				547712191B751FA300223568 /* ocmock.framework */,
-				5477121A1B751FA300223568 /* ZMCSystem.framework */,
-				5477121B1B751FA300223568 /* ZMTesting.framework */,
-				5477121C1B751FA300223568 /* ZMUtilities.framework */,
 			);
 			name = Frameworks;
 			sourceTree = "<group>";
@@ -1017,8 +1017,8 @@
 			inputPaths = (
 				"$(SRCROOT)/Carthage/Build/iOS/OCMock.framework",
 				"$(BUILT_PRODUCTS_DIR)/ZMTransport.framework",
-				"$(SRCROOT)/Carthage/Build/iOS/ZMUtilities.framework",
-				"$(SRCROOT)/Carthage/Build/iOS/ZMCSystem.framework",
+				"$(SRCROOT)/Carthage/Build/iOS/WireUtilities.framework",
+				"$(SRCROOT)/Carthage/Build/iOS/WireSystem.framework",
 			);
 			name = "Install frameworks";
 			outputPaths = (

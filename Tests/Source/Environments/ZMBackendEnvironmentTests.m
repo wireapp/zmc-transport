@@ -19,7 +19,7 @@
 
 @import XCTest;
 @import ZMTransport;
-@import ZMTesting;
+@import WireTesting;
 
 
 #import "ZMBackendEnvironment+Testing.h"

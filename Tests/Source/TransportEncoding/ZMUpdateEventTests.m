@@ -18,7 +18,7 @@
 
 
 @import ZMTransport;
-@import ZMTesting;
+@import WireTesting;
 
 @interface ZMUpdateEventTests : ZMTBaseTest
 

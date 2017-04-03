@@ -19,7 +19,7 @@
 
 @import ImageIO;
 @import MobileCoreServices;
-@import ZMCSystem;
+@import WireSystem;
 
 #import "ZMTransportResponse.h"
 

@@ -17,8 +17,8 @@
 // 
 
 
-@import ZMCSystem;
-@import ZMUtilities;
+@import WireSystem;
+@import WireUtilities;
 
 #import <ZMTransport/ZMTransport-Swift.h>
 

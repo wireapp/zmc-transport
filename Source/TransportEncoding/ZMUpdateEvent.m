@@ -23,7 +23,7 @@
 #import "NSString+UUID.h"
 #import <ZMTransport/ZMTransport-Swift.h>
 
-@import ZMUtilities;
+@import WireUtilities;
 
 
 @interface NSDictionary (HashExtension)
