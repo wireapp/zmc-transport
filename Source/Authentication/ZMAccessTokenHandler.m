@@ -17,8 +17,8 @@
 // 
 
 
-@import ZMCSystem;
-@import ZMUtilities;
+@import WireSystem;
+@import WireUtilities;
 
 #import "ZMAccessTokenHandler.h"
 #import "ZMAccessToken.h"
@@ -210,6 +210,7 @@ static NSTimeInterval const GraceperiodToRenewAccessToken = 40;
 - (void)didCompleteAccessTokenRequestWithTask:(NSURLSessionTask *)task data:(NSData *)data session:(ZMURLSession *)session shouldRetry:(BOOL)shouldRetry
 {
     ZMLogInfo(@"<---- Access token task completed: %@ // %@", task, task.error);
+    ZMLogInfo(@"<---- Access token URL session: %@", session.description);
     
     NSError *transportError = [NSError transportErrorFromURLTask:task expired:NO];
     ZMTransportResponse *response = [self transportResponseFromURLResponse:task.response data:data error:transportError];
