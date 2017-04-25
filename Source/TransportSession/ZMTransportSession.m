@@ -522,7 +522,7 @@ static NSInteger const DefaultMaximumRequests = 6;
     }
     
     if (request.responseWillContainAccessToken) {
-        [self.accessTokenHandler processAccessTokenResponse:response taskIdentifier:task.taskIdentifier];
+        [self.accessTokenHandler processAccessTokenResponse:response];
     }
     
     // If this requests needed authentication, but the access token wasn't valid, fail it:

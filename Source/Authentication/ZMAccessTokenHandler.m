@@ -214,7 +214,7 @@ static NSTimeInterval const GraceperiodToRenewAccessToken = 40;
     
     NSError *transportError = [NSError transportErrorFromURLTask:task expired:NO];
     ZMTransportResponse *response = [self transportResponseFromURLResponse:task.response data:data error:transportError];
-    BOOL needToResend = [self processAccessTokenResponse:response taskIdentifier:task.taskIdentifier];
+    BOOL needToResend = [self processAccessTokenResponse:response];
     
     // We can only re-send once we've cleared out the current
     self.currentAccessTokenTask = nil;
@@ -255,7 +255,7 @@ static NSTimeInterval const GraceperiodToRenewAccessToken = 40;
 
 
 
-- (BOOL)processAccessTokenResponse:(ZMTransportResponse *)response taskIdentifier:(NSUInteger __unused)taskIdentifier;
+- (BOOL)processAccessTokenResponse:(ZMTransportResponse *)response
 {
     ZMLogInfo(@"<---- Access token response: %@", response);
     

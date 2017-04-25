@@ -1737,18 +1737,6 @@ static __weak FakeReachability *currentReachability;
     XCTAssertEqual(currentFakePushChannel.setConsumerCount, 1u);
 }
 
-//- (void)testThatItForwardsClosePushChannel
-//{
-//    // given
-//    XCTAssertEqual(currentFakePushChannel.closeAndRemoveConsumerCount, 0u);
-//    
-//    // when
-//    [self.sut closePushChannelAndRemoveConsumer];
-//    
-//    // then
-//    XCTAssertEqual(currentFakePushChannel.closeAndRemoveConsumerCount, 1u);
-//}
-
 - (void)testThatItCreatesAPushChannelConnectionWhenWeAreReceivingAnOpenPushChannelItemAndHaveAnAccessToken
 {
     // given
