@@ -47,6 +47,10 @@ static SecKeyRef publicKeyFromKeyData(NSData *keyData)
     CFErrorRef error = nil;
     SecKeyRef key =  SecKeyCreateWithData((__bridge CFDataRef)keyData, (__bridge CFDictionaryRef)attributes, &error);
     
+    if (error != nil) {
+        [NSException raise:NSInvalidArgumentException format:@"Error while creating pinned key: %@", error, nil];
+    }
+    
     return key;
 }
 
