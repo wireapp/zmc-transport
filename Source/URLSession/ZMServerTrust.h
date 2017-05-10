@@ -20,4 +20,4 @@
 @import Security;
 
 
-extern BOOL verifyServerTrust_(SecTrustRef const serverTrust, NSString *host);
+extern BOOL verifyServerTrust(SecTrustRef const serverTrust, NSString *host);

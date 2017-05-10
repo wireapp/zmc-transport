@@ -286,7 +286,7 @@ ZM_EMPTY_ASSERTING_INIT();
     Check(URLSession == self.backingSession);
     NSURLProtectionSpace *protectionSpace = challenge.protectionSpace;
     if ([protectionSpace.authenticationMethod isEqualToString:NSURLAuthenticationMethodServerTrust]) {
-        BOOL const didTrust = verifyServerTrust_(protectionSpace.serverTrust, protectionSpace.host);
+        BOOL const didTrust = verifyServerTrust(protectionSpace.serverTrust, protectionSpace.host);
         if (! didTrust) {
             ZMLogDebug(@"Not trusting the server.");
             completionHandler(NSURLSessionAuthChallengeCancelAuthenticationChallenge, nil);

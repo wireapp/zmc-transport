@@ -86,7 +86,7 @@ static SecKeyRef cloudfrontPublicKey()
     return key;
 }
 
-BOOL verifyServerTrust_(SecTrustRef const serverTrust, NSString *host)
+BOOL verifyServerTrust(SecTrustRef const serverTrust, NSString *host)
 {
     NSArray *pinnedKeys;
     

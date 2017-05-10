@@ -19,7 +19,7 @@
 #import <XCTest/XCTest.h>
 #import "ZMServerTrust.h"
 
-extern BOOL verifyServerTrust_(SecTrustRef const serverTrust, NSString *host);
+extern BOOL verifyServerTrust(SecTrustRef const serverTrust, NSString *host);
 
 @import WireTesting;
 
@@ -64,7 +64,7 @@ extern BOOL verifyServerTrust_(SecTrustRef const serverTrust, NSString *host);
 {
     NSURLProtectionSpace *protectionSpace = challenge.protectionSpace;
     if ([protectionSpace.authenticationMethod isEqualToString:NSURLAuthenticationMethodServerTrust]) {
-        BOOL const didTrust = verifyServerTrust_(protectionSpace.serverTrust, protectionSpace.host);
+        BOOL const didTrust = verifyServerTrust(protectionSpace.serverTrust, protectionSpace.host);
         
         if (! didTrust) {
             completionHandler(NSURLSessionAuthChallengeCancelAuthenticationChallenge, nil);
