@@ -97,26 +97,34 @@ static SecKeyRef publicKeyAssociatedWithServerTrust(SecTrustRef const serverTrus
     
     SecCertificateRef certificatesCArray[] = { certificate};
     CFArrayRef certificates = CFArrayCreate(NULL, (const void **)certificatesCArray, 1, NULL);
+    SecTrustRef trust = NULL;
     
-    SecTrustRef trust;
-    require_noerr_quiet(SecTrustCreateWithCertificates(certificates, policy, &trust), _error);
+    void(^finally)() = ^{
+        if (certificates) {
+            CFRelease(certificates);
+        }
+        
+        if (trust) {
+            CFRelease(trust);
+        }
+        
+        CFRelease(policy);
+    };
+    
+    if (SecTrustCreateWithCertificates(certificates, policy, &trust) != noErr) {
+        finally();
+        return nil;
+    }
     
     SecTrustResultType result;
-    require_noerr_quiet(SecTrustEvaluate(trust, &result), _error);
+    if (SecTrustEvaluate(trust, &result) != noErr) {
+        finally();
+        return nil;
+    }
     
     key = SecTrustCopyPublicKey(trust);
-    
-_error:
-    
-    if (certificates) {
-        CFRelease(certificates);
-    }
-    
-    if (trust) {
-        CFRelease(trust);
-    }
-    
-    CFRelease(policy);
+        
+    finally();
     
     return key;
 }
