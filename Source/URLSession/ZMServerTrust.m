@@ -45,7 +45,7 @@ static SecKeyRef publicKeyFromKeyData(NSData *keyData)
                                  };
     
     CFErrorRef error = nil;
-    SecKeyRef key =  SecKeyCreateWithData((__bridge CFDataRef)keyData, (__bridge CFDictionaryRef)attributes, &error);
+    SecKeyRef key = SecKeyCreateWithData((__bridge CFDataRef)keyData, (__bridge CFDictionaryRef)attributes, &error);
     
     if (error != nil) {
         [NSException raise:NSInvalidArgumentException format:@"Error while creating pinned key: %@", error, nil];
@@ -72,75 +72,53 @@ static SecKeyRef wirePublicKey()
     return key;
 }
 
-static SecKeyRef cloudfrontPublicKey()
-{
-    NSString *base64Key = @"MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAryQICCl6NZ5gDKrnSztO \
-                            3Hy8PEUcuyvg/ikC+VcIo2SFFSf18a3IMYldIugqqqZCs4/4uVW3sbdLs/6PfgdX \
-                            7O9D22ZiFWHPYA2k2N744MNiCD1UE+tJyllUhSblK48bn+v1oZHCM0nYQ2NqUkvS \
-                            j+hwUU3RiWl7x3D2s9wSdNt7XUtW05a/FXehsPSiJfKvHJJnGOX0BgTvkLnkAOTd \
-                            OrUZ/wK69Dzu4IvrN4vs9Nes8vbwPa/ddZEzGR0cQMt0JBkhk9kU/qwqUseP1QRJ \
-                            5I1jR4g8aYPL/ke9K35PxZWuDp3U0UPAZ3PjFAh+5T+fc7gzCs9dPzSHloruU+gl \
-                            FQIDAQAB";
-    
-    NSData *keyData = [[NSData alloc] initWithBase64EncodedString:base64Key options:NSDataBase64DecodingIgnoreUnknownCharacters];
-    SecKeyRef key = publicKeyFromKeyData(keyData);
-    
-    assert(key != nil);
-    
-    return key;
-}
-
 BOOL verifyServerTrust(SecTrustRef const serverTrust, NSString *host)
 {
-    NSArray *pinnedKeys;
+    NSArray *pinnedKeys = @[];
     
-    if ([host hasSuffix:@"cloudfront.net"]) {
-        pinnedKeys = @[CFBridgingRelease(cloudfrontPublicKey())];
-    } else {
+    if (   [host hasSuffix:@"prod-nginz-https.wire.com"]
+        || [host hasSuffix:@"prod-nginz-ssl.wire.com"]
+        || [host hasSuffix:@"prod-assets.wire.com"]
+        || [host hasSuffix:@"www.wire.com"]
+        || [host isEqualToString:@"wire.com"]) {
         pinnedKeys = @[CFBridgingRelease(wirePublicKey())];
     }
     
     return verifyServerTrustWithPinnedKeys(serverTrust, pinnedKeys);
 }
 
-static NSArray * publicKeysAssociatedWithServerTrust(SecTrustRef const serverTrust)
+/// Returns the public key of the leaf certificate associated with the trust object
+static SecKeyRef publicKeyAssociatedWithServerTrust(SecTrustRef const serverTrust)
 {
-    CFIndex const certCount = SecTrustGetCertificateCount(serverTrust);
-    NSMutableArray *publicKeys = [NSMutableArray array];
+    SecKeyRef key = nil;
     SecPolicyRef policy = SecPolicyCreateBasicX509();
     
-    for (CFIndex i = 0; i < certCount; i++) {
-        SecCertificateRef certificate = SecTrustGetCertificateAtIndex(serverTrust, i);
-        
-        SecCertificateRef certificatesCArray[] = { certificate};
-        CFArrayRef certificates = CFArrayCreate(NULL, (const void **)certificatesCArray, 1, NULL);
-        
-        SecTrustRef trust;
-        require_noerr_quiet(SecTrustCreateWithCertificates(certificates, policy, &trust), _error);
-        
-        SecTrustResultType result;
-        require_noerr_quiet(SecTrustEvaluate(trust, &result), _error);
-        
-        SecKeyRef key = SecTrustCopyPublicKey(trust);
-        
-        if (key != nil) {
-            [publicKeys addObject:CFBridgingRelease(key)];
-        }
-        
-        _error:
-        
-        if (certificates) {
-            CFRelease(certificates);
-        }
+    SecCertificateRef certificate = SecTrustGetCertificateAtIndex(serverTrust, 0); // leaf certificate
     
-        if (trust) {
-            CFRelease(trust);
-        }
+    SecCertificateRef certificatesCArray[] = { certificate};
+    CFArrayRef certificates = CFArrayCreate(NULL, (const void **)certificatesCArray, 1, NULL);
+    
+    SecTrustRef trust;
+    require_noerr_quiet(SecTrustCreateWithCertificates(certificates, policy, &trust), _error);
+    
+    SecTrustResultType result;
+    require_noerr_quiet(SecTrustEvaluate(trust, &result), _error);
+    
+    key = SecTrustCopyPublicKey(trust);
+    
+_error:
+    
+    if (certificates) {
+        CFRelease(certificates);
+    }
+    
+    if (trust) {
+        CFRelease(trust);
     }
     
     CFRelease(policy);
     
-    return publicKeys;
+    return key;
 }
 
 static BOOL verifyServerTrustWithPinnedKeys(SecTrustRef const serverTrust, NSArray *pinnedKeys)
@@ -150,16 +128,27 @@ static BOOL verifyServerTrustWithPinnedKeys(SecTrustRef const serverTrust, NSArr
         return NO;
     }
     
-    NSArray *publicKeys =  publicKeysAssociatedWithServerTrust(serverTrust);
-    NSInteger matchingKeyCount = 0;
+    if (result != kSecTrustResultProceed && result != kSecTrustResultUnspecified) {
+        return NO;
+    }
     
-    for (id publicKey in publicKeys) {
-        for (id pinnedKey in pinnedKeys) {
-            if ([publicKey isEqual:pinnedKey]) {
-                matchingKeyCount += 1;
-            }
+    if (pinnedKeys.count == 0) {
+        return YES;
+    }
+    
+    SecKeyRef publicKey = publicKeyAssociatedWithServerTrust(serverTrust);
+    
+    if (publicKey == nil) {
+        return NO;
+    }
+    
+    for (id pinnedKey in pinnedKeys) {
+        if ([(__bridge id)publicKey isEqual:pinnedKey]) {
+            CFRelease(publicKey);
+            return YES;
         }
     }
     
-    return matchingKeyCount > 0;
+    CFRelease(publicKey);
+    return NO;
 }

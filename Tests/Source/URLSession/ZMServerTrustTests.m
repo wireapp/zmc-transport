@@ -45,19 +45,16 @@ extern BOOL verifyServerTrust(SecTrustRef const serverTrust, NSString *host);
 }
 
 - (void)testProductionBackendPinning {
-    self.trustedServer = [self expectationWithDescription:@"We are trusting the server"];
     
-    [[self.urlSession dataTaskWithURL:[NSURL URLWithString:@"https://prod-nginz-https.wire.com/clients/"]] resume];
+    NSArray<NSString *> *pinnedHosts = @[@"prod-nginz-https.wire.com", @"prod-nginz-ssl.wire.com", @"prod-assets.wire.com", @"www.wire.com", @"wire.com"];
     
-    XCTAssertTrue([self waitForCustomExpectationsWithTimeout:5.0]);
-}
-
-- (void)testCDNPinning {
-    self.trustedServer = [self expectationWithDescription:@"We are trusting the server"];
-    
-    [[self.urlSession dataTaskWithURL:[NSURL URLWithString:@"https://d7uri8nf7uskq.cloudfront.net/sample.jpg"]] resume];
-    
-    XCTAssertTrue([self waitForCustomExpectationsWithTimeout:5.0]);
+    for (NSString *pinnedHost in pinnedHosts) {
+        self.trustedServer = [self expectationWithDescription:@"We are trusting the server"];
+        
+        [[self.urlSession dataTaskWithURL:[NSURL URLWithString:[NSString stringWithFormat:@"https://%@", pinnedHost]]] resume];
+        
+        XCTAssertTrue([self waitForCustomExpectationsWithTimeout:5.0]);
+    }
 }
 
 - (void)URLSession:(NSURLSession * __unused)session didReceiveChallenge:(NSURLAuthenticationChallenge *)challenge completionHandler:(void (^)(NSURLSessionAuthChallengeDisposition, NSURLCredential * _Nullable))completionHandler
