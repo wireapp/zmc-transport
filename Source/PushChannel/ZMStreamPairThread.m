@@ -51,7 +51,6 @@ static BOOL canSetQualityOfService()
     VerifyReturnNil(outputStream != nil);
     self = [super init];
     if (self) {
-        self.shouldKeepRunning = YES;
         self.inputStream = inputStream;
         self.outputStream = outputStream;
         self.name = @"ZMStreamPairThread";
@@ -67,8 +66,10 @@ static BOOL canSetQualityOfService()
     NSRunLoop *loop = [NSRunLoop currentRunLoop];
     [self.inputStream scheduleInRunLoop:loop forMode:NSDefaultRunLoopMode];
     [self.outputStream scheduleInRunLoop:loop forMode:NSDefaultRunLoopMode];
-    while (self.shouldKeepRunning && [loop runMode:NSDefaultRunLoopMode beforeDate:[NSDate distantFuture]])
+    while (!self.isCancelled && [loop runMode:NSDefaultRunLoopMode beforeDate:[NSDate dateWithTimeIntervalSinceNow:1]])
     {}
+    [self.inputStream removeFromRunLoop:loop forMode:NSDefaultRunLoopMode];
+    [self.outputStream removeFromRunLoop:loop forMode:NSDefaultRunLoopMode];
 }
 
 @end
