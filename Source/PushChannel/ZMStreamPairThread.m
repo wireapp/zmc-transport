@@ -20,28 +20,12 @@
 #import "ZMStreamPairThread.h"
 @import WireSystem;
 
-@import ObjectiveC;
-
-
-
 @interface ZMStreamPairThread ()
 
 @property (nonatomic) NSInputStream *inputStream;
 @property (nonatomic) NSOutputStream *outputStream;
 
 @end
-
-
-static BOOL canSetQualityOfService()
-{
-    static BOOL canSet;
-    static dispatch_once_t onceToken;
-    dispatch_once(&onceToken, ^{
-        canSet = (NULL != class_getProperty([ZMStreamPairThread class], "numberOfValidItemsForDrop"));
-    });
-    return canSet;
-}
-
 
 @implementation ZMStreamPairThread
 
@@ -54,9 +38,6 @@ static BOOL canSetQualityOfService()
         self.inputStream = inputStream;
         self.outputStream = outputStream;
         self.name = @"ZMStreamPairThread";
-        if (canSetQualityOfService()) {
-            self.qualityOfService = NSQualityOfServiceUtility;
-        }
     }
     return self;
 }
