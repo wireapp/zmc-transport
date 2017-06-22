@@ -76,9 +76,7 @@ extern NSString * const ZMTransportSessionNewRequestAvailableNotification;
 
 - (instancetype)initWithBaseURL:(NSURL *)baseURL
                    websocketURL:(NSURL *)websocketURL
-                 mainGroupQueue:(id<ZMSGroupQueue>)mainGroupQueue
-             initialAccessToken:(ZMAccessToken *)initialAccessToken
-                    application:(nullable UIApplication *)application
+             initialAccessToken:(nullable ZMAccessToken *)initialAccessToken
       sharedContainerIdentifier:(nullable NSString *)sharedContainerIdentifier;
 
 - (void)tearDown;
