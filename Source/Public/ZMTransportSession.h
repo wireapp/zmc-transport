@@ -73,6 +73,7 @@ extern NSString * const ZMTransportSessionNewRequestAvailableNotification;
 @property (nonatomic, assign) NSInteger maximumConcurrentRequests;
 @property (nonatomic, readonly) ZMPersistentCookieStorage *cookieStorage;
 @property (nonatomic, copy) void (^requestLoopDetectionCallback)(NSString*);
+@property (nonatomic, readonly) ZMReachability *reachability;
 
 - (instancetype)initWithBaseURL:(NSURL *)baseURL
                    websocketURL:(NSURL *)websocketURL

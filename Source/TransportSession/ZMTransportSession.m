@@ -83,7 +83,6 @@ static NSInteger const DefaultMaximumRequests = 6;
 @property (nonatomic, copy, readonly) NSString *userAgentValue;
 
 @property (nonatomic, readonly) ZMSDispatchGroup *workGroup;
-@property (nonatomic, readonly) ZMReachability *reachability;
 @property (nonatomic, readonly) ZMTransportRequestScheduler *requestScheduler;
 
 @property (nonatomic) ZMAccessTokenHandler *accessTokenHandler;
