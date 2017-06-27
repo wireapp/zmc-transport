@@ -32,6 +32,7 @@ NS_ASSUME_NONNULL_BEGIN
 + (void)setDoNotPersistToKeychain:(BOOL)disabled;
 
 @property (nonatomic, nullable) NSData *authenticationCookieData;
+@property (nonatomic, nullable) NSString *cookieLabel;
 
 @end
 
