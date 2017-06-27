@@ -111,7 +111,7 @@ static dispatch_queue_t isolationQueue()
     }
 }
 
-+ (void)deleteAllKeychainItems
+- (void)deleteUserKeychainItems
 {
     dispatch_sync(isolationQueue(), ^{
         NonPersistedPassword = nil;
