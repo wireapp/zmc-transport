@@ -77,6 +77,7 @@ extern NSString * const ZMTransportSessionNewRequestAvailableNotification;
 
 - (instancetype)initWithBaseURL:(NSURL *)baseURL
                    websocketURL:(NSURL *)websocketURL
+                  cookieStorage:(ZMPersistentCookieStorage *)cookieStorage
              initialAccessToken:(nullable ZMAccessToken *)initialAccessToken
       sharedContainerIdentifier:(nullable NSString *)sharedContainerIdentifier;
 

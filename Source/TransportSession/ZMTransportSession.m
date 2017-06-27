@@ -105,6 +105,7 @@ static NSInteger const DefaultMaximumRequests = 6;
     @throw [NSException exceptionWithName:NSInvalidArgumentException reason:@"You should not use -init" userInfo:nil];
     return [self initWithBaseURL:nil
                     websocketURL:nil
+                   cookieStorage:nil
               initialAccessToken:nil
        sharedContainerIdentifier:nil];
 }
@@ -166,6 +167,7 @@ static NSInteger const DefaultMaximumRequests = 6;
 
 - (instancetype)initWithBaseURL:(NSURL *)baseURL
                    websocketURL:(NSURL *)websocketURL
+                  cookieStorage:(ZMPersistentCookieStorage *)cookieStorage
              initialAccessToken:(ZMAccessToken *)initialAccessToken
       sharedContainerIdentifier:(NSString *)sharedContainerIdentifier
 {
@@ -191,6 +193,7 @@ static NSInteger const DefaultMaximumRequests = 6;
                                     group:group
                                   baseURL:baseURL
                              websocketURL:websocketURL
+                            cookieStorage:cookieStorage
                        initialAccessToken:initialAccessToken];
 }
 
@@ -201,6 +204,7 @@ static NSInteger const DefaultMaximumRequests = 6;
                                    group:(ZMSDispatchGroup *)group
                                  baseURL:(NSURL *)baseURL
                             websocketURL:(NSURL *)websocketURL
+                           cookieStorage:(ZMPersistentCookieStorage *)cookieStorage
                       initialAccessToken:(ZMAccessToken *)initialAccessToken
 {
     return [self initWithURLSessionSwitch:URLSessionSwitch
@@ -211,6 +215,7 @@ static NSInteger const DefaultMaximumRequests = 6;
                                   baseURL:baseURL
                              websocketURL:websocketURL
                          pushChannelClass:nil
+                            cookieStorage:cookieStorage
                        initialAccessToken:initialAccessToken];
 }
 
@@ -223,6 +228,7 @@ static NSInteger const DefaultMaximumRequests = 6;
                                  baseURL:(NSURL *)baseURL
                             websocketURL:(NSURL *)websocketURL
                         pushChannelClass:(Class)pushChannelClass
+                           cookieStorage:(ZMPersistentCookieStorage *)cookieStorage
                       initialAccessToken:(ZMAccessToken *)initialAccessToken
 {
     self = [super init];
@@ -232,7 +238,7 @@ static NSInteger const DefaultMaximumRequests = 6;
         
         self.workQueue = queue;
         _workGroup = group;
-        self.cookieStorage = [ZMPersistentCookieStorage storageForServerName:baseURL.host];
+        self.cookieStorage = cookieStorage;
         self.expiredTasks = [NSMutableSet set];
         self.completionHandlerBySessionID = [NSMutableDictionary new];
         self.urlSessionSwitch = URLSessionSwitch;
