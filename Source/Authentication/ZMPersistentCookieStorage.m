@@ -88,6 +88,14 @@ static dispatch_queue_t isolationQueue()
 
 #pragma mark - Public API
 
+- (NSString *)cookieLabel
+{
+    if (_cookieLabel == nil) {
+        _cookieLabel = [NSUUID UUID].UUIDString;
+    }
+    return _cookieLabel;
+}
+
 + (void)setDoNotPersistToKeychain:(BOOL)disabled;
 {
     KeychainDisabled = disabled;
