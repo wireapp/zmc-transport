@@ -79,7 +79,8 @@ extern NSString * const ZMTransportSessionNewRequestAvailableNotification;
                  mainGroupQueue:(id<ZMSGroupQueue>)mainGroupQueue
              initialAccessToken:(ZMAccessToken *)initialAccessToken
                     application:(nullable UIApplication *)application
-      sharedContainerIdentifier:(nullable NSString *)sharedContainerIdentifier;
+      sharedContainerIdentifier:(nullable NSString *)sharedContainerIdentifier
+                 userIdentifier:(nonnull NSUUID *)userIdentifier;
 
 - (void)tearDown;
 

@@ -27,9 +27,11 @@ NS_ASSUME_NONNULL_BEGIN
 /// We will only store cookies relevant to our backend. They'll be persisted in the keychain.
 @interface ZMPersistentCookieStorage : NSObject
 
-+ (instancetype)storageForServerName:(NSString *)serverName;
++ (instancetype)storageForServerName:(NSString *)serverName userIdentifier:(NSUUID *)userIdentifier;
 + (void)deleteAllKeychainItems;
 + (void)setDoNotPersistToKeychain:(BOOL)disabled;
+
+- (void)deleteKeychainItems;
 
 @property (nonatomic, nullable) NSData *authenticationCookieData;
 
@@ -49,6 +51,12 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)setCookieDataFromResponse:(NSHTTPURLResponse *)response forURL:(NSURL *)URL;
 - (void)setRequestHeaderFieldsOnRequest:(NSMutableURLRequest *)request;
 
+@end
+
+
+@interface ZMPersistentCookieStorageMigrator : NSObject
++ (instancetype)migratorWithUserIdentifier:(NSUUID *)userIdentifier serverName:(NSString *)serverName;
+- (ZMPersistentCookieStorage *)createStoreMigratingLegacyStoreIfNeeded;
 @end
 
 NS_ASSUME_NONNULL_END

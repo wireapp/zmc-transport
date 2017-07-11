@@ -26,7 +26,7 @@
 #import <CommonCrypto/CommonCrypto.h>
 #import "ZMKeychain.h"
 
-static NSString * const AccountName = @"User";
+static NSString * const LegacyAccountName = @"User";
 static NSString* ZMLogTag ZM_UNUSED = ZMT_LOG_TAG_NETWORK;
 static BOOL KeychainDisabled = NO;
 static NSMutableDictionary *NonPersistedPassword;
@@ -47,6 +47,7 @@ static dispatch_queue_t isolationQueue()
 @interface ZMPersistentCookieStorage ()
 
 @property (nonatomic, readonly) NSString *serverName;
+@property (nonatomic, readonly) NSUUID *userIdentifier;
 
 @end
 
@@ -67,9 +68,9 @@ static dispatch_queue_t isolationQueue()
 
 #pragma mark - Creation
 
-+ (instancetype)storageForServerName:(NSString *)serverName;
++ (instancetype)storageForServerName:(NSString *)serverName userIdentifier:(NSUUID *)userIdentifier
 {
-    return [[self alloc] initWithServerName:serverName];
+    return [[self alloc] initWithServerName:serverName userIdentifier:userIdentifier];
 }
 
 - (instancetype)init
@@ -77,11 +78,12 @@ static dispatch_queue_t isolationQueue()
     return nil;
 }
 
-- (instancetype)initWithServerName:(NSString *)serverName
+- (instancetype)initWithServerName:(NSString *)serverName userIdentifier:(NSUUID *)userIdentifier
 {
     self = [super init];
     if (self) {
         _serverName = [serverName copy];
+        _userIdentifier = [userIdentifier copy];
     }
     return self;
 }
@@ -99,7 +101,7 @@ static dispatch_queue_t isolationQueue()
     if ([self findItemWithPassword:&result]) {
         return result;
     }
-    return nil;
+    return nil;     
 }
 
 - (void)setAuthenticationCookieData:(NSData *)data;
@@ -111,6 +113,37 @@ static dispatch_queue_t isolationQueue()
     }
 }
 
+- (NSString *)cookieKey
+{
+    if (nil != self.accountName) {
+        return [[self.accountName stringByAppendingString:@"_"] stringByAppendingString:self.serverName];
+    } else {
+        return self.serverName; // Legacy and migration support
+    }
+}
+
+- (NSString *)accountName
+{
+    if (nil != self.userIdentifier) {
+        return self.userIdentifier.UUIDString;
+    } else {
+        return LegacyAccountName; // Legacy and migration support
+    }
+}
+
+- (void)deleteKeychainItems
+{
+    dispatch_sync(isolationQueue(), ^{
+        NonPersistedPassword[self.cookieKey] = nil;
+
+        if (KeychainDisabled) {
+            return;
+        }
+
+        [ZMKeychain deleteAllKeychainItemsWithAccountName:self.accountName];
+    });
+}
+
 + (void)deleteAllKeychainItems
 {
     dispatch_sync(isolationQueue(), ^{
@@ -119,7 +152,8 @@ static dispatch_queue_t isolationQueue()
         if (KeychainDisabled) {
             return;
         }
-        [ZMKeychain deleteAllKeychainItemsWithAccountName:AccountName];
+
+        [ZMKeychain deleteAllKeychainItems];
     });
 }
 
@@ -134,7 +168,7 @@ static dispatch_queue_t isolationQueue()
     __block BOOL success = NO;
     dispatch_sync(isolationQueue(), ^{
         
-        NSData *password = NonPersistedPassword[self.serverName];
+        NSData *password = NonPersistedPassword[self.cookieKey];
         BOOL const fetchFromKeychain = (password == nil);
         *passwordP = (password == (id) [NSNull null]) ? nil : password;
         
@@ -146,10 +180,10 @@ static dispatch_queue_t isolationQueue()
         if (fetchFromKeychain) {
             id result = nil;
             if (passwordP == nil) {
-                result = [ZMKeychain stringForAccount:AccountName fallbackToDefaultGroup:YES];
+                result = [ZMKeychain stringForAccount:self.accountName fallbackToDefaultGroup:YES];
             }
             else {
-                result = [ZMKeychain dataForAccount:AccountName fallbackToDefaultGroup:YES];
+                result = [ZMKeychain dataForAccount:self.accountName fallbackToDefaultGroup:YES];
             }
             
             if (result != nil) {
@@ -171,7 +205,7 @@ static dispatch_queue_t isolationQueue()
     if (NonPersistedPassword == nil) {
         NonPersistedPassword = [NSMutableDictionary dictionary];
     }
-    NonPersistedPassword[self.serverName] = password ?: [NSNull null];
+    NonPersistedPassword[self.cookieKey] = password ?: [NSNull null];
 }
 
 - (void)setItem:(NSData *)data
@@ -193,7 +227,7 @@ static dispatch_queue_t isolationQueue()
             success = YES;
             return;
         }
-        success = [ZMKeychain setData:password forAccount:AccountName];
+        success = [ZMKeychain setData:password forAccount:self.accountName];
     });
     return success;
 }
@@ -203,10 +237,10 @@ static dispatch_queue_t isolationQueue()
     __block BOOL success = NO;
     dispatch_sync(isolationQueue(), ^{
         
-        BOOL hasItem = ((NonPersistedPassword[self.serverName] != nil) &&
-                        (NonPersistedPassword[self.serverName] != [NSNull null]));
+        BOOL hasItem = ((NonPersistedPassword[self.cookieKey] != nil) &&
+                        (NonPersistedPassword[self.cookieKey] != [NSNull null]));
         if (hasItem) {
-            NonPersistedPassword[self.serverName] = password ?: [NSNull null];
+            NonPersistedPassword[self.cookieKey] = password ?: [NSNull null];
         }
         
         if (KeychainDisabled) {
@@ -214,7 +248,7 @@ static dispatch_queue_t isolationQueue()
             return;
         }
         
-        success = [ZMKeychain setData:password forAccount:AccountName];
+        success = [ZMKeychain setData:password forAccount:self.accountName];
     });
     
     // now try to read. If we fail to read, it means that the keychain is blocked and it always return success on an update (I guess it's a security feature?)
@@ -235,13 +269,13 @@ static dispatch_queue_t isolationQueue()
 {
     dispatch_sync(isolationQueue(), ^{
         
-        [NonPersistedPassword removeObjectForKey:self.serverName];
+        [NonPersistedPassword removeObjectForKey:self.cookieKey];
         
         if (KeychainDisabled) {
             return;
         }
         
-        [ZMKeychain deleteAllKeychainItemsWithAccountName:AccountName];
+        [ZMKeychain deleteAllKeychainItemsWithAccountName:self.accountName];
     });
 }
 
@@ -334,5 +368,50 @@ static dispatch_queue_t isolationQueue()
         [request addValue:value forHTTPHeaderField:field];
     }];
 }
+
+@end
+
+
+
+#pragma mark – Legacy Storage Migration
+
+
+@interface ZMPersistentCookieStorageMigrator ()
+@property (nonatomic, readonly) NSUUID *userIdentifier;
+@property (nonatomic, readonly) NSString *serverName;
+@end
+
+@implementation ZMPersistentCookieStorageMigrator
+
++ (instancetype)migratorWithUserIdentifier:(NSUUID *)userIdentifier serverName:(NSString *)serverName
+{
+    return [[self alloc] initWithUserIdentifier:userIdentifier serverName:serverName];
+}
+
+- (instancetype)initWithUserIdentifier:(NSUUID *)userIdentifier serverName:(NSString *)serverName
+{
+    self = [super init];
+    if (self) {
+        _userIdentifier = userIdentifier;
+        _serverName = serverName;
+    }
+    return self;
+}
+
+- (ZMPersistentCookieStorage *)createStoreMigratingLegacyStoreIfNeeded
+{
+    ZMPersistentCookieStorage *oldStorage = [ZMPersistentCookieStorage storageForServerName:self.serverName userIdentifier:(NSUUID *_Nonnull)nil];
+    ZMPersistentCookieStorage *newStorage = [ZMPersistentCookieStorage storageForServerName:self.serverName userIdentifier:self.userIdentifier];
+    NSData *cookieData = oldStorage.authenticationCookieData;
+
+    if (nil != cookieData) {
+        // Migrate cookie data to the new storage
+        newStorage.authenticationCookieData = oldStorage.authenticationCookieData;
+        [oldStorage deleteKeychainItems];
+    }
+
+    return newStorage;
+}
+
 
 @end

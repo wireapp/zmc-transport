@@ -109,7 +109,8 @@ static NSInteger const DefaultMaximumRequests = 6;
                   mainGroupQueue:nil
               initialAccessToken:nil
                      application:nil
-       sharedContainerIdentifier:nil];
+       sharedContainerIdentifier:nil
+                  userIdentifier:nil];
 }
 
 + (void)setUpConfiguration:(NSURLSessionConfiguration *)configuration;
@@ -173,6 +174,7 @@ static NSInteger const DefaultMaximumRequests = 6;
              initialAccessToken:(ZMAccessToken *)initialAccessToken
                     application:(UIApplication *)application
       sharedContainerIdentifier:(NSString *)sharedContainerIdentifier
+                 userIdentifier:(NSUUID *)userIdentifier
 {
     NSOperationQueue *queue = [NSOperationQueue zm_serialQueueWithName:@"ZMTransportSession"];
     ZMSDispatchGroup *group = [ZMSDispatchGroup groupWithLabel:@"ZMTransportSession init"];
@@ -198,7 +200,8 @@ static NSInteger const DefaultMaximumRequests = 6;
                              websocketURL:websocketURL
                            mainGroupQueue:mainGroupQueue
                        initialAccessToken:initialAccessToken
-                              application:application];
+                              application:application
+                           userIdentifier:userIdentifier];
 }
 
 - (instancetype)initWithURLSessionSwitch:(ZMURLSessionSwitch *)URLSessionSwitch
@@ -211,6 +214,7 @@ static NSInteger const DefaultMaximumRequests = 6;
                           mainGroupQueue:(id<ZMSGroupQueue>)mainGroupQueue
                       initialAccessToken:(ZMAccessToken *)initialAccessToken
                              application:(UIApplication *)application
+                          userIdentifier:(NSUUID *)userIdentifier
 {
     return [self initWithURLSessionSwitch:URLSessionSwitch
                          requestScheduler:requestScheduler
@@ -222,7 +226,8 @@ static NSInteger const DefaultMaximumRequests = 6;
                          pushChannelClass:nil
                            mainGroupQueue:mainGroupQueue
                        initialAccessToken:initialAccessToken
-                              application:application];
+                              application:application
+                           userIdentifier:userIdentifier];
 }
 
 
@@ -237,6 +242,7 @@ static NSInteger const DefaultMaximumRequests = 6;
                           mainGroupQueue:(id<ZMSGroupQueue>)mainGroupQueue
                       initialAccessToken:(ZMAccessToken *)initialAccessToken
                              application:(UIApplication *)application
+                          userIdentifier:(NSUUID *)userIdentifier
 {
     self = [super init];
     if (self) {
@@ -247,7 +253,8 @@ static NSInteger const DefaultMaximumRequests = 6;
         
         self.workQueue = queue;
         _workGroup = group;
-        self.cookieStorage = [ZMPersistentCookieStorage storageForServerName:baseURL.host];
+        ZMPersistentCookieStorageMigrator *migrator = [ZMPersistentCookieStorageMigrator migratorWithUserIdentifier:userIdentifier serverName:baseURL.host];
+        self.cookieStorage = [migrator createStoreMigratingLegacyStoreIfNeeded];
         self.expiredTasks = [NSMutableSet set];
         self.completionHandlerBySessionID = [NSMutableDictionary new];
         self.urlSessionSwitch = URLSessionSwitch;

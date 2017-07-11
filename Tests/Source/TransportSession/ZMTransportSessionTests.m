@@ -416,6 +416,7 @@ static __weak FakeReachability *currentReachability;
 @property (nonatomic) NSUInteger nextTaskIdentifier;
 @property (nonatomic) FakeTransportRequestScheduler *scheduler;
 @property (nonatomic) ZMURLSessionSwitch *URLSessionSwitch;
+@property (nonatomic) NSUUID *userIdentifier;
 
 
 @end
@@ -440,7 +441,7 @@ static __weak FakeReachability *currentReachability;
     [super setUp];
 
     self.scheduler = [[FakeTransportRequestScheduler alloc] init];
-    
+    self.userIdentifier = NSUUID.createUUID;
     self.dataTask = [OCMockObject mockForClass:FakeDataTask.class];
     [[[self.dataTask stub] andReturnValue:OCMOCK_VALUE((NSUInteger) 0)] taskIdentifier];
 
@@ -469,7 +470,9 @@ static __weak FakeReachability *currentReachability;
                 pushChannelClass:FakePushChannel.class
                 mainGroupQueue:[[FakeGroupQueue alloc] init]
                 initialAccessToken:nil
-                application:[UIApplication sharedApplication]];
+                application:[UIApplication sharedApplication]
+                userIdentifier:self.userIdentifier
+                ];
     __weak id weakSelf = self;
     [self.sut setAccessTokenRenewalFailureHandler:^(ZMTransportResponse *response) {
         id strongSelf = weakSelf;
@@ -488,7 +491,7 @@ static __weak FakeReachability *currentReachability;
         @"expires_in": @(7777)
     };
     
-    [ZMPersistentCookieStorage deleteAllKeychainItems];
+    [ZMKeychain deleteAllKeychainItems];
 }
 
 - (void)tearDown
@@ -496,6 +499,7 @@ static __weak FakeReachability *currentReachability;
     currentFakePushChannel = nil;
     self.queue = nil;
     self.failedAuthHandler = nil;
+    self.userIdentifier = nil;
     [super tearDown];
     currentTestCase = nil;
 }
@@ -591,7 +595,8 @@ static __weak FakeReachability *currentReachability;
                 pushChannelClass:nil
                 mainGroupQueue:[[FakeGroupQueue alloc] init]
                 initialAccessToken:nil
-                application:[UIApplication sharedApplication]];
+                application:[UIApplication sharedApplication]
+                userIdentifier:self.userIdentifier];
     
     self.sut.accessToken = self.validAccessToken;
     XCTestExpectation *expectation = [self expectationWithDescription:@"Completion handler called"];
@@ -809,7 +814,8 @@ static __weak FakeReachability *currentReachability;
                                pushChannelClass:nil
                                mainGroupQueue:[[FakeGroupQueue alloc] init]
                                initialAccessToken:nil
-                               application:[UIApplication sharedApplication]];
+                               application:[UIApplication sharedApplication]
+                               userIdentifier:self.userIdentifier];
     
     sut.accessToken = self.validAccessToken;
     id<ZMTransportData> payload = @{@"numbers": @[@4, @8, @15, @16, @23, @42]};
@@ -849,7 +855,8 @@ static __weak FakeReachability *currentReachability;
                                pushChannelClass:nil
                                mainGroupQueue:nil
                                initialAccessToken:nil
-                               application:[UIApplication sharedApplication]];
+                               application:[UIApplication sharedApplication]
+                               userIdentifier:self.userIdentifier];
     
     sut.accessToken = self.validAccessToken;
     id<ZMTransportData> payload = @{@"numbers": @[@4, @8, @15, @16, @23, @42]};
