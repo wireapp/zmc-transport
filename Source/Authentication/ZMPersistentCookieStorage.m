@@ -109,7 +109,7 @@ static dispatch_queue_t isolationQueue()
     if ([self findItemWithPassword:&result]) {
         return result;
     }
-    return nil;     
+    return nil;
 }
 
 - (void)setAuthenticationCookieData:(NSData *)data;
