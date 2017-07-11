@@ -90,6 +90,14 @@ static dispatch_queue_t isolationQueue()
 
 #pragma mark - Public API
 
+- (NSString *)cookieLabel
+{
+    if (_cookieLabel == nil) {
+        _cookieLabel = [NSUUID UUID].UUIDString;
+    }
+    return _cookieLabel;
+}
+
 + (void)setDoNotPersistToKeychain:(BOOL)disabled;
 {
     KeychainDisabled = disabled;
@@ -363,6 +371,7 @@ static dispatch_queue_t isolationQueue()
     NSArray *cookies = [properties mapWithBlock:^id(NSDictionary *p) {
         return [[NSHTTPCookie alloc] initWithProperties:p];
     }];
+
     [[NSHTTPCookie requestHeaderFieldsWithCookies:cookies] enumerateKeysAndObjectsUsingBlock:^(NSString *field, NSString *value, BOOL *stop) {
         NOT_USED(stop);
         [request addValue:value forHTTPHeaderField:field];
@@ -370,8 +379,6 @@ static dispatch_queue_t isolationQueue()
 }
 
 @end
-
-
 
 #pragma mark – Legacy Storage Migration
 

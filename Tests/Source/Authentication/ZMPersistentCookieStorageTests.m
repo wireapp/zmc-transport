@@ -25,6 +25,7 @@
 
 @interface ZMPersistentCookieStorageTests : XCTestCase
 @property (nonatomic, readonly) NSUUID *userIdentifier;
+@property (nonatomic) ZMPersistentCookieStorage *sut;
 @end
 
 
@@ -41,49 +42,49 @@
     [super setUp];
     [ZMPersistentCookieStorage deleteAllKeychainItems];
     _userIdentifier = NSUUID.createUUID;
+    self.sut = [ZMPersistentCookieStorage storageForServerName:@"1.example.com" userIdentifier:self.userIdentifier];
 }
 
 - (void)tearDown
 {
     _userIdentifier = nil;
     [super tearDown];
+    [self.sut deleteKeychainItems];
+    self.sut = nil;
 }
 
 - (void)testThatItDoesNotHaveACookie;
 {
-
-    ZMPersistentCookieStorage *sut = [ZMPersistentCookieStorage storageForServerName:@"1.example.com" userIdentifier:self.userIdentifier];
-    XCTAssertNil(sut.authenticationCookieData);
+    XCTAssertNil(self.sut.authenticationCookieData);
 }
 
 - (void)testThatItStoresTheCookie;
 {
-    ZMPersistentCookieStorage *sut = [ZMPersistentCookieStorage storageForServerName:@"1.example.com" userIdentifier:self.userIdentifier];
-    XCTAssertNil(sut.authenticationCookieData);
+    XCTAssertNil(self.sut.authenticationCookieData);
     NSData *data = [NSData dataWithBytes:(char []){'a'} length:1];
-    [sut setAuthenticationCookieData:data];
-    XCTAssertNotNil(sut.authenticationCookieData);
-    XCTAssertEqualObjects(sut.authenticationCookieData, data);
+    [self.sut setAuthenticationCookieData:data];
+    XCTAssertNotNil(self.sut.authenticationCookieData);
+    XCTAssertEqualObjects(self.sut.authenticationCookieData, data);
 }
 
 - (void)testThatItUpdatesTheCookie;
 {
-    ZMPersistentCookieStorage *sut = [ZMPersistentCookieStorage storageForServerName:@"1.example.com" userIdentifier:self.userIdentifier];
-    XCTAssertNil(sut.authenticationCookieData);
+    XCTAssertNil(self.sut.authenticationCookieData);
 
     NSData *data1 = [NSData dataWithBytes:(char []){'a'} length:1];
-    [sut setAuthenticationCookieData:data1];
-    XCTAssertEqualObjects(sut.authenticationCookieData, data1);
+    [self.sut setAuthenticationCookieData:data1];
+    XCTAssertEqualObjects(self.sut.authenticationCookieData, data1);
     
     NSData *data2 = [NSData dataWithBytes:(char []){'B'} length:1];
-    [sut setAuthenticationCookieData:data2];
-    XCTAssertEqualObjects(sut.authenticationCookieData, data2);
+    [self.sut setAuthenticationCookieData:data2];
+    XCTAssertEqualObjects(self.sut.authenticationCookieData, data2);
 }
 
 - (void)testThatItIsUniqueForServerName;
 {
-    ZMPersistentCookieStorage *sut1 = [ZMPersistentCookieStorage storageForServerName:@"1.example.com" userIdentifier:self.userIdentifier];
+    ZMPersistentCookieStorage *sut1 = self.sut;
     ZMPersistentCookieStorage *sut2 = [ZMPersistentCookieStorage storageForServerName:@"2.example.com" userIdentifier:self.userIdentifier];
+
     XCTAssertNil([sut1 authenticationCookieData]);
     XCTAssertNil([sut2 authenticationCookieData]);
     
@@ -94,29 +95,29 @@
     
     XCTAssertEqualObjects([sut1 authenticationCookieData], data1);
     XCTAssertEqualObjects([sut2 authenticationCookieData], data2);
+    [sut2 deleteKeychainItems];
 }
 
 - (void)testThatItCanDeleteCookies;
 {
-    ZMPersistentCookieStorage *sut = [ZMPersistentCookieStorage storageForServerName:@"1.example.com" userIdentifier:self.userIdentifier];
-    XCTAssertNil(sut.authenticationCookieData);
+    XCTAssertNil(self.sut.authenticationCookieData);
     
     NSData *data = [NSData dataWithBytes:(char []){'a'} length:1];
-    [sut setAuthenticationCookieData:data];
-    XCTAssertNotNil(sut.authenticationCookieData);
-    [sut setAuthenticationCookieData:nil];
-    XCTAssertNil(sut.authenticationCookieData);
+    [self.sut setAuthenticationCookieData:data];
+    XCTAssertNotNil(self.sut.authenticationCookieData);
+    [self.sut setAuthenticationCookieData:nil];
+    XCTAssertNil(self.sut.authenticationCookieData);
 }
 
 - (void)testThatItPersistsCookies;
 {
     NSData *data = [NSData dataWithBytes:(char []){'a'} length:1];
     @autoreleasepool {
-        ZMPersistentCookieStorage *sut1 = [ZMPersistentCookieStorage storageForServerName:@"1.example.com" userIdentifier:self.userIdentifier];
+        ZMPersistentCookieStorage *sut1 = self.sut;
         [sut1 setAuthenticationCookieData:data];
     }
     {
-        ZMPersistentCookieStorage *sut2 = [ZMPersistentCookieStorage storageForServerName:@"1.example.com" userIdentifier:self.userIdentifier];
+        ZMPersistentCookieStorage *sut2 = self.sut;
         XCTAssertEqualObjects([sut2 authenticationCookieData], data);
     }
 }
@@ -235,8 +236,7 @@
 - (void)testThatWeCanRetrieveTheCookie;
 {
     // given
-    ZMPersistentCookieStorage *sut = [ZMPersistentCookieStorage storageForServerName:@"1.example.com" userIdentifier:self.userIdentifier];
-    XCTAssertNil(sut.authenticationCookieData);
+    XCTAssertNil(self.sut.authenticationCookieData);
     
     NSDictionary *headerFields = @{@"Date": @"Thu, 24 Jul 2014 09:06:45 GMT",
                                    @"Content-Encoding": @"gzip",
@@ -248,13 +248,13 @@
                                    @"Content-Length": @"214"};
     NSURL *URL = [NSURL URLWithString:@"http://zeta.example.com/login"];
     NSHTTPURLResponse *response = [[NSHTTPURLResponse alloc] initWithURL:URL statusCode:200 HTTPVersion:@"HTTP/1.1" headerFields:headerFields];
-    [sut setCookieDataFromResponse:response forURL:URL];
-    XCTAssertNotNil(sut.authenticationCookieData);
+    [self.sut setCookieDataFromResponse:response forURL:URL];
+    XCTAssertNotNil(self.sut.authenticationCookieData);
     
     // when
     NSMutableURLRequest *request = [[NSMutableURLRequest alloc] init];
     [request setURL:URL];
-    [sut setRequestHeaderFieldsOnRequest:request];
+    [self.sut setRequestHeaderFieldsOnRequest:request];
     
     // then
     XCTAssertEqualObjects([request valueForHTTPHeaderField:@"Cookie"],
@@ -266,9 +266,8 @@
 - (void)testThatItDoesNotSetACookieDataIfNewCookieIsInvalid;
 {
     // given
-    ZMPersistentCookieStorage *sut = [ZMPersistentCookieStorage storageForServerName:@"1.example.com" userIdentifier:self.userIdentifier];
-    XCTAssertNil(sut.authenticationCookieData);
-    sut.authenticationCookieData = [@"previous-cookie" dataUsingEncoding:NSUTF8StringEncoding];
+    XCTAssertNil(self.sut.authenticationCookieData);
+    self.sut.authenticationCookieData = [@"previous-cookie" dataUsingEncoding:NSUTF8StringEncoding];
     
     NSDictionary *headerFields = @{@"Date": @"Thu, 24 Jul 2014 09:06:45 GMT",
                                    @"Content-Encoding": @"gzip",
@@ -282,17 +281,16 @@
     NSHTTPURLResponse *response = [[NSHTTPURLResponse alloc] initWithURL:URL statusCode:200 HTTPVersion:@"HTTP/1.1" headerFields:headerFields];
     
     // when
-    [sut setCookieDataFromResponse:response forURL:URL];
+    [self.sut setCookieDataFromResponse:response forURL:URL];
     
     // then
-    XCTAssertNotNil(sut.authenticationCookieData);
+    XCTAssertNotNil(self.sut.authenticationCookieData);
 }
 
 - (void)testThatItDoesNotStoreNotAuthCookies
 {
     // given
-    ZMPersistentCookieStorage *sut = [ZMPersistentCookieStorage storageForServerName:@"1.example.com" userIdentifier:self.userIdentifier];
-    XCTAssertNil(sut.authenticationCookieData);
+    XCTAssertNil(self.sut.authenticationCookieData);
     
     NSDictionary *headerFields = @{@"Date": @"Thu, 24 Jul 2014 09:06:45 GMT",
                                    @"Content-Encoding": @"gzip",
@@ -306,17 +304,16 @@
     NSHTTPURLResponse *response = [[NSHTTPURLResponse alloc] initWithURL:URL statusCode:200 HTTPVersion:@"HTTP/1.1" headerFields:headerFields];
 
     // when
-    [sut setCookieDataFromResponse:response forURL:URL];
+    [self.sut setCookieDataFromResponse:response forURL:URL];
 
     // then
-    XCTAssertNil(sut.authenticationCookieData);
+    XCTAssertNil(self.sut.authenticationCookieData);
 }
 
 - (void)testThatItStoresAuthCookies
 {
     // given
-    ZMPersistentCookieStorage *sut = [ZMPersistentCookieStorage storageForServerName:@"1.example.com" userIdentifier:self.userIdentifier];
-    XCTAssertNil(sut.authenticationCookieData);
+    XCTAssertNil(self.sut.authenticationCookieData);
     
     NSDictionary *headerFields = @{@"Date": @"Thu, 24 Jul 2014 09:06:45 GMT",
                                    @"Content-Encoding": @"gzip",
@@ -330,10 +327,10 @@
     NSHTTPURLResponse *response = [[NSHTTPURLResponse alloc] initWithURL:URL statusCode:200 HTTPVersion:@"HTTP/1.1" headerFields:headerFields];
     
     // when
-    [sut setCookieDataFromResponse:response forURL:URL];
+    [self.sut setCookieDataFromResponse:response forURL:URL];
     
     // then
-    XCTAssertNotNil(sut.authenticationCookieData);
+    XCTAssertNotNil(self.sut.authenticationCookieData);
 }
 
 @end

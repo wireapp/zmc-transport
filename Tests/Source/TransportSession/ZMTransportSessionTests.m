@@ -43,6 +43,7 @@
 #import "ZMURLSession.h"
 #import "ZMURLSessionSwitch.h"
 #import "Fakes.h"
+#import "ZMPersistentCookieStorage.h"
 
 /// the JSON Content-Type header
 static NSString *JSONContentType = @"application/json";
@@ -417,6 +418,7 @@ static __weak FakeReachability *currentReachability;
 @property (nonatomic) FakeTransportRequestScheduler *scheduler;
 @property (nonatomic) ZMURLSessionSwitch *URLSessionSwitch;
 @property (nonatomic) NSUUID *userIdentifier;
+@property (nonatomic) ZMPersistentCookieStorage *cookieStorage;
 
 
 @end
@@ -459,6 +461,8 @@ static __weak FakeReachability *currentReachability;
     
     self.baseURL = [NSURL URLWithString:@"http://base.example.com"];
     self.webSocketURL = [NSURL URLWithString:@"http://websocket.example.com"];
+    self.cookieStorage = [ZMPersistentCookieStorage storageForServerName:self.baseURL.host userIdentifier:self.userIdentifier];
+    
     self.sut = [[ZMTransportSession alloc]
                 initWithURLSessionSwitch:self.URLSessionSwitch
                 requestScheduler:(id) self.scheduler
@@ -468,11 +472,9 @@ static __weak FakeReachability *currentReachability;
                 baseURL:self.baseURL
                 websocketURL:self.webSocketURL
                 pushChannelClass:FakePushChannel.class
-                mainGroupQueue:[[FakeGroupQueue alloc] init]
-                initialAccessToken:nil
-                application:[UIApplication sharedApplication]
-                userIdentifier:self.userIdentifier
-                ];
+                cookieStorage:self.cookieStorage
+                initialAccessToken:nil];
+
     __weak id weakSelf = self;
     [self.sut setAccessTokenRenewalFailureHandler:^(ZMTransportResponse *response) {
         id strongSelf = weakSelf;
@@ -491,15 +493,29 @@ static __weak FakeReachability *currentReachability;
         @"expires_in": @(7777)
     };
     
-    [ZMKeychain deleteAllKeychainItems];
+    [ZMPersistentCookieStorage deleteAllKeychainItems];
 }
 
 - (void)tearDown
 {
-    currentFakePushChannel = nil;
+    self.URLSession = nil;
+    self.dataTask = nil;
+    self.sut = nil;
+    self.baseURL = nil;
+    self.webSocketURL = nil;
+    self.dummyPath = nil;
+    self.dummyTokenPayload = nil;
     self.queue = nil;
     self.failedAuthHandler = nil;
     self.userIdentifier = nil;
+    self.validAccessToken = nil;
+    self.expiredAccessToken = nil;
+    self.clientID = nil;
+    self.scheduler = nil;
+    self.URLSessionSwitch = nil;
+
+    [ZMPersistentCookieStorage deleteAllKeychainItems];
+    self.cookieStorage = nil;
     [super tearDown];
     currentTestCase = nil;
 }
@@ -593,10 +609,8 @@ static __weak FakeReachability *currentReachability;
                 baseURL:url
                 websocketURL:url2
                 pushChannelClass:nil
-                mainGroupQueue:[[FakeGroupQueue alloc] init]
-                initialAccessToken:nil
-                application:[UIApplication sharedApplication]
-                userIdentifier:self.userIdentifier];
+                cookieStorage:self.cookieStorage
+                initialAccessToken:nil];
     
     self.sut.accessToken = self.validAccessToken;
     XCTestExpectation *expectation = [self expectationWithDescription:@"Completion handler called"];
@@ -812,10 +826,8 @@ static __weak FakeReachability *currentReachability;
                                baseURL:url
                                websocketURL:url
                                pushChannelClass:nil
-                               mainGroupQueue:[[FakeGroupQueue alloc] init]
-                               initialAccessToken:nil
-                               application:[UIApplication sharedApplication]
-                               userIdentifier:self.userIdentifier];
+                               cookieStorage:self.cookieStorage
+                               initialAccessToken:nil];
     
     sut.accessToken = self.validAccessToken;
     id<ZMTransportData> payload = @{@"numbers": @[@4, @8, @15, @16, @23, @42]};
@@ -853,10 +865,8 @@ static __weak FakeReachability *currentReachability;
                                baseURL:url
                                websocketURL:url
                                pushChannelClass:nil
-                               mainGroupQueue:nil
-                               initialAccessToken:nil
-                               application:[UIApplication sharedApplication]
-                               userIdentifier:self.userIdentifier];
+                               cookieStorage:self.cookieStorage
+                               initialAccessToken:nil];
     
     sut.accessToken = self.validAccessToken;
     id<ZMTransportData> payload = @{@"numbers": @[@4, @8, @15, @16, @23, @42]};
@@ -876,7 +886,6 @@ static __weak FakeReachability *currentReachability;
     [(id)foregroundSession verify];
     [(id)backgroundSession verify];
 }
-
 
 - (void)testThatItCallsTheCompletionHandler
 {
@@ -898,7 +907,6 @@ static __weak FakeReachability *currentReachability;
     // then
     XCTAssert([self waitForCustomExpectationsWithTimeout:0.5]);
 }
-
 
 - (void)testThatItCallsTheCompletionHandlerWithResponseData
 {
