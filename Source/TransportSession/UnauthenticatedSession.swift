@@ -29,13 +29,14 @@ final public class UnauthenticatedTransportSession: NSObject {
     private let maximumNumberOfRequests: Int32 = 3
     private var numberOfRunningRequests: Int32 = 0
     private let baseURL: URL
-    private let session = URLSession.shared
+    private var session: URLSession!
     private weak var delegate: UnauthenticatedTransportSessionDelegate?
 
     public init(baseURL: URL, delegate: UnauthenticatedTransportSessionDelegate) {
         self.baseURL = baseURL
         self.delegate = delegate
         super.init()
+        self.session = URLSession(configuration: .default, delegate: self, delegateQueue: nil)
     }
 
     public func enqueueRequest(withGenerator generator: ZMTransportRequestGenerator) -> ZMTransportEnqueueResult {
