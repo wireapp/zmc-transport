@@ -1,6 +1,6 @@
 //
 // Wire
-// Copyright (C) 2016 Wire Swiss GmbH
+// Copyright (C) 2017 Wire Swiss GmbH
 //
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -20,8 +20,8 @@
 import Foundation
 
 
-protocol UnauthenticatedTransportSessionDelegate {
-    func session(_ session: UnauthenticatedTransportSession, cookieStorageBecameAvailable cookieStorage: ZMPersistentCookieStorage) // TODO:
+public protocol UnauthenticatedTransportSessionDelegate: class {
+    func session(_ session: UnauthenticatedTransportSession, cookieDataBecomeAvailable data: Data)
 }
 
 final public class UnauthenticatedTransportSession: NSObject {
@@ -30,9 +30,11 @@ final public class UnauthenticatedTransportSession: NSObject {
     private var numberOfRunningRequests: Int32 = 0
     private let baseURL: URL
     private let session = URLSession.shared
+    private weak var delegate: UnauthenticatedTransportSessionDelegate?
 
-    public init(baseURL: URL) {
+    public init(baseURL: URL, delegate: UnauthenticatedTransportSessionDelegate) {
         self.baseURL = baseURL
+        self.delegate = delegate
         super.init()
     }
 
@@ -59,14 +61,19 @@ final public class UnauthenticatedTransportSession: NSObject {
 
         let urlRequest = NSMutableURLRequest(url: url)
         urlRequest.configure(with: request)
-        let task = session.dataTask(with: urlRequest as URLRequest) { data, response, error in
+        let task = session.dataTask(with: urlRequest as URLRequest) { [weak self] data, response, error in
             decrement(notify: true)
-            let response = ZMTransportResponse(httpurlResponse: response as! HTTPURLResponse, data: data, error: error)
-            request.complete(with: response)
+            self?.parseCookie(from: response as! HTTPURLResponse)
+            request.complete(with: .init(httpurlResponse: response as! HTTPURLResponse, data: data, error: error))
         }
 
         task.resume()
         return .init(didHaveLessRequestsThanMax: true, didGenerateNonNullRequest: true)
+    }
+
+    private func parseCookie(from response: HTTPURLResponse) {
+        guard let data = response.extractCookieData() else { return }
+        delegate?.session(self, cookieDataBecomeAvailable: data)
     }
 
 }
@@ -93,6 +100,36 @@ extension NSMutableURLRequest {
         request.setBodyDataAndMediaTypeOnHTTP(self)
         request.setAdditionalHeaderFieldsOnHTTP(self)
         request.setContentDispositionOnHTTP(self)
+    }
+
+}
+
+
+private enum CookieKey: String {
+    case zetaId = "zuid"
+    case properties
+}
+
+extension HTTPURLResponse {
+
+    func extractCookieData() -> Data? {
+        let cookies = HTTPCookie.cookies(withResponseHeaderFields: allHeaderFields as! [String : String], for: url!)
+        guard !cookies.isEmpty else { return nil }
+        let properties = cookies.flatMap { $0.properties }
+        guard (properties.first?[.name] as? String) == CookieKey.zetaId.rawValue else { return nil }
+        let data = NSMutableData()
+        let archiver = NSKeyedArchiver(forWritingWith: data)
+        archiver.requiresSecureCoding = true
+        archiver.encode(properties, forKey: CookieKey.properties.rawValue)
+        archiver.finishEncoding()
+
+        if TARGET_OS_IPHONE == 1 {
+            let key = UserDefaults.cookiesKey()
+            let encrypted = data.zmEncryptPrefixingIV(withKey: key)
+            return encrypted?.base64EncodedData()
+        }
+
+        return data as Data
     }
 
 }
