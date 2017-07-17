@@ -139,7 +139,7 @@
 		BF73CCB31E9290FA00FA3003 /* WireSystem.framework in CopyFiles */ = {isa = PBXBuildFile; fileRef = BF73CCAF1E9290D700FA3003 /* WireSystem.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		BF73CCB51E92910D00FA3003 /* WireTesting.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = BF73CCB41E92910D00FA3003 /* WireTesting.framework */; };
 		BF73CCB61E92911D00FA3003 /* WireTesting.framework in CopyFiles */ = {isa = PBXBuildFile; fileRef = BF73CCB41E92910D00FA3003 /* WireTesting.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
-		BF8E457F1F1778E000CE6A0A /* UnauthenticatedSession.swift in Sources */ = {isa = PBXBuildFile; fileRef = BF8E457E1F1778E000CE6A0A /* UnauthenticatedSession.swift */; };
+		BF8E457F1F1778E000CE6A0A /* UnauthenticatedTransportSession.swift in Sources */ = {isa = PBXBuildFile; fileRef = BF8E457E1F1778E000CE6A0A /* UnauthenticatedTransportSession.swift */; };
 		BF9D0AFD1F1CAACC005D4C31 /* UnauthenticatedTransportSessionTests .swift in Sources */ = {isa = PBXBuildFile; fileRef = BF9D0AFB1F1CAAA4005D4C31 /* UnauthenticatedTransportSessionTests .swift */; };
 		BF9D0AFF1F1CC0C5005D4C31 /* SessionProtocols.swift in Sources */ = {isa = PBXBuildFile; fileRef = BF9D0AFE1F1CC0C5005D4C31 /* SessionProtocols.swift */; };
 		BFC6403C1D2CFE3300886274 /* ZMTransportRequest+AssetGet.h in Headers */ = {isa = PBXBuildFile; fileRef = BFC6403B1D2CFE3300886274 /* ZMTransportRequest+AssetGet.h */; settings = {ATTRIBUTES = (Public, ); }; };
@@ -364,7 +364,7 @@
 		BF73CCAE1E9290D700FA3003 /* WireUtilities.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = WireUtilities.framework; path = Carthage/Build/iOS/WireUtilities.framework; sourceTree = "<group>"; };
 		BF73CCAF1E9290D700FA3003 /* WireSystem.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = WireSystem.framework; path = Carthage/Build/iOS/WireSystem.framework; sourceTree = "<group>"; };
 		BF73CCB41E92910D00FA3003 /* WireTesting.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = WireTesting.framework; path = Carthage/Build/iOS/WireTesting.framework; sourceTree = "<group>"; };
-		BF8E457E1F1778E000CE6A0A /* UnauthenticatedSession.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = UnauthenticatedSession.swift; sourceTree = "<group>"; };
+		BF8E457E1F1778E000CE6A0A /* UnauthenticatedTransportSession.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = UnauthenticatedTransportSession.swift; sourceTree = "<group>"; };
 		BF9D0AFB1F1CAAA4005D4C31 /* UnauthenticatedTransportSessionTests .swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "UnauthenticatedTransportSessionTests .swift"; sourceTree = "<group>"; };
 		BF9D0AFE1F1CC0C5005D4C31 /* SessionProtocols.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SessionProtocols.swift; sourceTree = "<group>"; };
 		BFC6403B1D2CFE3300886274 /* ZMTransportRequest+AssetGet.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "ZMTransportRequest+AssetGet.h"; sourceTree = "<group>"; };
@@ -839,7 +839,7 @@
 		BF9D0B001F1CC159005D4C31 /* Unauthenticated Session */ = {
 			isa = PBXGroup;
 			children = (
-				BF8E457E1F1778E000CE6A0A /* UnauthenticatedSession.swift */,
+				BF8E457E1F1778E000CE6A0A /* UnauthenticatedTransportSession.swift */,
 				BF9D0AFE1F1CC0C5005D4C31 /* SessionProtocols.swift */,
 			);
 			name = "Unauthenticated Session";
@@ -1076,7 +1076,7 @@
 				54CA15BB1B32F2C1008D3787 /* ZMUserAgent.m in Sources */,
 				5499FFD21B31C66D00835C8B /* ZMTransportPushChannel.m in Sources */,
 				54CA15BF1B32F2C1008D3787 /* NSString+UUID.m in Sources */,
-				BF8E457F1F1778E000CE6A0A /* UnauthenticatedSession.swift in Sources */,
+				BF8E457F1F1778E000CE6A0A /* UnauthenticatedTransportSession.swift in Sources */,
 				54CA15CF1B32F2C1008D3787 /* ZMReachability.m in Sources */,
 				54CA15571B32F2C1008D3787 /* ZMBackgroundActivity.m in Sources */,
 				BF9D0AFF1F1CC0C5005D4C31 /* SessionProtocols.swift in Sources */,
