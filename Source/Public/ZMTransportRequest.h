@@ -131,7 +131,7 @@ typedef NS_ENUM(int8_t, ZMTransportAccept) {
 @property (nonatomic, readonly, copy, nullable) NSDictionary *contentDisposition; ///< C.f. <https://tools.ietf.org/html/rfc2183>
 
 - (void)addTaskCreatedHandler:(ZMTaskCreatedHandler *)taskCreatedHandler;
-- (void)addCompletionHandler:(ZMCompletionHandler *)completionHandler;
+- (void)addCompletionHandler:(ZMCompletionHandler *)completionHandler NS_SWIFT_NAME(add(_:));
 - (void)addProgressHandler:(ZMTaskProgressHandler *)progressHandler;
 - (void)callTaskCreationHandlersWithIdentifier:(NSUInteger)identifier sessionIdentifier:(NSString *)sessionIdentifier;
 - (void)completeWithResponse:(ZMTransportResponse *)response;

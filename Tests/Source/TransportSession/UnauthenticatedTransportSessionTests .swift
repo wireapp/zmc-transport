@@ -53,10 +53,10 @@ private class MockURLSession: SessionProtocol {
 
 private class MockDelegate: UnauthenticatedTransportSessionDelegate {
 
-    var cookieData: Data?
+    var userInfoCallback: ((UserInfo) -> Void)?
 
-    func session(_ session: UnauthenticatedTransportSession, cookieDataBecomeAvailable data: Data) {
-        cookieData = data
+    func session(_ session: UnauthenticatedTransportSession, didReceiveUserInfo info: UserInfo) {
+        userInfoCallback?(info)
     }
 
 }
@@ -149,7 +149,7 @@ final class UnauthenticatedTransportSessionTests: ZMTBaseTest {
         let completionExpectation = expectation(description: "Completion handler should be called")
         let request = ZMTransportRequest(getFromPath: "/")
 
-        request.addCompletionHandler(ZMCompletionHandler(on: fakeUIContext) { response in
+        request.add(ZMCompletionHandler(on: fakeUIContext) { response in
             // then
             XCTAssertEqual(response.httpStatus, 200)
             completionExpectation.fulfill()
@@ -181,7 +181,7 @@ final class UnauthenticatedTransportSessionTests: ZMTBaseTest {
 
     }
 
-    func testThatItParsesCookieDataAndCallsTheDelegate() {
+    func testThatItParsesCookieDataAndCallsTheDelegate() throws {
         // given
         let headers = [
             "Date": "Thu, 24 Jul 2014 09:06:45 GMT",
@@ -196,13 +196,23 @@ final class UnauthenticatedTransportSessionTests: ZMTBaseTest {
 
         let request = ZMTransportRequest(getFromPath: "/")
         let response = HTTPURLResponse(url: url, statusCode: 200, httpVersion: "HTTP/1.1", headerFields: headers)
-        sessionMock.nextCompletionParameters = (nil, response, nil)
+        let userId = UUID.create()
+
+        let data = try JSONSerialization.data(withJSONObject: ["user": userId.transportString()], options: [])
+        sessionMock.nextCompletionParameters = (data, response, nil)
+        let userExpectation = expectation(description: "UserInfo should become available")
+
+        mockDelegate.userInfoCallback = { info in
+            userExpectation.fulfill()
+            XCTAssertNotNil(info.cookieData)
+            XCTAssertEqual(info.identifier, userId)
+        }
 
         // when
         _ = sut.enqueueRequest { request }
 
         // then
-        XCTAssertNotNil(mockDelegate.cookieData)
+        XCTAssert(waitForCustomExpectations(withTimeout: 0.1))
     }
 
     func testThatItParsesCookieDataAndDoesNotCallTheDelegateIfTheCookieIsMissingRequiredFields() {
@@ -221,12 +231,17 @@ final class UnauthenticatedTransportSessionTests: ZMTBaseTest {
         let request = ZMTransportRequest(getFromPath: "/")
         let response = HTTPURLResponse(url: url, statusCode: 200, httpVersion: "HTTP/1.1", headerFields: headers)
         sessionMock.nextCompletionParameters = (nil, response, nil)
+        _ = expectation(description: "UserInfo should become available")
+
+        mockDelegate.userInfoCallback = { _ in
+            XCTFail("No UserInfo should become available")
+        }
 
         // when
         _ = sut.enqueueRequest { request }
 
         // then
-        XCTAssertNil(mockDelegate.cookieData)
+        XCTAssertFalse(waitForCustomExpectations(withTimeout: 0.01))
     }
 
 }

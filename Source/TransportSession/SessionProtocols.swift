@@ -20,11 +20,6 @@
 /// The following protocols are used in `UnauthenticatedTransportSession`
 /// to enable easy injection of mocks in tests.
 
-
-public protocol UnauthenticatedTransportSessionDelegate: class {
-    func session(_ session: UnauthenticatedTransportSession, cookieDataBecomeAvailable data: Data)
-}
-
 public protocol SessionProtocol {
     func task(
         with request: URLRequest,

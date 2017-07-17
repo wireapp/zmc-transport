@@ -17,6 +17,16 @@
 //
 
 
+public struct UserInfo {
+    let identifier: UUID
+    let cookieData: Data
+}
+
+public protocol UnauthenticatedTransportSessionDelegate: class {
+    func session(_ session: UnauthenticatedTransportSession, didReceiveUserInfo userInfo: UserInfo)
+}
+
+
 /// The `UnauthenticatedTransportSession` class should be used instead of `ZMTransportSession`
 /// until a user has been authenticated. Consumers should set themselves as delegate to 
 /// be notified when a cookie was parsed from a response of a request made using this transport session.
@@ -28,14 +38,23 @@ final public class UnauthenticatedTransportSession: NSObject {
         case success, nilRequest, maximumNumberOfRequests
     }
 
+    public weak var delegate: UnauthenticatedTransportSessionDelegate?
+
     private let maximumNumberOfRequests: Int32 = 3
     private var numberOfRunningRequests: Int32 = 0
     private let baseURL: URL
     private var session: SessionProtocol!
-    private weak var delegate: UnauthenticatedTransportSessionDelegate?
+    private let delegateQueue: OperationQueue
+    private var foundCookie = false
 
-    public init(baseURL: URL, delegate: UnauthenticatedTransportSessionDelegate, urlSession: SessionProtocol? = nil) {
+    public init(
+        baseURL: URL,
+        delegate: UnauthenticatedTransportSessionDelegate,
+        delegateQueue: OperationQueue = .main,
+        urlSession: SessionProtocol? = nil
+        ) {
         self.baseURL = baseURL
+        self.delegateQueue = delegateQueue
         self.delegate = delegate
         super.init()
         self.session = urlSession ?? URLSession(configuration: .default, delegate: self, delegateQueue: nil)
@@ -63,8 +82,9 @@ final public class UnauthenticatedTransportSession: NSObject {
         urlRequest.configure(with: request)
 
         let task = session.task(with: urlRequest as URLRequest) { [weak self] data, response, error in
-            request.complete(with: .init(httpurlResponse: response as! HTTPURLResponse, data: data, error: error))
-            self?.parseCookie(from: response as! HTTPURLResponse)
+            let transportResponse = ZMTransportResponse(httpurlResponse: response as! HTTPURLResponse, data: data, error: error)
+            request.complete(with: transportResponse)
+            self?.delegateQueue.addOperation { self?.parseCookie(from: transportResponse) }
             self?.decrement(notify: true)
         }
 
@@ -74,9 +94,12 @@ final public class UnauthenticatedTransportSession: NSObject {
 
     /// Parses cookie data from a response and calls the delegate with it.
     /// - parameter response: The response from which the cookie should be parsed.
-    private func parseCookie(from response: HTTPURLResponse) {
-        guard let data = response.extractCookieData() else { return }
-        delegate?.session(self, cookieDataBecomeAvailable: data)
+    private func parseCookie(from response: ZMTransportResponse) {
+        guard let data = response.extractCookieData(), let id = response.extractUserIdentifier() else { return }
+        delegateQueue.addOperation { [weak self] in
+            guard let `self` = self else { return }
+            self.delegate?.session(self, didReceiveUserInfo: UserInfo(identifier: id, cookieData: data))
+        }
     }
 
     /// Decrements the number of running requests and posts a new
@@ -133,13 +156,18 @@ private enum CookieKey: String {
     case properties
 }
 
+private enum UserKey: String {
+    case user
+}
 
-fileprivate extension HTTPURLResponse {
+
+fileprivate extension ZMTransportResponse {
 
     /// Extracts the wire cookie data from the response.
     /// - returns: The encrypted cookie data (using the cookies key) if there is any.
     func extractCookieData() -> Data? {
-        let cookies = HTTPCookie.cookies(withResponseHeaderFields: allHeaderFields as! [String : String], for: url!)
+        guard let response = rawResponse else { return nil }
+        let cookies = HTTPCookie.cookies(withResponseHeaderFields: response.allHeaderFields as! [String : String], for: response.url!)
         guard !cookies.isEmpty else { return nil }
         let properties = cookies.flatMap { $0.properties }
         guard (properties.first?[.name] as? String) == CookieKey.zetaId.rawValue else { return nil }
@@ -150,6 +178,11 @@ fileprivate extension HTTPURLResponse {
         archiver.finishEncoding()
         let key = UserDefaults.cookiesKey()
         return data.zmEncryptPrefixingIV(withKey: key).base64EncodedData()
+    }
+
+    func extractUserIdentifier() -> UUID? {
+        guard let data = payload as? [String: Any] else { return nil }
+        return (data[UserKey.user.rawValue] as? String).flatMap(UUID.init)
     }
 
 }
