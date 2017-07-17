@@ -36,7 +36,7 @@ public protocol DataTaskProtocol {
     func resume()
 }
 
-// MARK: – Conformances
+// MARK: - Conformances
 
 extension URLSessionDataTask: DataTaskProtocol {}
 

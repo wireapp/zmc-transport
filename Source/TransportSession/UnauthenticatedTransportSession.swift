@@ -97,7 +97,7 @@ final public class UnauthenticatedTransportSession: NSObject {
 
 }
 
-// MARK: – SSL Pinning
+// MARK: - SSL Pinning
 
 extension UnauthenticatedTransportSession: URLSessionDelegate {
 
@@ -111,7 +111,7 @@ extension UnauthenticatedTransportSession: URLSessionDelegate {
 
 }
 
-// MARK: – Request configuration
+// MARK: - Request configuration
 
 extension NSMutableURLRequest {
 
@@ -126,7 +126,7 @@ extension NSMutableURLRequest {
 
 }
 
-// MARK: – Cookie Parsing
+// MARK: - Cookie Parsing
 
 private enum CookieKey: String {
     case zetaId = "zuid"
