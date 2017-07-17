@@ -92,8 +92,7 @@ final class UnauthenticatedTransportSessionTests: ZMTBaseTest {
         let result = sut.enqueueRequest { .init(getFromPath: "/") }
 
         // then
-        XCTAssert(result.didHaveLessRequestThanMax)
-        XCTAssert(result.didGenerateNonNullRequest)
+        XCTAssertEqual(result, .success)
         XCTAssertEqual(task.resumeCallCount, 1)
     }
 
@@ -102,30 +101,26 @@ final class UnauthenticatedTransportSessionTests: ZMTBaseTest {
         let result = sut.enqueueRequest { nil }
 
         // then
-        XCTAssert(result.didHaveLessRequestThanMax)
-        XCTAssertFalse(result.didGenerateNonNullRequest)
+        XCTAssertEqual(result, .nilRequest)
     }
 
     func testThatItDoesNotEnqueueMoreThanThreeRequests() {
         // when
         (0..<3).forEach { _ in
             let result = sut.enqueueRequest { .init(getFromPath: "/") }
-            XCTAssert(result.didHaveLessRequestThanMax)
-            XCTAssert(result.didGenerateNonNullRequest)
+            XCTAssertEqual(result, .success)
         }
 
         // then
         let result = sut.enqueueRequest { .init(getFromPath: "/") }
-        XCTAssertFalse(result.didHaveLessRequestThanMax)
-        XCTAssertFalse(result.didGenerateNonNullRequest)
+        XCTAssertEqual(result, .maximumNumberOfRequests)
     }
 
     func testThatItDoesEnqueueAnotherRequestAfterTheLastOneHasBeenCompleted() {
         // when
         (0..<3).forEach { _ in
             let result = sut.enqueueRequest { .init(getFromPath: "/") }
-            XCTAssert(result.didHaveLessRequestThanMax)
-            XCTAssert(result.didGenerateNonNullRequest)
+            XCTAssertEqual(result, .success)
         }
 
         guard let lastCompletion = sessionMock.recordedCompletionHandler else { return XCTFail("No completion handler") }
@@ -133,8 +128,7 @@ final class UnauthenticatedTransportSessionTests: ZMTBaseTest {
         // then
         do {
             let result = sut.enqueueRequest { .init(getFromPath: "/") }
-            XCTAssertFalse(result.didHaveLessRequestThanMax)
-            XCTAssertFalse(result.didGenerateNonNullRequest)
+            XCTAssertEqual(result, .maximumNumberOfRequests)
         }
 
         // when
@@ -144,8 +138,7 @@ final class UnauthenticatedTransportSessionTests: ZMTBaseTest {
         // then
         do {
             let result = sut.enqueueRequest { .init(getFromPath: "/") }
-            XCTAssert(result.didHaveLessRequestThanMax)
-            XCTAssert(result.didGenerateNonNullRequest)
+            XCTAssertEqual(result, .success)
         }
     }
 
@@ -167,8 +160,7 @@ final class UnauthenticatedTransportSessionTests: ZMTBaseTest {
         XCTAssert(waitForCustomExpectations(withTimeout: 0.1))
 
         // then
-        XCTAssert(result.didHaveLessRequestThanMax)
-        XCTAssert(result.didGenerateNonNullRequest)
+        XCTAssertEqual(result, .success)
     }
 
     func testThatPostsANewRequestAvailableNotificationAfterCompletingARunningRequest() {

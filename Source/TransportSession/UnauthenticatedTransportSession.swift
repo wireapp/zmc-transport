@@ -24,6 +24,10 @@
 /// to create a regular transport session with it.
 final public class UnauthenticatedTransportSession: NSObject {
 
+    public enum EnqueueResult {
+        case success, nilRequest, maximumNumberOfRequests
+    }
+
     private let maximumNumberOfRequests: Int32 = 3
     private var numberOfRunningRequests: Int32 = 0
     private let baseURL: URL
@@ -41,18 +45,18 @@ final public class UnauthenticatedTransportSession: NSObject {
     /// If there are too many requests in progress no request will be enqueued.
     /// - parameter generator: The closure used to retrieve a new request.
     /// - returns: The result of the enqueue operation.
-    public func enqueueRequest(withGenerator generator: ZMTransportRequestGenerator) -> ZMTransportEnqueueResult {
+    public func enqueueRequest(withGenerator generator: ZMTransportRequestGenerator) -> EnqueueResult {
         // Increment the running requests count and return early in case we are above the limit.
         let newCount = increment()
         if maximumNumberOfRequests < newCount {
             decrement(notify: false)
-            return .init(didHaveLessRequestsThanMax: false, didGenerateNonNullRequest: false)
+            return .maximumNumberOfRequests
         }
 
         // Ask the generator to create a request and return early if there is none.
         guard let request = generator() else {
             decrement(notify: false)
-            return .init(didHaveLessRequestsThanMax: true, didGenerateNonNullRequest: false)
+            return .nilRequest
         }
 
         guard let urlRequest = URL(string: request.path, relativeTo: baseURL).flatMap(NSMutableURLRequest.init) else { preconditionFailure() }
@@ -65,7 +69,7 @@ final public class UnauthenticatedTransportSession: NSObject {
         }
 
         task.resume()
-        return .init(didHaveLessRequestsThanMax: true, didGenerateNonNullRequest: true)
+        return .success
     }
 
     /// Parses cookie data from a response and calls the delegate with it.
