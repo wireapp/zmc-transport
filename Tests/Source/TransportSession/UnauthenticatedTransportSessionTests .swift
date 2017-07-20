@@ -55,7 +55,7 @@ private class MockDelegate: UnauthenticatedTransportSessionDelegate {
 
     var userInfoCallback: ((UserInfo) -> Void)?
 
-    func session(_ session: UnauthenticatedTransportSession, didReceiveUserInfo info: UserInfo) {
+    func session(_ session: UnauthenticatedTransportSessionProtocol, didReceiveUserInfo info: UserInfo) {
         userInfoCallback?(info)
     }
 
