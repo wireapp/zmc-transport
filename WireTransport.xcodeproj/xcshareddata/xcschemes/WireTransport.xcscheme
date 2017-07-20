@@ -20,20 +20,6 @@
                ReferencedContainer = "container:WireTransport.xcodeproj">
             </BuildableReference>
          </BuildActionEntry>
-         <BuildActionEntry
-            buildForTesting = "YES"
-            buildForRunning = "NO"
-            buildForProfiling = "NO"
-            buildForArchiving = "NO"
-            buildForAnalyzing = "NO">
-            <BuildableReference
-               BuildableIdentifier = "primary"
-               BlueprintIdentifier = "3E88BCB11B1F35DF00232589"
-               BuildableName = "WireTransport-ios-tests.xctest"
-               BlueprintName = "WireTransport-ios-tests"
-               ReferencedContainer = "container:WireTransport.xcodeproj">
-            </BuildableReference>
-         </BuildActionEntry>
       </BuildActionEntries>
    </BuildAction>
    <TestAction
