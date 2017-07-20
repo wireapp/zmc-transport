@@ -456,6 +456,7 @@ static __weak FakeReachability *currentReachability;
     
     self.URLSessionSwitch = [OCMockObject mockForClass:ZMURLSessionSwitch.class];
     [[[(id)self.URLSessionSwitch stub] andReturn:self.URLSession] currentSession];
+    [[(id)self.URLSessionSwitch stub] tearDown];
     [self verifyMockLater:self.URLSessionSwitch];
     
     self.baseURL = [NSURL URLWithString:@"http://base.example.com"];
@@ -496,6 +497,7 @@ static __weak FakeReachability *currentReachability;
 {
     self.URLSession = nil;
     self.dataTask = nil;
+    [self.sut tearDown];
     self.sut = nil;
     self.baseURL = nil;
     self.webSocketURL = nil;
