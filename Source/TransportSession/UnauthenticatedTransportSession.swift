@@ -17,26 +17,36 @@
 //
 
 
+public enum EnqueueResult {
+    case success, nilRequest, maximumNumberOfRequests
+}
+
+public protocol UnauthenticatedTransportSessionProtocol {
+    
+    func enqueueRequest(withGenerator generator: ZMTransportRequestGenerator) -> EnqueueResult
+    
+}
+
 public struct UserInfo {
-    let identifier: UUID
-    let cookieData: Data
+    public let identifier: UUID
+    public let cookieData: Data
+    
+    public init(identifier: UUID, cookieData: Data) {
+        self.identifier = identifier
+        self.cookieData = cookieData
+    }
 }
 
 public protocol UnauthenticatedTransportSessionDelegate: class {
-    func session(_ session: UnauthenticatedTransportSession, didReceiveUserInfo userInfo: UserInfo)
+    func session(_ session: UnauthenticatedTransportSessionProtocol, didReceiveUserInfo userInfo: UserInfo)
 }
-
 
 /// The `UnauthenticatedTransportSession` class should be used instead of `ZMTransportSession`
 /// until a user has been authenticated. Consumers should set themselves as delegate to 
 /// be notified when a cookie was parsed from a response of a request made using this transport session.
 /// When cookie data became available it should be used to create a `ZMPersistentCookieStorage` and
 /// to create a regular transport session with it.
-final public class UnauthenticatedTransportSession: NSObject {
-
-    public enum EnqueueResult {
-        case success, nilRequest, maximumNumberOfRequests
-    }
+final public class UnauthenticatedTransportSession: NSObject, UnauthenticatedTransportSessionProtocol {
 
     public weak var delegate: UnauthenticatedTransportSessionDelegate?
 
@@ -49,7 +59,7 @@ final public class UnauthenticatedTransportSession: NSObject {
 
     public init(
         baseURL: URL,
-        delegate: UnauthenticatedTransportSessionDelegate,
+        delegate: UnauthenticatedTransportSessionDelegate? = nil,
         delegateQueue: OperationQueue = .main,
         urlSession: SessionProtocol? = nil
         ) {
