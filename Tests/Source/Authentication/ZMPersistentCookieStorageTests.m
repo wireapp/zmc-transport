@@ -24,10 +24,11 @@
 
 
 @interface ZMPersistentCookieStorageTests : XCTestCase
+
 @property (nonatomic, readonly) NSUUID *userIdentifier;
 @property (nonatomic) ZMPersistentCookieStorage *sut;
-@end
 
+@end
 
 
 @implementation ZMPersistentCookieStorageTests
@@ -164,7 +165,8 @@
     XCTAssertNotNil(sut2.authenticationCookieData);
     
     // when
-    [ZMPersistentCookieStorage deleteAllKeychainItems];
+    [sut1 deleteKeychainItems];
+    [sut2 deleteKeychainItems];
     
     // then
     XCTAssertNil(sut1.authenticationCookieData);
