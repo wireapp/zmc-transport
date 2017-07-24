@@ -24,7 +24,7 @@ public enum EnqueueResult {
 
 public protocol UnauthenticatedTransportSessionProtocol: class {
 
-    var delegate: UnauthenticatedTransportSessionDelegate? { get set }
+    var didReceiveUserInfo: UserInfoAvailableClosure? { get set }
     func enqueueRequest(withGenerator generator: ZMTransportRequestGenerator) -> EnqueueResult
     
 }
@@ -40,11 +40,37 @@ public struct UserInfo {
     }
 }
 
+/// A wrapper around a callback closure when the `UserInfo` for an unauthenticated user
+/// became available. Will be called on the `OperationQueue` passed in `init`.
+public struct UserInfoAvailableClosure {
+    let queue: OperationQueue
+    let block: (UserInfo) -> Void
 
-public protocol UnauthenticatedTransportSessionDelegate: class {
-    func session(_ session: UnauthenticatedTransportSessionProtocol, didReceiveUserInfo userInfo: UserInfo)
+    public init(queue: OperationQueue, block: @escaping (UserInfo) -> Void) {
+        self.queue = queue
+        self.block = block
+    }
+
+    public func execute(with info: UserInfo) {
+        queue.addOperation { self.block(info) }
+    }
 }
 
+
+private let zmLog = ZMSLog(tag: "Network")
+
+
+fileprivate extension ZMTransportRequest {
+    func log() -> Void {
+        zmLog.debug("[Unauthenticated] ----> Request: \(ZMTransportRequest.string(for: method))\n\(self)")
+    }
+}
+
+fileprivate extension ZMTransportResponse {
+    func log() -> Void {
+        zmLog.debug("[Unauthenticated] <---- Response: \(String(describing: headers))\n\(String(describing: payload))")
+    }
+}
 
 /// The `UnauthenticatedTransportSession` class should be used instead of `ZMTransportSession`
 /// until a user has been authenticated. Consumers should set themselves as delegate to 
@@ -53,24 +79,15 @@ public protocol UnauthenticatedTransportSessionDelegate: class {
 /// to create a regular transport session with it.
 final public class UnauthenticatedTransportSession: NSObject, UnauthenticatedTransportSessionProtocol {
 
-    public weak var delegate: UnauthenticatedTransportSessionDelegate?
-
     private let maximumNumberOfRequests: Int32 = 3
     private var numberOfRunningRequests: Int32 = 0
     private let baseURL: URL
     private var session: SessionProtocol!
-    private let delegateQueue: OperationQueue
-    private var foundCookie = false
 
-    public init(
-        baseURL: URL,
-        delegate: UnauthenticatedTransportSessionDelegate? = nil,
-        delegateQueue: OperationQueue = .main,
-        urlSession: SessionProtocol? = nil
-        ) {
+    public var didReceiveUserInfo: UserInfoAvailableClosure?
+
+    public init(baseURL: URL, urlSession: SessionProtocol? = nil) {
         self.baseURL = baseURL
-        self.delegateQueue = delegateQueue
-        self.delegate = delegate
         super.init()
         self.session = urlSession ?? URLSession(configuration: .default, delegate: self, delegateQueue: nil)
     }
@@ -95,11 +112,13 @@ final public class UnauthenticatedTransportSession: NSObject, UnauthenticatedTra
 
         guard let urlRequest = URL(string: request.path, relativeTo: baseURL).flatMap(NSMutableURLRequest.init) else { preconditionFailure() }
         urlRequest.configure(with: request)
+        request.log()
 
         let task = session.task(with: urlRequest as URLRequest) { [weak self] data, response, error in
             let transportResponse = ZMTransportResponse(httpurlResponse: response as! HTTPURLResponse, data: data, error: error)
+            transportResponse.log()
             request.complete(with: transportResponse)
-            self?.delegateQueue.addOperation { self?.parseCookie(from: transportResponse) }
+            self?.parseCookie(from: transportResponse)
             self?.decrement(notify: true)
         }
 
@@ -111,10 +130,7 @@ final public class UnauthenticatedTransportSession: NSObject, UnauthenticatedTra
     /// - parameter response: The response from which the cookie should be parsed.
     private func parseCookie(from response: ZMTransportResponse) {
         guard let data = response.extractCookieData(), let id = response.extractUserIdentifier() else { return }
-        delegateQueue.addOperation { [weak self] in
-            guard let `self` = self else { return }
-            self.delegate?.session(self, didReceiveUserInfo: UserInfo(identifier: id, cookieData: data))
-        }
+        didReceiveUserInfo?.execute(with: .init(identifier: id, cookieData: data))
     }
 
     /// Decrements the number of running requests and posts a new

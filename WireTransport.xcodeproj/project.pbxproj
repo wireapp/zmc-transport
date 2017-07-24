@@ -126,6 +126,7 @@
 		BF3A7A6B1D8C01D30034FF40 /* CoreImage.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = BF3A7A6A1D8C01D30034FF40 /* CoreImage.framework */; };
 		BF3A7A6C1D8C04550034FF40 /* WireTransport.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 3E88BCA71B1F35DF00232589 /* WireTransport.framework */; };
 		BF3A7A6D1D8C04550034FF40 /* WireTransport.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 3E88BCA71B1F35DF00232589 /* WireTransport.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		BF3EDB251F2619820015D158 /* ZMPersistentCookieStorage+Label.swift in Sources */ = {isa = PBXBuildFile; fileRef = BF3EDB241F2619820015D158 /* ZMPersistentCookieStorage+Label.swift */; };
 		BF453F1A1CC6377200403E1C /* ZMRequestCancellation.h in Headers */ = {isa = PBXBuildFile; fileRef = BF453F191CC6377200403E1C /* ZMRequestCancellation.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		BF453F1D1CC63C4800403E1C /* ZMTaskIdentifier.h in Headers */ = {isa = PBXBuildFile; fileRef = BF453F1B1CC63C4800403E1C /* ZMTaskIdentifier.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		BF453F1E1CC63C4800403E1C /* ZMTaskIdentifier.m in Sources */ = {isa = PBXBuildFile; fileRef = BF453F1C1CC63C4800403E1C /* ZMTaskIdentifier.m */; };
@@ -352,6 +353,7 @@
 		AF9D8F9C1F20D99500ABF225 /* TestTrustVerificator.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TestTrustVerificator.swift; sourceTree = "<group>"; };
 		BF3A7A631D8AD5430034FF40 /* SwiftStructs+TransportEncoding.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "SwiftStructs+TransportEncoding.swift"; sourceTree = "<group>"; };
 		BF3A7A6A1D8C01D30034FF40 /* CoreImage.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreImage.framework; path = Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS10.0.sdk/System/Library/Frameworks/CoreImage.framework; sourceTree = DEVELOPER_DIR; };
+		BF3EDB241F2619820015D158 /* ZMPersistentCookieStorage+Label.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "ZMPersistentCookieStorage+Label.swift"; sourceTree = "<group>"; };
 		BF453F191CC6377200403E1C /* ZMRequestCancellation.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ZMRequestCancellation.h; sourceTree = "<group>"; };
 		BF453F1B1CC63C4800403E1C /* ZMTaskIdentifier.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ZMTaskIdentifier.h; sourceTree = "<group>"; };
 		BF453F1C1CC63C4800403E1C /* ZMTaskIdentifier.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ZMTaskIdentifier.m; sourceTree = "<group>"; };
@@ -749,6 +751,7 @@
 				54CA15111B32F2C1008D3787 /* ZMBackgroundable.h */,
 				54CA15121B32F2C1008D3787 /* ZMBackgroundActivity.h */,
 				54CA15131B32F2C1008D3787 /* ZMPersistentCookieStorage.h */,
+				BF3EDB241F2619820015D158 /* ZMPersistentCookieStorage+Label.swift */,
 				54CA15141B32F2C1008D3787 /* ZMReachability.h */,
 				54CA15151B32F2C1008D3787 /* ZMSessionCancelTimer.h */,
 				54CA15161B32F2C1008D3787 /* ZMTransportCodec.h */,
@@ -1108,6 +1111,7 @@
 				54CA15591B32F2C1008D3787 /* ZMSessionCancelTimer.m in Sources */,
 				BF3A7A641D8AD5430034FF40 /* SwiftStructs+TransportEncoding.swift in Sources */,
 				BF453F1E1CC63C4800403E1C /* ZMTaskIdentifier.m in Sources */,
+				BF3EDB251F2619820015D158 /* ZMPersistentCookieStorage+Label.swift in Sources */,
 				5431ABFF1DB4C35B0040343C /* RequestLoopDetection.swift in Sources */,
 				5499FFC41B31C66D00835C8B /* ZMNetworkSocket.m in Sources */,
 				5499FFDE1B31C66D00835C8B /* ZMWebSocketHandshake.m in Sources */,

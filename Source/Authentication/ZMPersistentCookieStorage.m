@@ -91,18 +91,6 @@ static dispatch_queue_t isolationQueue()
 
 #pragma mark - Public API
 
-- (NSString *)cookieLabel
-{
-    if (_cookieLabel == nil) {
-        NSUUID *deviceIdentifier = [[UIDevice currentDevice] identifierForVendor];
-        if (deviceIdentifier == nil) {
-            deviceIdentifier = [NSUUID UUID];
-        }
-        _cookieLabel = deviceIdentifier.UUIDString;
-    }
-    return _cookieLabel;
-}
-
 + (void)setDoNotPersistToKeychain:(BOOL)disabled;
 {
     KeychainDisabled = disabled;
