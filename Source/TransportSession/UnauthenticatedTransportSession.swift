@@ -21,11 +21,14 @@ public enum EnqueueResult {
     case success, nilRequest, maximumNumberOfRequests
 }
 
-public protocol UnauthenticatedTransportSessionProtocol {
-    
+
+public protocol UnauthenticatedTransportSessionProtocol: class {
+
+    var delegate: UnauthenticatedTransportSessionDelegate? { get set }
     func enqueueRequest(withGenerator generator: ZMTransportRequestGenerator) -> EnqueueResult
     
 }
+
 
 public struct UserInfo {
     public let identifier: UUID
@@ -37,9 +40,11 @@ public struct UserInfo {
     }
 }
 
+
 public protocol UnauthenticatedTransportSessionDelegate: class {
     func session(_ session: UnauthenticatedTransportSessionProtocol, didReceiveUserInfo userInfo: UserInfo)
 }
+
 
 /// The `UnauthenticatedTransportSession` class should be used instead of `ZMTransportSession`
 /// until a user has been authenticated. Consumers should set themselves as delegate to 
