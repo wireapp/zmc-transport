@@ -51,34 +51,21 @@ private class MockURLSession: SessionProtocol {
 }
 
 
-private class MockDelegate: UnauthenticatedTransportSessionDelegate {
-
-    var userInfoCallback: ((UserInfo) -> Void)?
-
-    func session(_ session: UnauthenticatedTransportSessionProtocol, didReceiveUserInfo info: UserInfo) {
-        userInfoCallback?(info)
-    }
-
-}
-
 
 final class UnauthenticatedTransportSessionTests: ZMTBaseTest {
 
     private var sut: UnauthenticatedTransportSession!
     private var sessionMock: MockURLSession!
-    private var mockDelegate: MockDelegate!
     private let url = URL(string: "http://base.example.com")!
 
     override func setUp() {
         super.setUp()
         sessionMock = MockURLSession()
-        mockDelegate = MockDelegate()
-        sut = UnauthenticatedTransportSession(baseURL: url, delegate: mockDelegate, urlSession: sessionMock)
+        sut = UnauthenticatedTransportSession(baseURL: url, urlSession: sessionMock)
     }
 
     override func tearDown() {
         sessionMock = nil
-        mockDelegate = nil
         sut = nil
         super.tearDown()
     }
@@ -202,7 +189,7 @@ final class UnauthenticatedTransportSessionTests: ZMTBaseTest {
         sessionMock.nextCompletionParameters = (data, response, nil)
         let userExpectation = expectation(description: "UserInfo should become available")
 
-        mockDelegate.userInfoCallback = { info in
+        sut.didReceiveUserInfo = UserInfoAvailableClosure(queue: .main) { info in
             userExpectation.fulfill()
             XCTAssertNotNil(info.cookieData)
             XCTAssertEqual(info.identifier, userId)
@@ -233,7 +220,7 @@ final class UnauthenticatedTransportSessionTests: ZMTBaseTest {
         sessionMock.nextCompletionParameters = (nil, response, nil)
         _ = expectation(description: "UserInfo should become available")
 
-        mockDelegate.userInfoCallback = { _ in
+        sut.didReceiveUserInfo = UserInfoAvailableClosure(queue: .main) { _ in
             XCTFail("No UserInfo should become available")
         }
 
