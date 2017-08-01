@@ -22,7 +22,7 @@ public enum EnqueueResult {
 }
 
 
-public protocol UnauthenticatedTransportSessionProtocol: class {
+public protocol UnauthenticatedTransportSessionProtocol: ReachabilityProvider {
 
     var didReceiveUserInfo: UserInfoAvailableClosure? { get set }
     func enqueueRequest(withGenerator generator: ZMTransportRequestGenerator) -> EnqueueResult
@@ -33,7 +33,7 @@ public protocol UnauthenticatedTransportSessionProtocol: class {
 public struct UserInfo {
     public let identifier: UUID
     public let cookieData: Data
-    
+
     public init(identifier: UUID, cookieData: Data) {
         self.identifier = identifier
         self.cookieData = cookieData
@@ -102,6 +102,10 @@ final public class UnauthenticatedTransportSession: NSObject, UnauthenticatedTra
         self.reachability = reachability
         super.init()
         self.session = urlSession ?? URLSession(configuration: .default, delegate: self, delegateQueue: nil)
+    }
+
+    public var mayBeReachable: Bool {
+        return reachability.mayBeReachable
     }
 
     /// Creates and resumes a request on the internal `URLSession`.
@@ -173,16 +177,6 @@ extension UnauthenticatedTransportSession: URLSessionDelegate {
             guard verifyServerTrust(protectionSpace.serverTrust, protectionSpace.host) else { return completionHandler(.cancelAuthenticationChallenge, nil) }
         }
         completionHandler(.performDefaultHandling, challenge.proposedCredential)
-    }
-
-}
-
-// MARK: - Reachability
-
-extension UnauthenticatedTransportSession: ReachabilityProvider {
-
-    public var mayBeReachable: Bool {
-        return reachability.mayBeReachable
     }
 
 }
