@@ -122,6 +122,7 @@
 		871667FE1BB2CD1E009C6EEA /* ZMKeychain.m in Sources */ = {isa = PBXBuildFile; fileRef = 871667FC1BB2CD1E009C6EEA /* ZMKeychain.m */; };
 		871668001BB2CD2A009C6EEA /* ZMKeychain.h in Headers */ = {isa = PBXBuildFile; fileRef = 871667FF1BB2CD2A009C6EEA /* ZMKeychain.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		AF9D8F9E1F20D9B700ABF225 /* TestTrustVerificator.swift in Sources */ = {isa = PBXBuildFile; fileRef = AF9D8F9C1F20D99500ABF225 /* TestTrustVerificator.swift */; };
+		BF25D0711F30A613002AB855 /* ReachabilityProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = BF25D0701F30A613002AB855 /* ReachabilityProvider.swift */; };
 		BF3A7A641D8AD5430034FF40 /* SwiftStructs+TransportEncoding.swift in Sources */ = {isa = PBXBuildFile; fileRef = BF3A7A631D8AD5430034FF40 /* SwiftStructs+TransportEncoding.swift */; };
 		BF3A7A6B1D8C01D30034FF40 /* CoreImage.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = BF3A7A6A1D8C01D30034FF40 /* CoreImage.framework */; };
 		BF3A7A6C1D8C04550034FF40 /* WireTransport.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 3E88BCA71B1F35DF00232589 /* WireTransport.framework */; };
@@ -351,6 +352,7 @@
 		871667FC1BB2CD1E009C6EEA /* ZMKeychain.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ZMKeychain.m; sourceTree = "<group>"; };
 		871667FF1BB2CD2A009C6EEA /* ZMKeychain.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ZMKeychain.h; sourceTree = "<group>"; };
 		AF9D8F9C1F20D99500ABF225 /* TestTrustVerificator.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TestTrustVerificator.swift; sourceTree = "<group>"; };
+		BF25D0701F30A613002AB855 /* ReachabilityProvider.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ReachabilityProvider.swift; sourceTree = "<group>"; };
 		BF3A7A631D8AD5430034FF40 /* SwiftStructs+TransportEncoding.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "SwiftStructs+TransportEncoding.swift"; sourceTree = "<group>"; };
 		BF3A7A6A1D8C01D30034FF40 /* CoreImage.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreImage.framework; path = Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS10.0.sdk/System/Library/Frameworks/CoreImage.framework; sourceTree = DEVELOPER_DIR; };
 		BF3EDB241F2619820015D158 /* ZMPersistentCookieStorage+Label.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "ZMPersistentCookieStorage+Label.swift"; sourceTree = "<group>"; };
@@ -844,6 +846,7 @@
 			isa = PBXGroup;
 			children = (
 				BF8E457E1F1778E000CE6A0A /* UnauthenticatedTransportSession.swift */,
+				BF25D0701F30A613002AB855 /* ReachabilityProvider.swift */,
 				BF9D0AFE1F1CC0C5005D4C31 /* SessionProtocols.swift */,
 			);
 			name = "Unauthenticated Session";
@@ -1104,6 +1107,7 @@
 				54CA15D91B32F2C1008D3787 /* ZMURLSessionSwitch.m in Sources */,
 				54CA15C31B32F2C1008D3787 /* ZMTransportData.m in Sources */,
 				54CA15D31B32F2C1008D3787 /* ZMServerTrust.m in Sources */,
+				BF25D0711F30A613002AB855 /* ReachabilityProvider.swift in Sources */,
 				54CA15C51B32F2C1008D3787 /* NSError+ZMTransportSession.m in Sources */,
 				54CA15C11B32F2C1008D3787 /* ZMTransportCodec.m in Sources */,
 				54CA15B71B32F2C1008D3787 /* ZMTransportRequest.m in Sources */,

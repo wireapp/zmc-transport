@@ -72,6 +72,7 @@ fileprivate extension ZMTransportResponse {
     }
 }
 
+
 /// The `UnauthenticatedTransportSession` class should be used instead of `ZMTransportSession`
 /// until a user has been authenticated. Consumers should set themselves as delegate to 
 /// be notified when a cookie was parsed from a response of a request made using this transport session.
@@ -83,11 +84,22 @@ final public class UnauthenticatedTransportSession: NSObject, UnauthenticatedTra
     private var numberOfRunningRequests: Int32 = 0
     private let baseURL: URL
     private var session: SessionProtocol!
+    fileprivate let reachability: ReachabilityProvider
 
     public var didReceiveUserInfo: UserInfoAvailableClosure?
 
-    public init(baseURL: URL, urlSession: SessionProtocol? = nil) {
+    public convenience init(baseURL: URL, urlSession: SessionProtocol? = nil) {
+        let group = ZMSDispatchGroup(dispatchGroup: DispatchGroup(), label: "Unauthenticated Session Reachability")!
+        self.init(
+            baseURL: baseURL,
+            urlSession: urlSession,
+            reachability: ZMReachability(serverNames: [baseURL], observer: nil, queue: .main, group: group)
+        )
+    }
+
+    public init(baseURL: URL, urlSession: SessionProtocol? = nil, reachability: ReachabilityProvider) {
         self.baseURL = baseURL
+        self.reachability = reachability
         super.init()
         self.session = urlSession ?? URLSession(configuration: .default, delegate: self, delegateQueue: nil)
     }
@@ -165,7 +177,17 @@ extension UnauthenticatedTransportSession: URLSessionDelegate {
 
 }
 
-// MARK: - Request configuration
+// MARK: - Reachability
+
+extension UnauthenticatedTransportSession: ReachabilityProvider {
+
+    public var mayBeReachable: Bool {
+        return reachability.mayBeReachable
+    }
+
+}
+
+// MARK: - Request Configuration
 
 extension NSMutableURLRequest {
 
