@@ -51,7 +51,6 @@ private class MockURLSession: SessionProtocol {
 }
 
 
-
 final class UnauthenticatedTransportSessionTests: ZMTBaseTest {
 
     private var sut: UnauthenticatedTransportSession!
@@ -61,7 +60,7 @@ final class UnauthenticatedTransportSessionTests: ZMTBaseTest {
     override func setUp() {
         super.setUp()
         sessionMock = MockURLSession()
-        sut = UnauthenticatedTransportSession(baseURL: url, urlSession: sessionMock)
+        sut = UnauthenticatedTransportSession(baseURL: url, urlSession: sessionMock, reachability: nil)
     }
 
     override func tearDown() {

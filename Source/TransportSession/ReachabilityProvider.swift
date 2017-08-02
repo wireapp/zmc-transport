@@ -21,7 +21,6 @@ public protocol ReachabilityProvider: class {
     var mayBeReachable: Bool { get }
 }
 
-extension ZMReachability: ReachabilityProvider {}
 
 extension ZMTransportSession: ReachabilityProvider {
 
