@@ -214,7 +214,7 @@ private enum CookieKey: String {
 }
 
 private enum UserKey: String {
-    case user
+    case user, id
 }
 
 
@@ -240,6 +240,7 @@ fileprivate extension ZMTransportResponse {
     func extractUserIdentifier() -> UUID? {
         guard let data = payload as? [String: Any] else { return nil }
         return (data[UserKey.user.rawValue] as? String).flatMap(UUID.init)
+            ?? (data[UserKey.id.rawValue] as? String).flatMap(UUID.init)
     }
 
 }
