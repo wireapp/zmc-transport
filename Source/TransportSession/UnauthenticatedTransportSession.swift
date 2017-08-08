@@ -24,7 +24,6 @@ public enum EnqueueResult {
 
 public protocol UnauthenticatedTransportSessionProtocol: class {
 
-    var didReceiveUserInfo: UserInfoAvailableClosure? { get set }
     func enqueueRequest(withGenerator generator: ZMTransportRequestGenerator) -> EnqueueResult
     
 }
@@ -37,22 +36,6 @@ public struct UserInfo {
     public init(identifier: UUID, cookieData: Data) {
         self.identifier = identifier
         self.cookieData = cookieData
-    }
-}
-
-/// A wrapper around a callback closure when the `UserInfo` for an unauthenticated user
-/// became available. Will be called on the `OperationQueue` passed in `init`.
-public struct UserInfoAvailableClosure {
-    let queue: OperationQueue
-    let block: (UserInfo) -> Void
-
-    public init(queue: OperationQueue, block: @escaping (UserInfo) -> Void) {
-        self.queue = queue
-        self.block = block
-    }
-
-    public func execute(with info: UserInfo) {
-        queue.addOperation { self.block(info) }
     }
 }
 
@@ -85,8 +68,6 @@ final public class UnauthenticatedTransportSession: NSObject, UnauthenticatedTra
     private let baseURL: URL
     private var session: SessionProtocol!
     fileprivate let reachability: ZMReachability?
-
-    public var didReceiveUserInfo: UserInfoAvailableClosure?
 
     public convenience init(baseURL: URL) {
         let group = ZMSDispatchGroup(dispatchGroup: DispatchGroup(), label: "Unauthenticated Session Reachability")!
@@ -134,19 +115,11 @@ final public class UnauthenticatedTransportSession: NSObject, UnauthenticatedTra
             let transportResponse = ZMTransportResponse(httpurlResponse: response as! HTTPURLResponse, data: data, error: error)
             transportResponse.log()
             request.complete(with: transportResponse)
-            self?.parseCookie(from: transportResponse)
             self?.decrement(notify: true)
         }
 
         task.resume()
         return .success
-    }
-
-    /// Parses cookie data from a response and calls the delegate with it.
-    /// - parameter response: The response from which the cookie should be parsed.
-    private func parseCookie(from response: ZMTransportResponse) {
-        guard let data = response.extractCookieData(), let id = response.extractUserIdentifier() else { return }
-        didReceiveUserInfo?.execute(with: .init(identifier: id, cookieData: data))
     }
 
     /// Decrements the number of running requests and posts a new
@@ -218,11 +191,11 @@ private enum UserKey: String {
 }
 
 
-fileprivate extension ZMTransportResponse {
+public extension ZMTransportResponse {
 
     /// Extracts the wire cookie data from the response.
     /// - returns: The encrypted cookie data (using the cookies key) if there is any.
-    func extractCookieData() -> Data? {
+    private func extractCookieData() -> Data? {
         guard let response = rawResponse else { return nil }
         let cookies = HTTPCookie.cookies(withResponseHeaderFields: response.allHeaderFields as! [String : String], for: response.url!)
         guard !cookies.isEmpty else { return nil }
@@ -237,10 +210,15 @@ fileprivate extension ZMTransportResponse {
         return data.zmEncryptPrefixingIV(withKey: key).base64EncodedData()
     }
 
-    func extractUserIdentifier() -> UUID? {
+    private func extractUserIdentifier() -> UUID? {
         guard let data = payload as? [String: Any] else { return nil }
         return (data[UserKey.user.rawValue] as? String).flatMap(UUID.init)
             ?? (data[UserKey.id.rawValue] as? String).flatMap(UUID.init)
+    }
+
+    public func extractUserInfo() -> UserInfo? {
+        guard let data = extractCookieData(), let id = extractUserIdentifier() else { return nil }
+        return .init(identifier: id, cookieData: data)
     }
 
 }
