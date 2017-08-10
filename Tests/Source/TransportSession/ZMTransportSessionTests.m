@@ -518,7 +518,7 @@ static __weak FakeReachability *currentReachability;
 
 - (void)setAuthenticationCookieData;
 {
-    NSURL *URL = [NSURL URLWithString:@"http://www.example.com"];
+    NSURL *URL = [NSURL URLWithString:@"https://www.example.com"];
     NSDictionary *headers = @{@"Set-Cookie": @"zuid=bar; Expires=Sun, 21-Jul-2024 09:06:45 GMT; Domain=example.com; HttpOnly; Secure"};
     NSHTTPURLResponse *response = [[NSHTTPURLResponse alloc] initWithURL:URL
                                                               statusCode:200
@@ -1691,7 +1691,7 @@ static __weak FakeReachability *currentReachability;
 {
     // Set cookie on cookie storage:
     NSDictionary *originalHeaders = @{@"Set-Cookie": @"zuid=bar; Expires=Sun, 21-Jul-2024 09:06:45 GMT; Domain=example.com; HttpOnly; Secure"};
-    NSURL *URL = [NSURL URLWithString:@"http://www.example.com"];
+    NSURL *URL = [NSURL URLWithString:@"https://www.example.com"];
     NSHTTPURLResponse *response = [[NSHTTPURLResponse alloc] initWithURL:URL statusCode:200 HTTPVersion:@"HTTP/1.1" headerFields:originalHeaders];
     [self.sut.cookieStorage setCookieDataFromResponse:response forURL:URL];
 }
