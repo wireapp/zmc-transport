@@ -16,12 +16,14 @@
 // along with this program. If not, see http://www.gnu.org/licenses/.
 //
 
+import Foundation
+import WireTransport
 
-@objc public protocol ReachabilityProvider: NSObjectProtocol {
-    var mayBeReachable: Bool { get }
-    var isMobileConnection: Bool { get }
-    var oldMayBeReachable: Bool { get }
-    var oldIsMobileConnection: Bool { get }
+@objc public class FakeReachability: NSObject, ReachabilityProvider {
+    public var mayBeReachable: Bool = true
+    public var isMobileConnection: Bool = true
+    public var oldMayBeReachable: Bool = true
+    public var oldIsMobileConnection: Bool = true
     
-    func tearDown()
+    public func tearDown() {}
 }

@@ -67,18 +67,9 @@ final public class UnauthenticatedTransportSession: NSObject, UnauthenticatedTra
     private var numberOfRunningRequests: Int32 = 0
     private let baseURL: URL
     private var session: SessionProtocol!
-    fileprivate let reachability: ZMReachability?
-
-    public convenience init(baseURL: URL) {
-        let group = ZMSDispatchGroup(dispatchGroup: DispatchGroup(), label: "Unauthenticated Session Reachability")!
-        self.init(
-            baseURL: baseURL,
-            urlSession: nil,
-            reachability: ZMReachability(serverNames: [baseURL.host!], observer: nil, queue: .main, group: group)
-        )
-    }
-
-    public init(baseURL: URL, urlSession: SessionProtocol?, reachability: ZMReachability?) {
+    fileprivate let reachability: ReachabilityProvider
+    
+    public init(baseURL: URL, urlSession: SessionProtocol? = nil, reachability: ReachabilityProvider) {
         self.baseURL = baseURL
         self.reachability = reachability
         super.init()
@@ -86,7 +77,7 @@ final public class UnauthenticatedTransportSession: NSObject, UnauthenticatedTra
     }
 
     deinit {
-        reachability?.tearDown()
+        reachability.tearDown()
     }
 
     /// Creates and resumes a request on the internal `URLSession`.
@@ -150,16 +141,6 @@ extension UnauthenticatedTransportSession: URLSessionDelegate {
             guard verifyServerTrust(protectionSpace.serverTrust, protectionSpace.host) else { return completionHandler(.cancelAuthenticationChallenge, nil) }
         }
         completionHandler(.performDefaultHandling, challenge.proposedCredential)
-    }
-
-}
-
-// MARK: - Reachability
-
-extension UnauthenticatedTransportSession: ReachabilityProvider {
-
-    public var mayBeReachable: Bool {
-        return reachability?.mayBeReachable ?? true
     }
 
 }

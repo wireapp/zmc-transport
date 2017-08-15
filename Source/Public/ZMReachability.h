@@ -23,8 +23,7 @@ NS_ASSUME_NONNULL_BEGIN
 @import WireSystem;
 
 @protocol ZMReachabilityObserver;
-
-
+@protocol ReachabilityProvider;
 
 @interface ZMReachability : NSObject
 
@@ -46,7 +45,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 @protocol ZMReachabilityObserver <NSObject>
 
-- (void)reachabilityDidChange:(ZMReachability *)reachability;
+- (void)reachabilityDidChange:(id<ReachabilityProvider>)reachability;
 
 @end
 
