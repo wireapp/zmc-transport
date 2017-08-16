@@ -328,77 +328,12 @@ static FakePushChannel *currentFakePushChannel;
 
 static XCTestCase *currentTestCase;
 
-#define ReachabilityAssert(a) \
-	do { \
-		BOOL _a = a; \
-		if (! _a) { \
-			NSString *d = [NSString stringWithFormat: @"Assertion failed: %s", #a ]; \
-			_XCTRegisterFailure(currentTestCase, d); \
-		} \
-	} while (0)
-
-
-///// C.f. ZMReachability
-//@interface FakeReachability : NSObject
-//
-//- (instancetype)initWithServerNames:(NSArray *)names observer:(id<ZMReachabilityObserver>)observer queue:(NSOperationQueue *)observerQueue group:(ZMSDispatchGroup *)group;
-//
-//- (void)tearDown;
-//
-//@property (atomic) BOOL mayBeReachable;
-//@property (atomic) BOOL oldMayBeReachable;
-//
-//@property (nonatomic) BOOL wasTornDown;
-//@property (nonatomic, copy) NSArray *names;
-//@property (nonatomic, weak) id<ZMReachabilityObserver> observer;
-//@property (nonatomic) NSOperationQueue * observerQueue;
-//@property (nonatomic) ZMSDispatchGroup *group;
-//
-//@end
-//
-
-//static __weak FakeReachability *currentReachability;
-//
-//
-//
-//@implementation FakeReachability
-//
-//
-//- (instancetype)initWithServerNames:(NSArray *)names observer:(id<ZMReachabilityObserver>)observer queue:(NSOperationQueue *)observerQueue group:(ZMSDispatchGroup *)group;
-//{
-//    self = [super init];
-//    if (self) {
-//        self.names = names;
-//        self.observer = observer;
-//        self.observerQueue = observerQueue;
-//        self.group = group;
-//        self.mayBeReachable = YES;
-//        self.oldMayBeReachable = YES;
-//    }
-//    currentReachability = self;
-//    return self;
-//}
-//
-//- (void)tearDown;
-//{
-//    self.wasTornDown = YES;
-//}
-//
-//- (void)dealloc
-//{
-//    ReachabilityAssert(self.wasTornDown);
-//}
-//
-//@end
-//
-
 
 //////////////////////////////////////////////////
 //
 #pragma mark - Tests
 //
 //////////////////////////////////////////////////
-
 
 
 @interface ZMTransportSessionTests : ZMTBaseTest
