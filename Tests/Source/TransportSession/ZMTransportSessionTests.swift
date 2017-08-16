@@ -24,6 +24,4 @@ import WireTransport
     public var isMobileConnection: Bool = true
     public var oldMayBeReachable: Bool = true
     public var oldIsMobileConnection: Bool = true
-    
-    public func tearDown() {}
 }

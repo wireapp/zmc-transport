@@ -172,27 +172,6 @@
 @implementation FakeSchedulerItem
 @end
 
-
-//
-//
-#pragma mark -
-//
-//
-
-
-@interface FakeReachability_2 : NSObject
-
-@property (atomic) BOOL mayBeReachable;
-
-@end
-
-
-
-@implementation FakeReachability_2
-@end
-
-
-
 //
 //
 #pragma mark - Tests
