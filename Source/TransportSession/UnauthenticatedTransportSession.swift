@@ -76,10 +76,6 @@ final public class UnauthenticatedTransportSession: NSObject, UnauthenticatedTra
         self.session = urlSession ?? URLSession(configuration: .default, delegate: self, delegateQueue: nil)
     }
 
-    deinit {
-        reachability.tearDown()
-    }
-
     /// Creates and resumes a request on the internal `URLSession`.
     /// If there are too many requests in progress no request will be enqueued.
     /// - parameter generator: The closure used to retrieve a new request.

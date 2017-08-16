@@ -285,7 +285,6 @@ static NSInteger const DefaultMaximumRequests = 6;
 {
     [[NSNotificationCenter defaultCenter] removeObserver:self];
     
-    [self.reachability tearDown];
     self.tornDown = YES;
     
     [self.transportPushChannel closeAndRemoveConsumer];
