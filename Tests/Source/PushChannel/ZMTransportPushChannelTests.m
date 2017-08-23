@@ -172,7 +172,8 @@ static FakePushChannelConnection *currentFakePushChannelConnection;
     XCTAssertEqualObjects(currentFakePushChannelConnection.accessToken, self.accessToken);
     XCTAssertEqualObjects(currentFakePushChannelConnection.clientID, self.clientID);
     XCTAssertEqual(currentFakePushChannelConnection.consumer, self.sut);
-    XCTAssertEqual(currentFakePushChannelConnection.queue, self.fakeUIContext);
+    id<ZMSGroupQueue> queue = currentFakePushChannelConnection.queue;
+    XCTAssertEqual(queue, self.fakeUIContext);
 }
 
 - (void)testThatItDoesNotOpenThePushChannelWhenItDoesNotHaveAConsumer;
