@@ -2206,7 +2206,7 @@ static XCTestCase *currentTestCase;
 - (void)testThatItSendsTransportSessionReachabilityChangeNotificationOnReachabilityChanges
 {
     // expect
-    [self expectationForNotification:ZMTransportSessionReachabilityChangedNotificationName object:nil handler:nil];
+    [self expectationForNotification:ZMTransportSessionReachabilityChangedNotificationName object:self.sut handler:nil];
     
     // when
     [self.sut reachabilityDidChange:self.sut.reachability];
@@ -2220,7 +2220,7 @@ static XCTestCase *currentTestCase;
     [[[reachbilityMock stub] andReturnValue:@NO] mayBeReachable];
 
     // expect
-    [self expectationForNotification:ZMTransportSessionReachabilityChangedNotificationName object:nil handler:nil];
+    [self expectationForNotification:ZMTransportSessionReachabilityChangedNotificationName object:self.sut handler:nil];
 
     // when
     [self.sut reachabilityDidChange:reachbilityMock];
