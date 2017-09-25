@@ -37,6 +37,9 @@ typedef void (^ReachabilityObserverBlock)(id<ReachabilityProvider> provider);
 /// Register to observe when reachability status changes.
 /// Returns a token which should be retained as long as the observer should be active.
 - (id)addReachabilityObserver:(id<ZMReachabilityObserver>)observer queue:(nullable NSOperationQueue *)queue;
+
+/// Register to observe when reachability status changes.
+/// Returns a token which should be retained as long as the observer should be active.
 - (id)addReachabilityObserverOnQueue:(nullable NSOperationQueue *)queue block:(ReachabilityObserverBlock)block;
 
 @end
