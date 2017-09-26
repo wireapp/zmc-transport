@@ -85,6 +85,7 @@ ZM_EMPTY_ASSERTING_INIT();
     ZMURLSession *session = [[ZMURLSession alloc] initWithDelegate:delegate identifier:identifier];
     if(session) {
         session->_backingSession = [NSURLSession sessionWithConfiguration:configuration delegate:session delegateQueue:queue];
+        session->_backingSession.sessionDescription = identifier;
     }
     return session;
 }
