@@ -46,9 +46,6 @@
 
 static NSString* ZMLogTag ZM_UNUSED = ZMT_LOG_TAG_NETWORK;
 
-
-NSString * const ZMTransportSessionReachabilityChangedNotificationName = @"ZMTransportSessionReachabilityChanged";
-
 NSString * const ZMTransportSessionNewRequestAvailableNotification = @"ZMTransportSessionNewRequestAvailable";
 
 static NSString * const TaskTimerKey = @"task";
@@ -72,7 +69,7 @@ static NSInteger const DefaultMaximumRequests = 6;
 @property (nonatomic) NSOperationQueue *workQueue;
 @property (nonatomic) ZMPersistentCookieStorage *cookieStorage;
 @property (nonatomic) BOOL tornDown;
-@property (nonatomic) NSString *sharedContainerIdentifier;
+@property (nonatomic) NSString *applicationGroupIdentifier;
 
 @property (nonatomic) ZMTransportPushChannel *transportPushChannel;
 
@@ -93,7 +90,8 @@ static NSInteger const DefaultMaximumRequests = 6;
 @property (nonatomic) NSMutableDictionary <NSString *, dispatch_block_t> *completionHandlerBySessionID;
 
 @property (nonatomic) id<RequestRecorder> requestLoopDetection;
-@property (nonatomic, readwrite) id<ReachabilityProvider> reachability;
+@property (nonatomic, readwrite) id<ReachabilityProvider,ReachabilityTearDown> reachability;
+@property (nonatomic) id reachabilityObserverToken;
 
 @end
 
@@ -109,7 +107,7 @@ static NSInteger const DefaultMaximumRequests = 6;
                    cookieStorage:nil
                     reachability:nil
               initialAccessToken:nil
-       sharedContainerIdentifier:nil];
+      applicationGroupIdentifier:nil];
 }
 
 + (void)setUpConfiguration:(NSURLSessionConfiguration *)configuration;
@@ -146,14 +144,14 @@ static NSInteger const DefaultMaximumRequests = 6;
     return configuration;
 }
 
-+ (NSURLSessionConfiguration *)backgroundSessionConfigurationWithSharedContainerIdentifier:(NSString *)shardContainerIdentifier
++ (NSURLSessionConfiguration *)backgroundSessionConfigurationWithSharedContainerIdentifier:(NSString *)sharedContainerIdentifier userIdentifier:(NSUUID *)userIdentifier
 {
     NSString *bundleIdentifier = [NSBundle mainBundle].bundleIdentifier;
-    NSString *sessionIdentifier = bundleIdentifier ? bundleIdentifier : @"com.wire.background-session";
+    NSString *resolvedBundleIdentifier = bundleIdentifier ? bundleIdentifier : @"com.wire.background-session";
     
-    NSURLSessionConfiguration *configuration = [NSURLSessionConfiguration backgroundSessionConfigurationWithIdentifier:sessionIdentifier];
+    NSURLSessionConfiguration *configuration = [NSURLSessionConfiguration backgroundSessionConfigurationWithIdentifier:[ZMTransportSession identifierWithPrefix:resolvedBundleIdentifier userIdentifier:userIdentifier]];
     [self setUpConfiguration:configuration];
-    configuration.sharedContainerIdentifier = shardContainerIdentifier;
+    configuration.sharedContainerIdentifier = sharedContainerIdentifier;
     return configuration;
 }
 
@@ -167,19 +165,30 @@ static NSInteger const DefaultMaximumRequests = 6;
     return configuration;
 }
 
++ (NSString *)identifierWithPrefix:(NSString *)prefix userIdentifier:(NSUUID *)userIdentifier
+{
+    return [NSString stringWithFormat:@"%@-%@", prefix, userIdentifier.transportString];
+}
+
 - (instancetype)initWithBaseURL:(NSURL *)baseURL
                    websocketURL:(NSURL *)websocketURL
                   cookieStorage:(ZMPersistentCookieStorage *)cookieStorage
-                   reachability:(id<ReachabilityProvider>)reachability
+                   reachability:(id<ReachabilityProvider,ReachabilityTearDown>)reachability
              initialAccessToken:(ZMAccessToken *)initialAccessToken
-      sharedContainerIdentifier:(NSString *)sharedContainerIdentifier
+     applicationGroupIdentifier:(NSString *)applicationGroupIdentifier
 {
-    NSOperationQueue *queue = [NSOperationQueue zm_serialQueueWithName:@"ZMTransportSession"];
-    ZMSDispatchGroup *group = [ZMSDispatchGroup groupWithLabel:@"ZMTransportSession init"];
+    NSUUID *userIdentifier = cookieStorage.userIdentifier;
+    NSOperationQueue *queue = [NSOperationQueue zm_serialQueueWithName:[ZMTransportSession identifierWithPrefix:@"ZMTransportSession" userIdentifier:userIdentifier]];
+    ZMSDispatchGroup *group = [ZMSDispatchGroup groupWithLabel:[ZMTransportSession identifierWithPrefix:@"ZMTransportSession init" userIdentifier:userIdentifier]];
     
-    ZMURLSession *foregroundSession = [ZMURLSession sessionWithConfiguration:[[self class] foregroundSessionConfiguration] delegate:self delegateQueue:queue identifier:@"foreground-session"];
-    ZMURLSession *backgroundSession = [ZMURLSession sessionWithConfiguration:[[self class] backgroundSessionConfigurationWithSharedContainerIdentifier:sharedContainerIdentifier] delegate:self delegateQueue:queue identifier:@"background-session"];
-    ZMURLSession *voipSession = [ZMURLSession sessionWithConfiguration:[[self class] voipSessionConfiguration] delegate:self delegateQueue:queue identifier:@"voip-session"];
+    NSString *foregroundIdentifier = [ZMTransportSession identifierWithPrefix:ZMURLSessionForegroundIdentifier userIdentifier:userIdentifier];
+    ZMURLSession *foregroundSession = [ZMURLSession sessionWithConfiguration:[[self class] foregroundSessionConfiguration] delegate:self delegateQueue:queue identifier:foregroundIdentifier];
+    
+    NSString *backgroundIdentifier = [ZMTransportSession identifierWithPrefix:ZMURLSessionBackgroundIdentifier userIdentifier:userIdentifier];
+    NSURLSessionConfiguration *backgroundSessionConfiguration = [[self class] backgroundSessionConfigurationWithSharedContainerIdentifier:applicationGroupIdentifier userIdentifier:userIdentifier];
+    ZMURLSession *backgroundSession = [ZMURLSession sessionWithConfiguration:backgroundSessionConfiguration delegate:self delegateQueue:queue identifier:backgroundIdentifier];
+    NSString *voipIdentifier = [ZMTransportSession identifierWithPrefix:ZMURLSessionVoipIdentifier userIdentifier:userIdentifier];
+    ZMURLSession *voipSession = [ZMURLSession sessionWithConfiguration:[[self class] voipSessionConfiguration] delegate:self delegateQueue:queue identifier:voipIdentifier];
 
     ZMTransportRequestScheduler *scheduler = [[ZMTransportRequestScheduler alloc] initWithSession:self operationQueue:queue group:group reachability:reachability];
     
@@ -202,7 +211,7 @@ static NSInteger const DefaultMaximumRequests = 6;
 
 - (instancetype)initWithURLSessionSwitch:(ZMURLSessionSwitch *)URLSessionSwitch
                         requestScheduler:(ZMTransportRequestScheduler *)requestScheduler
-                            reachability:(id<ReachabilityProvider>)reachability
+                            reachability:(id<ReachabilityProvider,ReachabilityTearDown>)reachability
                                    queue:(NSOperationQueue *)queue
                                    group:(ZMSDispatchGroup *)group
                                  baseURL:(NSURL *)baseURL
@@ -225,7 +234,7 @@ static NSInteger const DefaultMaximumRequests = 6;
 
 - (instancetype)initWithURLSessionSwitch:(ZMURLSessionSwitch *)URLSessionSwitch
                         requestScheduler:(ZMTransportRequestScheduler *)requestScheduler
-                            reachability:(id<ReachabilityProvider>)reachability
+                            reachability:(id<ReachabilityProvider,ReachabilityTearDown>)reachability
                                    queue:(NSOperationQueue *)queue
                                    group:(ZMSDispatchGroup *)group
                                  baseURL:(NSURL *)baseURL
@@ -249,6 +258,7 @@ static NSInteger const DefaultMaximumRequests = 6;
         _requestScheduler = requestScheduler;
         self.reachability = reachability;
         self.requestScheduler.schedulerState = ZMTransportRequestSchedulerStateNormal;
+        self.reachabilityObserverToken = [self.reachability addReachabilityObserver:self queue:self.workQueue];
         
         if( ! self.reachability.mayBeReachable) {
             [self schedulerWentOffline:self.requestScheduler];
@@ -287,6 +297,7 @@ static NSInteger const DefaultMaximumRequests = 6;
     
     self.tornDown = YES;
     
+    self.reachabilityObserverToken = nil;
     [self.transportPushChannel closeAndRemoveConsumer];
     [self.workGroup enter];
     [self.workQueue addOperationWithBlock:^{
@@ -322,16 +333,6 @@ static NSInteger const DefaultMaximumRequests = 6;
 
 - (ZMAccessToken *)accessToken {
     return self.accessTokenHandler.accessToken;
-}
-
-- (void)setupReachabilityWithClass:(Class)reachabilityClass
-{
-    Require(self.reachability == nil);
-    RequireString(self.baseURL.host != nil, "Invalid base URL host");
-    RequireString(self.websocketURL.host != nil, "Invalid WebSocket URL host");
-    
-    NSArray *serverNames = @[self.baseURL.host, self.websocketURL.host];
-    _reachability = [[reachabilityClass alloc] initWithServerNames:serverNames observer:self queue:self.workQueue group:self.workGroup];
 }
 
 - (NSString *)tasksDescription;
@@ -749,7 +750,7 @@ static NSInteger const DefaultMaximumRequests = 6;
 
 @implementation ZMTransportSession (ReachabilityObserver)
 
-- (void)reachabilityDidChange:(id<ReachabilityProvider>)reachability;
+- (void)reachabilityDidChange:(id<ReachabilityProvider,ReachabilityTearDown>)reachability;
 {
     ZMLogInfo(@"reachabilityDidChange -> mayBeReachable = %@", reachability.mayBeReachable ? @"YES" : @"NO");
     [self.requestScheduler reachabilityDidChange:reachability];
@@ -766,8 +767,6 @@ static NSInteger const DefaultMaximumRequests = 6;
     } else {
         [networkStateDelegate didGoOffline];
     }
-    
-    [[NSNotificationCenter defaultCenter] postNotificationName:ZMTransportSessionReachabilityChangedNotificationName object:nil];
 }
 
 - (void)updateNetworkStatusFromDidReadDataFromNetwork;
