@@ -50,7 +50,6 @@
 @interface ZMURLSessionTests (TaskGeneration)
 @end
 
-
 static NSString * const TaskKey = @"response";
 static NSString * const RequestKey = @"request";
 static NSString * const DataKey = @"data";
@@ -89,7 +88,6 @@ static NSString * const DataKey = @"data";
     self.finishedBackgroundSessions = nil;
     self.receivedDataCount = 0;
     self.firedTimers = nil;
-
     [self.sut tearDown];
     self.sut = nil;
     [super tearDown];
@@ -114,9 +112,8 @@ static NSString * const DataKey = @"data";
     ++self.receivedDataCount;
 }
 
-- (void)URLSession:(ZMURLSession *)URLSession taskDidComplete:(NSURLSessionTask *)task transportRequest:(ZMTransportRequest *)transportRequest responseData:(NSData *)responseData;
+- (void)URLSession:(__unused ZMURLSession *)URLSession taskDidComplete:(NSURLSessionTask *)task transportRequest:(ZMTransportRequest *)transportRequest responseData:(NSData *)responseData;
 {
-    XCTAssertEqual(URLSession, self.sut);
     NSMutableDictionary *arguments = [NSMutableDictionary dictionary];
     if (task != nil) {
         arguments[TaskKey] = task;
@@ -477,6 +474,7 @@ willPerformHTTPRedirection:response
     }
     
     // then
+    XCTAssert([self waitForCustomExpectationsWithTimeout:0.5]);
     XCTAssertTrue([self waitForAllGroupsToBeEmptyWithTimeout:0.5]);
     
     if (shouldDecrease && shouldFailInsteadOfRetry) {
