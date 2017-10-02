@@ -37,7 +37,16 @@
 
 @end
 
-
+@interface ZMTransportRequestTests (ResponseMediaTypes)
+@end
+@interface ZMTransportRequestTests (HTTPHeaders)
+@end
+@interface ZMTransportRequestTests (Payload)
+@end
+@interface ZMTransportRequestTests (TimeoutOverride)
+@end
+@interface ZMTransportRequestTests (Debugging)
+@end
 
 @implementation ZMTransportRequestTests
 

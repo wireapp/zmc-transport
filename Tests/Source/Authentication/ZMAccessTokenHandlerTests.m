@@ -52,6 +52,14 @@
 
 @end
 
+@interface ZMAccessTokenHandlerTests (General)
+@end
+@interface ZMAccessTokenHandlerTests (ConsumeTasks)
+@end
+@interface ZMAccessTokenHandlerTests (Backoff)
+@end
+@interface ZMAccessTokenHandlerTests (Response)
+@end
 
 @implementation ZMAccessTokenHandlerTests
 

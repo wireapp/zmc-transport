@@ -30,6 +30,8 @@
 
 @end
 
+@interface ZMPersistentCookieStorageTests (HTTPCookie)
+@end
 
 @implementation ZMPersistentCookieStorageTests
 

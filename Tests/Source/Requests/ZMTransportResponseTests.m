@@ -24,7 +24,8 @@
 @interface ZMTransportResponseTests : ZMTBaseTest
 @end
 
-
+@interface ZMTransportResponseTests (ContentType)
+@end
 
 @implementation ZMTransportResponseTests
 

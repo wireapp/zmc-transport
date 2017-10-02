@@ -40,7 +40,14 @@
 
 @end
 
-
+@interface FakeSchedulerSession (AccessToken)
+@end
+@interface FakeSchedulerSession (Reachability)
+@end
+@interface FakeSchedulerSession (Backoff)
+@end
+@interface FakeSchedulerSession (RateLimit)
+@end
 
 @implementation FakeSchedulerSession
 

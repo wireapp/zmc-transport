@@ -38,7 +38,8 @@
 
 @end
 
-
+@interface ZMPushChannelConnectionTests (WebSocket)
+@end
 
 @implementation ZMPushChannelConnectionTests
 

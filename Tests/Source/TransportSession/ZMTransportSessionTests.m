@@ -359,7 +359,28 @@ static XCTestCase *currentTestCase;
 
 @end
 
-
+@interface ZMTransportSessionTests(AccessTokens_Cookies_Login)
+@end
+@interface ZMTransportSessionTests(URLResponseForwardingToTheScheduler)
+@end
+@interface ZMTransportSessionTests(CookieAndAccessTokenRenewal)
+@end
+@interface ZMTransportSessionTests(PushChannel)
+@end
+@interface ZMTransportSessionTests(ImageDownload)
+@end
+@interface ZMTransportSessionTests(Timeout)
+@end
+@interface ZMTransportSessionTests(Backoff)
+@end
+@interface ZMTransportSessionTests(Reachability)
+@end
+@interface ZMTransportSessionTests(Background)
+@end
+@interface ZMTransportSessionTests(ExpirationDate)
+@end
+@interface ZMTransportSessionTests(RequestLoop)
+@end
 
 @interface ZMTransportSessionTests (Helper)
 

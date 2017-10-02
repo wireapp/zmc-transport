@@ -45,6 +45,10 @@
 
 @end
 
+@interface ZMURLSessionTests (Delegate)
+@end
+@interface ZMURLSessionTests (TaskGeneration)
+@end
 
 
 static NSString * const TaskKey = @"response";
