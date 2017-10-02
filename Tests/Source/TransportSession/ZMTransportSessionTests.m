@@ -396,8 +396,8 @@ static XCTestCase *currentTestCase;
     [[(id)self.URLSessionSwitch stub] tearDown];
     [self verifyMockLater:self.URLSessionSwitch];
     
-    self.baseURL = [NSURL URLWithString:@"http://base.example.com"];
-    self.webSocketURL = [NSURL URLWithString:@"http://websocket.example.com"];
+    self.baseURL = [NSURL URLWithString:@"https://base.example.com"];
+    self.webSocketURL = [NSURL URLWithString:@"https://websocket.example.com"];
     self.cookieStorage = [ZMPersistentCookieStorage storageForServerName:self.baseURL.host userIdentifier:self.userIdentifier];
     self.reachability = [[FakeReachability alloc] init];
     
@@ -534,8 +534,8 @@ static XCTestCase *currentTestCase;
 - (void)testThatItUsesTheBaseURL
 {
     // given
-    NSURL *url = [NSURL URLWithString:@"http://test1.example.com"];
-    NSURL *url2 = [NSURL URLWithString:@"http://test2.example.com"];
+    NSURL *url = [NSURL URLWithString:@"https://test1.example.com"];
+    NSURL *url2 = [NSURL URLWithString:@"https://test2.example.com"];
     [[(id) self.URLSessionSwitch stub] tearDown];
     [self.sut tearDown];
     self.sut = [[ZMTransportSession alloc]
@@ -749,7 +749,7 @@ static XCTestCase *currentTestCase;
 - (void)testThatItSendsARequestThatShuouldUseForegroundSessionOnlyOnForegroundSessionWhenURLSwitchIsInBackground
 {
     // given
-    NSURL *url = [NSURL URLWithString:@"http://test1.example.com"];
+    NSURL *url = [NSURL URLWithString:@"https://test1.example.com"];
     ZMURLSession *foregroundSession = [OCMockObject niceMockForClass:ZMURLSession.class];
     ZMURLSession *backgroundSession = [OCMockObject niceMockForClass:ZMURLSession.class];
     ZMURLSession *voipSession = [OCMockObject niceMockForClass:ZMURLSession.class];
@@ -788,7 +788,7 @@ static XCTestCase *currentTestCase;
 - (void)testThatItSendsARequestOnBackgroundSessionWhenURLSwitchIsOnBackground
 {
     // given
-    NSURL *url = [NSURL URLWithString:@"http://test1.example.com"];
+    NSURL *url = [NSURL URLWithString:@"https://test1.example.com"];
     ZMURLSession *foregroundSession = [OCMockObject niceMockForClass:ZMURLSession.class];
     ZMURLSession *backgroundSession = [OCMockObject niceMockForClass:ZMURLSession.class];
     ZMURLSession *voipSession = [OCMockObject niceMockForClass:ZMURLSession.class];

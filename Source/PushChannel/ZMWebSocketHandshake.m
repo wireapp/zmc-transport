@@ -100,7 +100,7 @@ static NSString * const ZMWebSocketHandshakeErrorDomain = @"ZMWebSocketHandshake
     }
     
     if ((allHeaderFields != nil) && (httpVersion != nil)) {
-        NSURL *URL = [NSURL URLWithString:@"http://example.com"];
+        NSURL *URL = [NSURL URLWithString:@"https://example.com"];
         self.response = [[NSHTTPURLResponse alloc] initWithURL:URL statusCode:statusCode HTTPVersion:httpVersion headerFields:allHeaderFields];
     }
     

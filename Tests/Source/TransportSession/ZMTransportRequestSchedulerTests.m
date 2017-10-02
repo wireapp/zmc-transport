@@ -219,7 +219,7 @@
 - (NSURLSessionTask *)fakeTaskWithHTTPStatusCode:(NSInteger)statusCode URLErrorCode:(NSInteger)code;
 {
     id task = [OCMockObject niceMockForClass:FakeDataTask.class];
-    NSURL *URL = [NSURL URLWithString:@"http://example.com/test"];
+    NSURL *URL = [NSURL URLWithString:@"https://example.com/test"];
     NSHTTPURLResponse *response = [[NSHTTPURLResponse alloc] initWithURL:URL statusCode:statusCode HTTPVersion:@"HTTP/1.1" headerFields:@{}];
     NSError *error = (code == 0) ? nil : [NSError errorWithDomain:NSURLErrorDomain code:code userInfo:nil];
     (void)[(FakeDataTask *) [[task stub] andReturn:response] response];
