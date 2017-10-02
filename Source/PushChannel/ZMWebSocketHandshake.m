@@ -67,6 +67,8 @@ static NSString * const ZMWebSocketHandshakeErrorDomain = @"ZMWebSocketHandshake
                 *error = [NSError errorWithDomain:ZMWebSocketHandshakeErrorDomain code:1 userInfo:@{NSLocalizedDescriptionKey: @"Response did not end within range."}];
             }
             return ZMWebSocketHandshakeError;
+        } else {
+            return ZMWebSocketHandshakeNeedsMoreData;
         }
     }
 
