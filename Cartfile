@@ -1,1 +1,1 @@
-github "wireapp/wire-ios-utilities" "feature/xcode9"
+github "wireapp/wire-ios-utilities" ~> 18.0
