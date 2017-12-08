@@ -20,14 +20,12 @@
 @import XCTest;
 @import WireTesting;
 @import WireSystem;
-
-#import "ZMNetworkSocket.h"
-
+@import WireTransport;
 
 
-@interface ZMNetworkSocketTest : ZMTBaseTest <ZMNetworkSocketDelegate>
+@interface ZMNetworkSocketTest : ZMTBaseTest <NetworkSocketDelegate>
 
-@property (nonatomic) ZMNetworkSocket *sut;
+@property (nonatomic) NetworkSocket *sut;
 @property (nonatomic) NSMutableData *dataRead;
 @property (nonatomic) NSInteger openCounter;
 @property (nonatomic) NSInteger closeCounter;
@@ -44,7 +42,7 @@
     self.openCounter = 0;
     self.closeCounter = 0;
     self.dataRead = [NSMutableData dataWithCapacity:16 * 1024];
-    self.queue = dispatch_queue_create([self.name UTF8String], 0);
+    self.queue = dispatch_get_main_queue();
 }
 
 - (void)tearDown
@@ -59,33 +57,30 @@
     [super tearDown];
 }
 
-//- (BOOL)checkThatWeCanRetrieveHTTPSURL:(NSURL *)url ZM_MUST_USE_RETURN
-//{
-//    self.sut = [[ZMNetworkSocket alloc] initWithURL:url delegate:self delegateQueue:self.queue group:self.syncMOC.dispatchGroup];
-//    XCTAssertNotNil(self.sut);
-//    BOOL success = [self checkThatWeCanRetrieveHTTPSURL:url withNetworkSocket:self.sut];
-//    [self.sut close];
-//    WaitForAllGroupsToBeEmpty(0.5);
-//    return success;
-//}
+- (BOOL)checkThatWeCanRetrieveHTTPSURL:(NSURL *)url ZM_MUST_USE_RETURN
+{
+    self.sut = [[NetworkSocket alloc] initWithUrl:url delegate:self queue:self.queue group:self.dispatchGroup];
+    XCTAssertNotNil(self.sut);
+    BOOL success = [self checkThatWeCanRetrieveHTTPSURL:url withNetworkSocket:self.sut];
+    [self.sut close];
+    WaitForAllGroupsToBeEmpty(0.5);
+    return success;
+}
 
-- (BOOL)checkThatWeCanRetrieveHTTPSURL:(NSURL *)url withNetworkSocket:(ZMNetworkSocket *)socket ZM_MUST_USE_RETURN
+- (BOOL)checkThatWeCanRetrieveHTTPSURL:(NSURL *)url withNetworkSocket:(NetworkSocket *)socket ZM_MUST_USE_RETURN
 {
     
     NSString *requestHeader = [NSString stringWithFormat:@"GET %@ HTTP/1.1\r\n"
                                "Accept: */*\r\n"
                                "Accept-Encoding: gzip, deflate, compress\r\n"
                                "Host: %@\r\n"
-                               //"User-Agent: Mozilla/5.0 \r\n"
                                "\r\n"
                                "\r\n", url.path, url.host ];
     NSData *requestData = [requestHeader dataUsingEncoding:NSUTF8StringEncoding];
     
-    dispatch_data_t request = dispatch_data_create(requestData.bytes, requestData.length, NULL, DISPATCH_DATA_DESTRUCTOR_DEFAULT);
-    
     // when
     [socket open];
-    [socket writeDataToNetwork:request];
+    [socket writeData:requestData];
     [self expectationForNotification:@"ZMNetworkSocketTest" object:nil handler:^BOOL(NSNotification *notification) {
         NOT_USED(notification);
         return YES;
@@ -121,47 +116,20 @@
 }
 
 // this test is disabled as it seems to fail on the CI server 100% for some reason
-//- (void)DISABLED_testThatItRetrievesAWellKnownHomepage
+//- (void)testThatItRetrievesAWellKnownHomepage
 //{
-//    // given
-//    NSArray *urls = @[
-//                      @"https://www.apple.com/",
-//                      @"https://www.google.com/",
-//                      @"https://de.wikipedia.org/",
-//                      @"https://www.amazon.de/",
-//                      ];
-//    
-//    // this test tries different urls, with a sleep in between. If one service/the network is down, hopefully the next one will work after that delay
-//    __block size_t failures = 0;
-//    for(NSString *url in urls) {
-//        __block BOOL success = NO;
-//        [self performIgnoringZMLogError:^{
-//            if([self checkThatWeCanRetrieveHTTPSURL:[NSURL URLWithString:url]]) {
-//                NSLog(@"Successfully connected to %@", url);
-//                success = YES;
-//                return;
-//            }
-//            NSLog(@"Fail to retrieve %@", url);
-//            [NSThread sleepForTimeInterval:failures*3];
-//            ++failures;
-//
-//        }];
-//        if(success) {
-//            return;
-//        }
-//    }
-//    XCTFail(@"Failed to retrieve any URL");
+//    XCTAssertTrue([self checkThatWeCanRetrieveHTTPSURL:[NSURL URLWithString:@"https://www.apple.com/"]]);
 //}
 
-// this test is disabled as it seems to fail on the CI server 100% for some reason
-//- (void)DISABLED_testThatItFailsWhenRetrieveingFromANonexistingServer;
+// TODO
+//- (void)testThatItFailsWhenRetrieveingFromANonexistingServer;
 //{
 //    NSURL *url = [NSURL URLWithString:@"https://127.0.0.1:38973/this-does-not-exist"];
 //    [self performIgnoringZMLogError:^{
-//        self.sut = [[ZMNetworkSocket alloc] initWithURL:url delegate:self delegateQueue:self.queue group:self.syncMOC.dispatchGroup];
-//    
+//        self.sut = [[NetworkSocket alloc] initWithUrl:url delegate:self queue:self.queue group:self.dispatchGroup];
+//
 //        XCTAssertNotNil(self.sut);
-//        
+//
 //        NSString *requestHeader = [NSString stringWithFormat:@"GET %@ HTTP/1.1\r\n"
 //                                   "Accept: */*\r\n"
 //                                   "Accept-Encoding: gzip, deflate, compress\r\n"
@@ -170,19 +138,17 @@
 //                                   "\r\n"
 //                                   "\r\n", url.path, url.host ];
 //        NSData *requestData = [requestHeader dataUsingEncoding:NSUTF8StringEncoding];
-//        
-//        dispatch_data_t request = dispatch_data_create(requestData.bytes, requestData.length, NULL, DISPATCH_DATA_DESTRUCTOR_DEFAULT);
-//        
+//
 //        // when
 //
 //        [self.sut open];
-//        [self.sut writeDataToNetwork:request];
+//        [self.sut writeData:requestData];
 //        [self expectationForNotification:@"ZMNetworkSocketClosed" object:nil handler:^BOOL(NSNotification *notification) {
 //            NOT_USED(notification);
 //            return YES;
 //        }];
-//    
-//    
+//
+//
 //        // then
 //        XCTAssertTrue([self waitForCustomExpectationsWithTimeout:5 handler:nil]);
 //        XCTAssertEqual(self.dataRead.length, 0u);
@@ -191,21 +157,21 @@
 //    }];
 //}
 
-- (void)networkSocket:(ZMNetworkSocket *)socket didReceiveData:(dispatch_data_t)data;
+- (void)didReceiveData:(NSData *)data networkSocket:(NetworkSocket *)socket
 {
     XCTAssertEqual(socket, self.sut);
     [self.dataRead appendData:(NSData *) data];
     [[NSNotificationCenter defaultCenter] postNotificationName:@"ZMNetworkSocketTest" object:self.dataRead];
 }
 
-- (void)networkSocketDidClose:(ZMNetworkSocket *)socket;
+- (void)networkSocketDidClose:(NetworkSocket *)socket
 {
     [[NSNotificationCenter defaultCenter] postNotificationName:@"ZMNetworkSocketClosed" object:socket];
     XCTAssertEqual(socket, self.sut);
     self.closeCounter++;
 }
 
-- (void)networkSocketDidOpen:(ZMNetworkSocket *)socket
+- (void)networkSocketDidOpen:(NetworkSocket *)socket
 {
     [[NSNotificationCenter defaultCenter] postNotificationName:@"ZMNetworkSocketOpened" object:socket];
     XCTAssertEqual(socket, self.sut);
