@@ -204,7 +204,7 @@ fileprivate extension URL {
         if #available(iOSApplicationExtension 10.0, *) {
             dispatchPrecondition(condition: .onQueue(queue))
         } else {
-            precondition(isOnQueue(), "open() called from the wrong queue")
+            precondition(isOnQueue(), "called from the wrong queue")
         }
     }
     

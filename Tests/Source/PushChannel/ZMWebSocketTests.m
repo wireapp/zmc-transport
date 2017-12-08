@@ -50,21 +50,18 @@
 - (void)webSocket:(ZMWebSocket *)webSocket didReceiveFrameWithData:(NSData *)data;
 {
     XCTAssertEqual(webSocket, self.sut);
-    ZMAssertGroupQueue(self.queue);
     [self.receivedData addObject:data];
 }
 
 - (void)webSocket:(ZMWebSocket *)webSocket didReceiveFrameWithText:(NSString *)text;
 {
     XCTAssertEqual(webSocket, self.sut);
-	ZMAssertGroupQueue(self.queue);
     [self.receivedText addObject:text];
 }
 
 - (void)webSocketDidClose:(ZMWebSocket *)webSocket HTTPResponse:(NSHTTPURLResponse *)response;
 {
     XCTAssertEqual(webSocket, self.sut);
-    ZMAssertGroupQueue(self.queue);
     ++self.closeCounter;
     self.closeResponse = response;
 }
@@ -72,7 +69,6 @@
 - (void)webSocketDidCompleteHandshake:(ZMWebSocket *)webSocket HTTPResponse:(NSHTTPURLResponse *)response
 {
     XCTAssertEqual(webSocket, self.sut);
-    ZMAssertGroupQueue(self.queue);
     ++self.openCounter;
     self.openResponse = response;
 }

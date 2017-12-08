@@ -102,7 +102,9 @@ static NSString* ZMLogTag ZM_UNUSED = ZMT_LOG_TAG_PUSHCHANNEL;
         self.handshake = [[ZMWebSocketHandshake alloc] initWithDataBuffer:self.inputBuffer];
         self.dataPendingTransmission = [NSMutableArray array];
         self.additionalHeaderFields = additionalHeaderFields;
-        [self open];
+        dispatch_async(self.consumerQueue, ^{
+            [self open];
+        });
     }
     return self;
 }
@@ -179,7 +181,9 @@ static NSString* ZMLogTag ZM_UNUSED = ZMT_LOG_TAG_PUSHCHANNEL;
         ZMSDispatchGroup *group = self.consumerGroup;
         self.consumerQueue = nil;
         self.consumerGroup = nil;
-        [self.networkSocket close];
+        [group asyncOnQueue:queue block:^{
+            [self.networkSocket close];
+        }];
         NSHTTPURLResponse *response = self.response;
         self.response = nil;
         id<ZMWebSocketConsumer> consumer = self.consumer;
