@@ -132,6 +132,9 @@ fileprivate extension URL {
                                  forKey: Stream.PropertyKey.networkServiceType)
         outputStream.setProperty(StreamNetworkServiceTypeValue.background,
                                   forKey: Stream.PropertyKey.networkServiceType)
+        
+        inputStream.open()
+        outputStream.open()
     }
     
     public func close() {
@@ -218,7 +221,7 @@ fileprivate extension URL {
         }
         self.didCheckTrust = true
         
-        guard let peerTrustValue = self.value(forKey: kCFStreamPropertySSLPeerTrust as String) else {
+        guard let peerTrustValue = stream.property(forKey: kCFStreamPropertySSLPeerTrust as Stream.PropertyKey) else {
             self.trusted = false
             return false
         }
@@ -299,7 +302,7 @@ extension NetworkSocket: StreamDelegate {
         preconditionQueue()
 
         switch (self.state, eventCode) {
-        case (.readyToConnect, .openCompleted):
+        case (.connecting, .openCompleted):
             if aStream == outputStream {
                 self.state = .connected
                 self.delegate?.didOpen(socket: self)
