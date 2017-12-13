@@ -56,30 +56,23 @@ import Foundation
     }
 }
 
-fileprivate extension URL {
-    var usesSSL: Bool {
-        guard let scheme = self.scheme else {
-            return false
-        }
-        return Set(["https", "wss"]).contains(scheme)
-    }
-}
-
 @objc public final class NetworkSocket: NSObject {
     
     // MARK: - Public API
     public let url: URL
     public let queue: DispatchQueue
+    public let callbackQueue: DispatchQueue
     public let group: ZMSDispatchGroup
     
     public weak var delegate: NetworkSocketDelegate?
     
     private let queueMarkerKey = DispatchSpecificKey<Void>()
     
-    public init(url: URL, delegate: NetworkSocketDelegate?, queue: DispatchQueue, group: ZMSDispatchGroup) {
+    public init(url: URL, delegate: NetworkSocketDelegate?, queue: DispatchQueue, callbackQueue: DispatchQueue, group: ZMSDispatchGroup) {
         self.url = url
         self.delegate = delegate
         self.queue = queue
+        self.callbackQueue = callbackQueue
         self.group = group
         
         queue.setSpecific(key: queueMarkerKey, value: ())
@@ -97,7 +90,7 @@ fileprivate extension URL {
         state = .connecting
         
         let hostName = url.host!
-        let port = url.port ?? (url.usesSSL ? 443 : 80)
+        let port = url.port ?? 443
         
         var inStream: InputStream? = nil
         var outStream: OutputStream? = nil
@@ -115,23 +108,16 @@ fileprivate extension URL {
         CFReadStreamSetDispatchQueue(inputStream, queue)
         CFWriteStreamSetDispatchQueue(outputStream, queue)
         
-        if url.usesSSL {
-            let sslSettings: [AnyHashable: Any] = [kCFStreamSSLPeerName: hostName,
-                                                   kCFStreamSSLValidatesCertificateChain: false]
-            
-            inputStream.setProperty(sslSettings, forKey: Stream.PropertyKey(kCFStreamPropertySSLSettings as String))
-            outputStream.setProperty(sslSettings, forKey: Stream.PropertyKey(kCFStreamPropertySSLSettings as String))
-            
-            inputStream.setProperty(StreamSocketSecurityLevel.tlSv1,
-                                     forKey: Stream.PropertyKey.socketSecurityLevelKey)
-            outputStream.setProperty(StreamSocketSecurityLevel.tlSv1,
-                                      forKey: Stream.PropertyKey.socketSecurityLevelKey)
-        }
+        let sslSettings: [AnyHashable: Any] = [kCFStreamSSLPeerName: hostName,
+                                               kCFStreamSSLValidatesCertificateChain: false]
+        
+        inputStream.setProperty(sslSettings, forKey: Stream.PropertyKey(kCFStreamPropertySSLSettings as String))
+        
+        inputStream.setProperty(StreamSocketSecurityLevel.tlSv1,
+                                 forKey: Stream.PropertyKey.socketSecurityLevelKey)
         
         inputStream.setProperty(StreamNetworkServiceTypeValue.background,
                                  forKey: Stream.PropertyKey.networkServiceType)
-        outputStream.setProperty(StreamNetworkServiceTypeValue.background,
-                                  forKey: Stream.PropertyKey.networkServiceType)
         
         inputStream.open()
         outputStream.open()
@@ -150,8 +136,21 @@ fileprivate extension URL {
         outputStream?.delegate = nil
         outputStream?.close()
         
-        delegate?.didClose(socket: self)
+        self.withDelegate { delegate in
+            delegate.didClose(socket: self)
+        }
+        
         delegate = nil
+    }
+    
+    fileprivate func withDelegate(_ perform: @escaping (NetworkSocketDelegate)->()) {
+        guard let delegate = self.delegate else {
+            return
+        }
+    
+        self.group.async(on: callbackQueue) {
+            perform(delegate)
+        }
     }
     
     @objc(writeData:)
@@ -256,7 +255,9 @@ fileprivate extension URL {
         }
         
         inputBuffer.removeLast(inputBufferCount - bytesRead)
-        self.delegate?.didReceive(data: inputBuffer, on: self)
+        self.withDelegate { delegate in
+            delegate.didReceive(data: inputBuffer, on: self)
+        }
     }
 
     fileprivate func onHasSpaceAvailable() {
@@ -268,12 +269,6 @@ fileprivate extension URL {
         // Check if we have the output stream
         guard let outputStream = self.outputStream else {
             fatal("Output stream is missing")
-        }
-        
-        // Check if we are already writing to the stream
-        guard outputStream.streamStatus != .writing else {
-            print("Error: Trying to write into output stream, but stream is already writing. Skipping write to avoid crashing.")
-            return
         }
         
         // Check if the stream is errored
@@ -305,7 +300,9 @@ extension NetworkSocket: StreamDelegate {
         case (.connecting, .openCompleted):
             if aStream == outputStream {
                 self.state = .connected
-                self.delegate?.didOpen(socket: self)
+                self.withDelegate { delegate in
+                    delegate.didOpen(socket: self)
+                }
             }
         case (.connected, .hasBytesAvailable):
             guard aStream == inputStream, checkTrust(for: aStream) else {

@@ -79,7 +79,12 @@
     [self verifyMockLater:self.networkSocketMock];
     self.queue = dispatch_get_main_queue();
     self.URL = [NSURL URLWithString:@"wss://echo.websocket.org"];
-    self.sut = (id)[[ZMWebSocket alloc] initWithConsumer:self queue:self.queue group:self.fakeUIContext.dispatchGroup networkSocket:self.networkSocketMock url:self.URL additionalHeaderFields:nil];
+    self.sut = (id)[[ZMWebSocket alloc] initWithConsumer:self
+                                                   queue:self.queue
+                                                   group:self.fakeUIContext.dispatchGroup
+                                           networkSocket:self.networkSocketMock
+                                                     url:self.URL
+                                  additionalHeaderFields:nil];
     self.receivedData = [NSMutableArray array];
     self.receivedText = [NSMutableArray array];
     self.closeCounter = 0;
@@ -102,6 +107,7 @@
 
 - (void)testThatItNotifiesItsConsumerWhenItIsClosing
 {
+    WaitForAllGroupsToBeEmpty(0.5);
     // when
     [self.sut close];
     WaitForAllGroupsToBeEmpty(0.5);
@@ -112,6 +118,7 @@
 
 - (void)testThatItNotifiesItsConsumerOnlyOnceWhenItIsClosing
 {
+    WaitForAllGroupsToBeEmpty(0.5);
     // when
     [self.sut close];
     [self.sut close];
@@ -230,7 +237,12 @@
     self.closeCounter = 0;
     self.openCounter = 0;
     
-    self.sut = (id)[[ZMWebSocket alloc] initWithConsumer:self queue:self.queue group:self.fakeUIContext.dispatchGroup networkSocket:self.networkSocketMock url:self.URL additionalHeaderFields:extraHeaders];
+    self.sut = (id)[[ZMWebSocket alloc] initWithConsumer:self
+                                                   queue:self.queue
+                                                   group:self.fakeUIContext.dispatchGroup
+                                           networkSocket:self.networkSocketMock
+                                                     url:self.URL
+                                  additionalHeaderFields:extraHeaders];
     __block NSData *sentData;
     XCTestExpectation *expectation = [self expectationWithDescription:@"Did receive data."];
     [[(id) self.networkSocketMock expect] writeData:[OCMArg checkWithBlock:^BOOL(id obj) {
@@ -433,6 +445,7 @@
 
 - (void)testThatItCallsDidCloseWhenTheNetworkSocketCloses;
 {
+    WaitForAllGroupsToBeEmpty(0.5);
     // when
     [self.sut networkSocketDidClose:self.networkSocketMock];
     WaitForAllGroupsToBeEmpty(0.5);

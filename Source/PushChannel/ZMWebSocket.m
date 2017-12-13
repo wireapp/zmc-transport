@@ -94,7 +94,8 @@ static NSString* ZMLogTag ZM_UNUSED = ZMT_LOG_TAG_PUSHCHANNEL;
         if (networkSocket == nil) {
             networkSocket = [[NetworkSocket alloc] initWithUrl:url
                                                       delegate:self
-                                                         queue:self.consumerQueue
+                                                         queue:dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0)
+                                                 callbackQueue:self.consumerQueue
                                                          group:self.consumerGroup];
         }
         self.inputBuffer = [[DataBuffer alloc] init];
@@ -102,9 +103,9 @@ static NSString* ZMLogTag ZM_UNUSED = ZMT_LOG_TAG_PUSHCHANNEL;
         self.handshake = [[ZMWebSocketHandshake alloc] initWithDataBuffer:self.inputBuffer];
         self.dataPendingTransmission = [NSMutableArray array];
         self.additionalHeaderFields = additionalHeaderFields;
-        dispatch_async(self.consumerQueue, ^{
+        [self.consumerGroup asyncOnQueue:self.consumerQueue block:^{
             [self open];
-        });
+        }];
     }
     return self;
 }

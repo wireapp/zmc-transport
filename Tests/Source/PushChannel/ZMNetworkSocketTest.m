@@ -59,7 +59,11 @@
 
 - (BOOL)checkThatWeCanRetrieveHTTPSURL:(NSURL *)url ZM_MUST_USE_RETURN
 {
-    self.sut = [[NetworkSocket alloc] initWithUrl:url delegate:self queue:self.queue group:self.dispatchGroup];
+    self.sut = [[NetworkSocket alloc] initWithUrl:url
+                                         delegate:self
+                                            queue:dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0)
+                                    callbackQueue:self.queue
+                                            group:self.dispatchGroup];
     XCTAssertNotNil(self.sut);
     BOOL success = [self checkThatWeCanRetrieveHTTPSURL:url withNetworkSocket:self.sut];
     [self.sut close];
