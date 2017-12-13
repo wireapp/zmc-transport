@@ -61,7 +61,7 @@
 {
     self.sut = [[NetworkSocket alloc] initWithUrl:url
                                          delegate:self
-                                            queue:dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0)
+                                            queue:self.queue
                                     callbackQueue:self.queue
                                             group:self.dispatchGroup];
     XCTAssertNotNil(self.sut);
@@ -119,47 +119,49 @@
     return YES;
 }
 
-// this test is disabled as it seems to fail on the CI server 100% for some reason
-//- (void)testThatItRetrievesAWellKnownHomepage
-//{
-//    XCTAssertTrue([self checkThatWeCanRetrieveHTTPSURL:[NSURL URLWithString:@"https://www.apple.com/"]]);
-//}
+- (void)testThatItRetrievesAWellKnownHomepage
+{
+    XCTAssertTrue([self checkThatWeCanRetrieveHTTPSURL:[NSURL URLWithString:@"https://www.apple.com/"]]);
+}
 
-// TODO
-//- (void)testThatItFailsWhenRetrieveingFromANonexistingServer;
-//{
-//    NSURL *url = [NSURL URLWithString:@"https://127.0.0.1:38973/this-does-not-exist"];
-//    [self performIgnoringZMLogError:^{
-//        self.sut = [[NetworkSocket alloc] initWithUrl:url delegate:self queue:self.queue group:self.dispatchGroup];
-//
-//        XCTAssertNotNil(self.sut);
-//
-//        NSString *requestHeader = [NSString stringWithFormat:@"GET %@ HTTP/1.1\r\n"
-//                                   "Accept: */*\r\n"
-//                                   "Accept-Encoding: gzip, deflate, compress\r\n"
-//                                   "Host: %@\r\n"
-//                                   "User-Agent: ZMNetworkSocket\r\n"
-//                                   "\r\n"
-//                                   "\r\n", url.path, url.host ];
-//        NSData *requestData = [requestHeader dataUsingEncoding:NSUTF8StringEncoding];
-//
-//        // when
-//
-//        [self.sut open];
-//        [self.sut writeData:requestData];
-//        [self expectationForNotification:@"ZMNetworkSocketClosed" object:nil handler:^BOOL(NSNotification *notification) {
-//            NOT_USED(notification);
-//            return YES;
-//        }];
-//
-//
-//        // then
-//        XCTAssertTrue([self waitForCustomExpectationsWithTimeout:5 handler:nil]);
-//        XCTAssertEqual(self.dataRead.length, 0u);
-//        XCTAssertEqual(self.openCounter, 0);
-//        XCTAssertEqual(self.closeCounter, 1);
-//    }];
-//}
+- (void)testThatItFailsWhenRetrieveingFromANonexistingServer;
+{
+    NSURL *url = [NSURL URLWithString:@"https://127.0.0.1:38973/this-does-not-exist"];
+    [self performIgnoringZMLogError:^{
+        self.sut = [[NetworkSocket alloc] initWithUrl:url
+                                             delegate:self
+                                                queue:self.queue
+                                        callbackQueue:self.queue
+                                                group:self.dispatchGroup];
+
+        XCTAssertNotNil(self.sut);
+
+        NSString *requestHeader = [NSString stringWithFormat:@"GET %@ HTTP/1.1\r\n"
+                                   "Accept: */*\r\n"
+                                   "Accept-Encoding: gzip, deflate, compress\r\n"
+                                   "Host: %@\r\n"
+                                   "User-Agent: ZMNetworkSocket\r\n"
+                                   "\r\n"
+                                   "\r\n", url.path, url.host ];
+        NSData *requestData = [requestHeader dataUsingEncoding:NSUTF8StringEncoding];
+
+        // when
+
+        [self.sut open];
+        [self.sut writeData:requestData];
+        [self expectationForNotification:@"ZMNetworkSocketClosed" object:nil handler:^BOOL(NSNotification *notification) {
+            NOT_USED(notification);
+            return YES;
+        }];
+
+
+        // then
+        XCTAssertTrue([self waitForCustomExpectationsWithTimeout:5 handler:nil]);
+        XCTAssertEqual(self.dataRead.length, 0u);
+        XCTAssertEqual(self.openCounter, 0);
+        XCTAssertEqual(self.closeCounter, 1);
+    }];
+}
 
 - (void)didReceiveData:(NSData *)data networkSocket:(NetworkSocket *)socket
 {

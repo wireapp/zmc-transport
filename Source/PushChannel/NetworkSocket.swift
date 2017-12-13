@@ -126,7 +126,9 @@ import Foundation
     public func close() {
         preconditionQueue()
         
-        assert(self.state != .stopped)
+        guard self.state != .stopped else {
+            return
+        }
         
         state = .stopped
         
@@ -175,13 +177,7 @@ import Foundation
       
         dataBuffer.append(data: dispatchData)
         
-        let data = dataBuffer.data
-        
-        let bytesWritten = data.withUnsafeBytes { (bytes: UnsafePointer<UInt8>) -> Int in
-            return outputStream.write(bytes, maxLength: data.count)
-        }
-        
-        dataBuffer.clear(until: bytesWritten)
+        writeDataIfPossible()
     }
     
     // MARK: - Internals
@@ -282,13 +278,28 @@ import Foundation
             return
         }
         
+        writeDataIfPossible()
+    }
+    
+    fileprivate func writeDataIfPossible() {
+        // Check if we have the output stream
+        guard let outputStream = self.outputStream else {
+            fatal("Output stream is missing")
+        }
+        
+        guard outputStream.hasSpaceAvailable else {
+            return
+        }
+        
         let data = dataBuffer.data
         
         let bytesWritten = data.withUnsafeBytes { (bytes: UnsafePointer<UInt8>) -> Int in
             return outputStream.write(bytes, maxLength: data.count)
         }
         
-        self.dataBuffer.clear(until: bytesWritten)
+        if bytesWritten > 0 {
+            dataBuffer.clear(until: bytesWritten)
+        }
     }
 }
 
