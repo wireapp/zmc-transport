@@ -106,7 +106,7 @@
         NSLog(@"Unexpected return status %ld for URL: %@", status, url);
         return NO;
     }
-    NSString *statusLine =CFBridgingRelease(CFHTTPMessageCopyResponseStatusLine(message));
+    NSString *statusLine = CFBridgingRelease(CFHTTPMessageCopyResponseStatusLine(message));
     CFRelease(message);
     if(![statusLine hasPrefix:@"HTTP/1.1"]) {
         NSLog(@"Unexpected response status line from %@: %@", url, statusLine);

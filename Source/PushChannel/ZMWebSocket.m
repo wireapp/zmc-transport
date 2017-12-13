@@ -43,6 +43,7 @@ static NSString* ZMLogTag ZM_UNUSED = ZMT_LOG_TAG_PUSHCHANNEL;
 @property (nonatomic, weak) id<ZMWebSocketConsumer> consumer;
 @property (atomic) dispatch_queue_t consumerQueue;
 @property (atomic) ZMSDispatchGroup *consumerGroup;
+@property (nonatomic) dispatch_queue_t networkSocketQueue;
 @property (nonatomic) NetworkSocket *networkSocket;
 @property (nonatomic) BOOL handshakeCompleted;
 @property (nonatomic) DataBuffer *inputBuffer;
@@ -59,7 +60,7 @@ static NSString* ZMLogTag ZM_UNUSED = ZMT_LOG_TAG_PUSHCHANNEL;
 - (instancetype)init
 {
     @throw [NSException exceptionWithName:NSInvalidArgumentException reason:@"You should not use -init" userInfo:nil];
-    return [self initWithConsumer:nil queue:nil group:nil networkSocket:nil url:nil additionalHeaderFields:nil];
+    return [self initWithConsumer:nil queue:nil group:nil networkSocket:nil networkSocketQueue:nil url:nil additionalHeaderFields:nil];
 }
 
 - (instancetype)initWithConsumer:(id<ZMWebSocketConsumer>)consumer
@@ -72,6 +73,7 @@ static NSString* ZMLogTag ZM_UNUSED = ZMT_LOG_TAG_PUSHCHANNEL;
                             queue:queue
                             group:group
                     networkSocket:nil
+               networkSocketQueue:nil
                               url:url
            additionalHeaderFields:additionalHeaderFields];
 }
@@ -80,6 +82,7 @@ static NSString* ZMLogTag ZM_UNUSED = ZMT_LOG_TAG_PUSHCHANNEL;
                            queue:(dispatch_queue_t)queue
                            group:(ZMSDispatchGroup *)group
                    networkSocket:(NetworkSocket *)networkSocket
+              networkSocketQueue:(dispatch_queue_t)networkSocketQueue
                              url:(NSURL *)url
           additionalHeaderFields:(NSDictionary *)additionalHeaderFields;
 {
@@ -91,10 +94,13 @@ static NSString* ZMLogTag ZM_UNUSED = ZMT_LOG_TAG_PUSHCHANNEL;
         self.consumer = consumer;
         self.consumerQueue = queue;
         self.consumerGroup = group;
+        
+        self.networkSocketQueue = networkSocketQueue ? : dispatch_queue_create("ZMWebSocket", DISPATCH_QUEUE_SERIAL);
+        
         if (networkSocket == nil) {
             networkSocket = [[NetworkSocket alloc] initWithUrl:url
                                                       delegate:self
-                                                         queue:dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0)
+                                                         queue:self.networkSocketQueue
                                                  callbackQueue:self.consumerQueue
                                                          group:self.consumerGroup];
         }
@@ -103,7 +109,7 @@ static NSString* ZMLogTag ZM_UNUSED = ZMT_LOG_TAG_PUSHCHANNEL;
         self.handshake = [[ZMWebSocketHandshake alloc] initWithDataBuffer:self.inputBuffer];
         self.dataPendingTransmission = [NSMutableArray array];
         self.additionalHeaderFields = additionalHeaderFields;
-        [self.consumerGroup asyncOnQueue:self.consumerQueue block:^{
+        [self safelyDispatchOnQueue:^{
             [self open];
         }];
     }
@@ -112,13 +118,13 @@ static NSString* ZMLogTag ZM_UNUSED = ZMT_LOG_TAG_PUSHCHANNEL;
 
 - (void)safelyDispatchOnQueue:(void (^)(void))block
 {
-    dispatch_queue_t consumerQueue = self.consumerQueue;
+    dispatch_queue_t networkSocketQueue = self.networkSocketQueue;
     ZMSDispatchGroup *consumerGroup = self.consumerGroup;
     
-    if(consumerGroup == nil || consumerQueue == nil) {
+    if(consumerGroup == nil || networkSocketQueue == nil) {
         return;
     }
-    [consumerGroup asyncOnQueue:consumerQueue block:block];
+    [consumerGroup asyncOnQueue:networkSocketQueue block:block];
 }
 
 - (void)open;
@@ -145,7 +151,7 @@ static NSString* ZMLogTag ZM_UNUSED = ZMT_LOG_TAG_PUSHCHANNEL;
     [headers enumerateKeysAndObjectsUsingBlock:^(NSString *headerField, NSString *headerValue, BOOL * ZM_UNUSED stop){
         CFHTTPMessageSetHeaderFieldValue(message, (__bridge CFStringRef) headerField, (__bridge CFStringRef) headerValue);
     }];
-    //CFHTTPMessageSetBody(message, (__bridge CFDataRef) [NSData data]);
+
     NSData *requestData = CFBridgingRelease(CFHTTPMessageCopySerializedMessage(message));
     Require(requestData != nil);
     CFRelease(message);
@@ -164,7 +170,9 @@ static NSString* ZMLogTag ZM_UNUSED = ZMT_LOG_TAG_PUSHCHANNEL;
     self.response = self.handshake.response;
     if (handshakeCompleted == ZMWebSocketHandshakeCompleted) {
         for (NSData *data in self.dataPendingTransmission) {
-            [self.networkSocket writeData:data];
+            [self safelyDispatchOnQueue:^{
+                [self.networkSocket writeData:data];
+            }];
         }
         self.dataPendingTransmission = nil;
     } else if (handshakeCompleted == ZMWebSocketHandshakeError) {
@@ -182,7 +190,7 @@ static NSString* ZMLogTag ZM_UNUSED = ZMT_LOG_TAG_PUSHCHANNEL;
         ZMSDispatchGroup *group = self.consumerGroup;
         self.consumerQueue = nil;
         self.consumerGroup = nil;
-        [group asyncOnQueue:queue block:^{
+        [group asyncOnQueue:self.networkSocketQueue block:^{
             [self.networkSocket close];
         }];
         NSHTTPURLResponse *response = self.response;

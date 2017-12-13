@@ -83,6 +83,7 @@
                                                    queue:self.queue
                                                    group:self.fakeUIContext.dispatchGroup
                                            networkSocket:self.networkSocketMock
+                                      networkSocketQueue:self.queue
                                                      url:self.URL
                                   additionalHeaderFields:nil];
     self.receivedData = [NSMutableArray array];
@@ -241,6 +242,7 @@
                                                    queue:self.queue
                                                    group:self.fakeUIContext.dispatchGroup
                                            networkSocket:self.networkSocketMock
+                                      networkSocketQueue:self.queue
                                                      url:self.URL
                                   additionalHeaderFields:extraHeaders];
     __block NSData *sentData;
@@ -292,7 +294,7 @@
     NSData *dataToBeSent = [NSData dataWithBytes:((char []){'A', 'B'}) length:2];
     
     XCTestExpectation *expectation = [self expectationWithDescription:@"Did receive data."];
-    [[(id) self.networkSocketMock expect] writeData:[OCMArg checkWithBlock:^BOOL(id obj) {
+    [[(id) self.networkSocketMock stub] writeData:[OCMArg checkWithBlock:^BOOL(id obj) {
         [sentData addObject:obj];
         if (sentData.count == 2) {
             [expectation fulfill];

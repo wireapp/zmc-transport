@@ -27,8 +27,19 @@
 
 @interface ZMWebSocket : NSObject
 
-- (instancetype)initWithConsumer:(id<ZMWebSocketConsumer>)consumer queue:(dispatch_queue_t)queue group:(ZMSDispatchGroup *)group url:(NSURL *)url additionalHeaderFields:(NSDictionary *)additionalHeaderFields;
-- (instancetype)initWithConsumer:(id<ZMWebSocketConsumer>)consumer queue:(dispatch_queue_t)queue group:(ZMSDispatchGroup *)group networkSocket:(NetworkSocket *)networkSocket url:(NSURL *)url additionalHeaderFields:(NSDictionary *)additionalHeaderFields NS_DESIGNATED_INITIALIZER;
+- (instancetype)initWithConsumer:(id<ZMWebSocketConsumer>)consumer
+                           queue:(dispatch_queue_t)queue
+                           group:(ZMSDispatchGroup *)group
+                             url:(NSURL *)url
+          additionalHeaderFields:(NSDictionary *)additionalHeaderFields;
+
+- (instancetype)initWithConsumer:(id<ZMWebSocketConsumer>)consumer
+                           queue:(dispatch_queue_t)queue
+                           group:(ZMSDispatchGroup *)group
+                   networkSocket:(NetworkSocket *)networkSocket
+              networkSocketQueue:(dispatch_queue_t)queue
+                             url:(NSURL *)url
+          additionalHeaderFields:(NSDictionary *)additionalHeaderFields NS_DESIGNATED_INITIALIZER;
 
 @property (nonatomic, readonly, weak) id<ZMWebSocketConsumer> consumer;
 
