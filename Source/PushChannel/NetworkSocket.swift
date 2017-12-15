@@ -267,6 +267,9 @@ import Foundation
             fatal("Output stream is missing")
         }
         
+        // Check if we are already writing to the stream
+        assert(outputStream.streamStatus != .writing, "Error: Trying to write into output stream, but stream is already writing. Threading issue?")
+        
         // Check if the stream is errored
         guard outputStream.streamStatus != .error else {
             self.close()
