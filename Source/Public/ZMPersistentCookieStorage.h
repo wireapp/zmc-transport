@@ -29,6 +29,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 + (instancetype)storageForServerName:(NSString *)serverName userIdentifier:(NSUUID *)userIdentifier;
 + (void)deleteAllKeychainItems;
++ (void)setDoNotPersistToKeychain:(BOOL)disabled;
 
 - (void)deleteKeychainItems;
 
