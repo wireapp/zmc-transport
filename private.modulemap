@@ -1,0 +1,6 @@
+explicit module WireTransport.Private {
+
+    header "ZMPersistentCookieStorage+Private.h"
+
+    export *
+}
