@@ -29,7 +29,6 @@
 
 static NSString * const LegacyAccountName = @"User";
 static NSString* ZMLogTag ZM_UNUSED = ZMT_LOG_TAG_NETWORK;
-static BOOL KeychainDisabled = NO;
 static NSMutableDictionary *NonPersistedPassword;
 static NSHTTPCookieAcceptPolicy cookiesPolicy = NSHTTPCookieAcceptPolicyAlways;
 
@@ -90,11 +89,6 @@ static dispatch_queue_t isolationQueue()
 
 #pragma mark - Public API
 
-+ (void)setDoNotPersistToKeychain:(BOOL)disabled;
-{
-    KeychainDisabled = disabled;
-}
-
 - (NSData *)authenticationCookieData;
 {
     NSData *result = nil;
@@ -136,10 +130,6 @@ static dispatch_queue_t isolationQueue()
     dispatch_sync(isolationQueue(), ^{
         NonPersistedPassword[self.cookieKey] = nil;
 
-        if (KeychainDisabled) {
-            return;
-        }
-
         [ZMKeychain deleteAllKeychainItemsWithAccountName:self.accountName];
     });
 }
@@ -148,10 +138,6 @@ static dispatch_queue_t isolationQueue()
 {
     dispatch_sync(isolationQueue(), ^{
         NonPersistedPassword = nil;
-
-        if (KeychainDisabled) {
-            return;
-        }
 
         [ZMKeychain deleteAllKeychainItems];
     });
@@ -171,11 +157,6 @@ static dispatch_queue_t isolationQueue()
         NSData *password = NonPersistedPassword[self.cookieKey];
         BOOL const fetchFromKeychain = (password == nil);
         *passwordP = (password == (id) [NSNull null]) ? nil : password;
-        
-        if (KeychainDisabled) {
-            success = YES;
-            return;
-        }
         
         if (fetchFromKeychain) {
             id result = nil;
@@ -223,10 +204,6 @@ static dispatch_queue_t isolationQueue()
         
         [self addNonPersistedPassword:password];
         
-        if (KeychainDisabled) {
-            success = YES;
-            return;
-        }
         success = [ZMKeychain setData:password forAccount:self.accountName];
     });
     return success;
@@ -241,11 +218,6 @@ static dispatch_queue_t isolationQueue()
                         (NonPersistedPassword[self.cookieKey] != [NSNull null]));
         if (hasItem) {
             NonPersistedPassword[self.cookieKey] = password ?: [NSNull null];
-        }
-        
-        if (KeychainDisabled) {
-            success = hasItem;
-            return;
         }
         
         success = [ZMKeychain setData:password forAccount:self.accountName];
@@ -270,10 +242,6 @@ static dispatch_queue_t isolationQueue()
     dispatch_sync(isolationQueue(), ^{
         
         [NonPersistedPassword removeObjectForKey:self.cookieKey];
-        
-        if (KeychainDisabled) {
-            return;
-        }
         
         [ZMKeychain deleteAllKeychainItemsWithAccountName:self.accountName];
     });

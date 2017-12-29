@@ -65,9 +65,6 @@
 
 - (void)setUp {
     [super setUp];
-#if TARGET_IPHONE_SIMULATOR
-    [ZMPersistentCookieStorage setDoNotPersistToKeychain:YES];
-#endif
     NSURL *baseURL = [NSURL URLWithString:@"https://www.example.com"];
 
     self.taskCount = 0;
@@ -112,6 +109,9 @@
     self.failureCount = 0;
     self.recordedResponse = nil;
     self.userIdentifier = nil;
+
+    [ZMPersistentCookieStorage deleteAllKeychainItems];
+
     [super tearDown];
 }
 
