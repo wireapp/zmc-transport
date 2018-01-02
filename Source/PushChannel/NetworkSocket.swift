@@ -91,7 +91,7 @@ import Foundation
             outputStream.close()
         }
         
-        assert(self.state == .stopped)
+        requireInternal(self.state == .stopped, "Socket is still running")
     }
     
     public func open() {
