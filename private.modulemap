@@ -1,4 +1,4 @@
-explicit module WireTransport.Private {
+explicit module WireTransport.Testing {
 
     header "ZMPersistentCookieStorage+Private.h"
 

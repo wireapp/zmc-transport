@@ -88,12 +88,14 @@ static dispatch_queue_t isolationQueue()
     return self;
 }
 
-#pragma mark - Public API
+#pragma mark - Private API for tests
 
 + (void)setDoNotPersistToKeychain:(BOOL)disabled;
 {
     KeychainDisabled = disabled;
 }
+
+#pragma mark - Public API
 
 - (NSData *)authenticationCookieData;
 {
