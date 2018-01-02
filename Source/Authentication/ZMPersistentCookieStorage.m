@@ -136,10 +136,6 @@ static dispatch_queue_t isolationQueue()
     dispatch_sync(isolationQueue(), ^{
         NonPersistedPassword[self.cookieKey] = nil;
 
-//        if (KeychainDisabled) {
-//            return;
-//        }
-
         [ZMKeychain deleteAllKeychainItemsWithAccountName:self.accountName];
     });
 }
