@@ -81,6 +81,16 @@ import Foundation
     }
     
     deinit {
+        if let inputStream = self.inputStream {
+            inputStream.delegate = nil
+            inputStream.close()
+        }
+        
+        if let outputStream = self.outputStream {
+            outputStream.delegate = nil
+            outputStream.close()
+        }
+        
         assert(self.state == .stopped)
     }
     
