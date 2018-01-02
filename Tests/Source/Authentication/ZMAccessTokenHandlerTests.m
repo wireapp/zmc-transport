@@ -24,7 +24,7 @@
 
 #import "ZMAccessTokenHandler.h"
 #import "ZMPersistentCookieStorage.h"
-#import "ZMPersistentCookieStorage+Private.h"
+@import WireTransport.Testing;
 #import "ZMAccessToken.h"
 #import "ZMURLSession.h"
 #import "NSError+ZMTransportSession.h"
