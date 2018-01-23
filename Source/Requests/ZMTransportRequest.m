@@ -457,7 +457,7 @@ typedef NS_ENUM(NSUInteger, ZMTransportRequestSessionType) {
     {
         for (NSString *uti in CFBridgingRelease(CGImageSourceCopyTypeIdentifiers())) {
             NSString *mime = CFBridgingRelease(UTTypeCopyPreferredTagWithClass((__bridge CFStringRef) uti, kUTTagClassMIMEType));
-            if ((mime == nil) || [mime hasPrefix:@"image/x-"] || [mime hasPrefix:@"application/"]) {
+            if ((mime == nil) || [mime hasPrefix:@"image/x-"] || [mime hasPrefix:@"image/svg+xml"] || [mime hasPrefix:@"application/"]) {
                 continue;
             }
             [types addObject:mime];
