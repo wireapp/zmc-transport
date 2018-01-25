@@ -34,14 +34,10 @@
  
   ---
  
- Instructions for exporting a certificate in ascii PEM format:
+ To export a certificate in ascii PEM format, run:
  
- 1. Go to wire.com in Safari
- 2. Click on the padlock and click show certificate
- 3. Select the certificate in the chain you want to export
- 4. Drag the big certificate icon to into finder (This will create a *.wire.com.cer file)
- 5. Run: openssl x509 -inform der -in \*.wire.com.cer -out wire.pem
- 6. You can now copy & paste the base64 string
+ openssl s_client -connect wire.com:443 -showcerts
+ 
  */
 - (NSArray *)productionCertificateChain
 {
