@@ -298,6 +298,7 @@ static NSInteger const DefaultMaximumRequests = 6;
     self.tornDown = YES;
     
     self.reachabilityObserverToken = nil;
+    [self.reachability tearDown];
     [self.transportPushChannel closeAndRemoveConsumer];
     [self.workGroup enter];
     [self.workQueue addOperationWithBlock:^{
