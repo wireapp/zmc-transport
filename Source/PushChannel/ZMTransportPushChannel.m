@@ -209,10 +209,11 @@ ZM_EMPTY_ASSERTING_INIT();
     }
     
     if (channel == self.pushChannel) {
-        if([channel isOpen]) {
-            [channel close];
+        if([self.pushChannel isOpen]) {
+            [self.pushChannel close];
+        } else {
+            self.pushChannel = nil;
         }
-        self.pushChannel = nil;
     }
 }
 
