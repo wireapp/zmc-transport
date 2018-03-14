@@ -209,6 +209,9 @@ ZM_EMPTY_ASSERTING_INIT();
     }
     
     if (channel == self.pushChannel) {
+        if([channel isOpen]) {
+            [channel close];
+        }
         self.pushChannel = nil;
     }
 }
