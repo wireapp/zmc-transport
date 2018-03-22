@@ -89,7 +89,6 @@ static FakePushChannelConnection *currentFakePushChannelConnection;
     self.fakeGroup = [[FakeGroupQueue alloc] init];
 
     self.scheduler = [OCMockObject niceMockForClass:ZMTransportRequestScheduler.class];
-//    [[self.scheduler expect] tearDown];
     [[[self.scheduler stub] andCall:@selector(schedulerPerformGroupedBlock:) onObject:self] performGroupedBlock:OCMOCK_ANY];
     [self verifyMockLater:self.scheduler];
     self.sut = (id) [[ZMTransportPushChannel alloc] initWithScheduler:self.scheduler userAgentString:self.userAgentString URL:self.pushChannelURL pushChannelClass:FakePushChannelConnection.class];
