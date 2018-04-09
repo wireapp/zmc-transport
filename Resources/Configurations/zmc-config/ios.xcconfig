@@ -16,7 +16,7 @@
 // along with this program. If not, see http://www.gnu.org/licenses/.
 // 
 
-
+#include "swift.xcconfig"
 
 
 //
@@ -25,17 +25,11 @@
 //
 
 
-
-
 // Architectures
 //
 SDKROOT = iphoneos
-ARCHS = armv7 arm64
-
-
-// Code Signing
-//
-CODE_SIGN_IDENTITY = iPhone Developer
+ARCHS[sdk=iphoneos*] = arm64 armv7
+VALID_ARCHS[sdk=iphoneos*] = arm64 armv7
 
 
 // Deployment
