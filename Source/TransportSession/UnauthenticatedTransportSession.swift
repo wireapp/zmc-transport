@@ -199,16 +199,7 @@ public extension ZMTransportResponse {
     private func extractCookieData() -> Data? {
         guard let response = rawResponse else { return nil }
         let cookies = HTTPCookie.cookies(withResponseHeaderFields: response.allHeaderFields as! [String : String], for: response.url!)
-        guard !cookies.isEmpty else { return nil }
-        let properties = cookies.compactMap(\.properties)
-        guard (properties.first?[.name] as? String) == CookieKey.zetaId.rawValue else { return nil }
-        let data = NSMutableData()
-        let archiver = NSKeyedArchiver(forWritingWith: data)
-        archiver.requiresSecureCoding = true
-        archiver.encode(properties, forKey: CookieKey.properties.rawValue)
-        archiver.finishEncoding()
-        let key = UserDefaults.cookiesKey()
-        return data.zmEncryptPrefixingIV(withKey: key).base64EncodedData()
+        return HTTPCookie.extractData(from: cookies)
     }
 
     private func extractUserIdentifier() -> UUID? {
@@ -233,10 +224,13 @@ extension HTTPCookie {
 
     public static func extractCookieData(from cookieString: String, url: URL) -> Data? {
         let cookies = HTTPCookie.cookies(from: cookieString, for: url)
+        return extractData(from: cookies)
+    }
+    
+    fileprivate static func extractData(from cookies: [HTTPCookie]) -> Data? {
+        guard !cookies.isEmpty else { return nil }
         let properties = cookies.compactMap(\.properties)
-
-        guard !properties.isEmpty else { return nil }
-        guard (properties.first?[.name] as? String) == CookieKey.zetaId.rawValue else { return nil }
+        guard let name = properties.first?[.name] as? String, name == CookieKey.zetaId.rawValue else { return nil }
         
         let data = NSMutableData()
         let archiver = NSKeyedArchiver(forWritingWith: data)
