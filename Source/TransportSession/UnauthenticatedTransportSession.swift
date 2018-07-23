@@ -183,6 +183,10 @@ private enum CookieKey: String {
     case properties
 }
 
+private enum HeaderKey: String {
+    case cookie = "Set-Cookie"
+}
+
 private enum UserKey: String {
     case user, id
 }
@@ -196,7 +200,7 @@ public extension ZMTransportResponse {
         guard let response = rawResponse else { return nil }
         let cookies = HTTPCookie.cookies(withResponseHeaderFields: response.allHeaderFields as! [String : String], for: response.url!)
         guard !cookies.isEmpty else { return nil }
-        let properties = cookies.compactMap { $0.properties }
+        let properties = cookies.compactMap(\.properties)
         guard (properties.first?[.name] as? String) == CookieKey.zetaId.rawValue else { return nil }
         let data = NSMutableData()
         let archiver = NSKeyedArchiver(forWritingWith: data)
@@ -221,23 +225,23 @@ public extension ZMTransportResponse {
 }
 
 extension HTTPCookie {
+    
+    static func cookies(from string: String, for url: URL) -> [HTTPCookie] {
+        let headers = [HeaderKey.cookie.rawValue: string]
+        return HTTPCookie.cookies(withResponseHeaderFields: headers, for: url)
+    }
 
     public static func extractCookieData(from cookieString: String, url: URL) -> Data? {
-        let responseHeaders = [
-            "Set-Cookie": cookieString
-        ]
+        let cookies = HTTPCookie.cookies(from: cookieString, for: url)
+        let properties = cookies.compactMap(\.properties)
 
-        let cookies = HTTPCookie.cookies(withResponseHeaderFields: responseHeaders, for: url)
-        let properties = cookies.compactMap { $0.properties }
-
-        guard !properties.isEmpty else {
-            return nil
-        }
-
+        guard !properties.isEmpty else { return nil }
+        guard (properties.first?[.name] as? String) == CookieKey.zetaId.rawValue else { return nil }
+        
         let data = NSMutableData()
         let archiver = NSKeyedArchiver(forWritingWith: data)
         archiver.requiresSecureCoding = true
-        archiver.encode(properties, forKey: "properties")
+        archiver.encode(properties, forKey: CookieKey.properties.rawValue)
         archiver.finishEncoding()
         let key = UserDefaults.cookiesKey()
         return data.zmEncryptPrefixingIV(withKey: key).base64EncodedData()
