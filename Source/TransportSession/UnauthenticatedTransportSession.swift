@@ -219,3 +219,28 @@ public extension ZMTransportResponse {
     }
 
 }
+
+extension HTTPCookie {
+
+    public static func extractCookieData(from cookieString: String, url: URL) -> Data? {
+        let responseHeaders = [
+            "Set-Cookie": cookieString
+        ]
+
+        let cookies = HTTPCookie.cookies(withResponseHeaderFields: responseHeaders, for: url)
+        let properties = cookies.compactMap { $0.properties }
+
+        guard !properties.isEmpty else {
+            return nil
+        }
+
+        let data = NSMutableData()
+        let archiver = NSKeyedArchiver(forWritingWith: data)
+        archiver.requiresSecureCoding = true
+        archiver.encode(properties, forKey: "properties")
+        archiver.finishEncoding()
+        let key = UserDefaults.cookiesKey()
+        return data.zmEncryptPrefixingIV(withKey: key).base64EncodedData()
+    }
+
+}
