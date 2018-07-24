@@ -438,7 +438,7 @@ totalBytesExpectedToSend:(int64_t)totalBytesExpectedToSend
     NOT_USED(session);
     NOT_USED(task);
     if (nil != metrics.transactionMetrics.firstObject) {
-        ZMLogError(@"Reused connection: %d", metrics.transactionMetrics.firstObject.reusedConnection);
+        ZMLogInfo(@"Reused connection: %d", metrics.transactionMetrics.firstObject.reusedConnection);
     }
 }
 
