@@ -754,9 +754,8 @@ static XCTestCase *currentTestCase;
     NSURL *url = [NSURL URLWithString:@"https://test1.example.com"];
     ZMURLSession *foregroundSession = [OCMockObject niceMockForClass:ZMURLSession.class];
     ZMURLSession *backgroundSession = [OCMockObject niceMockForClass:ZMURLSession.class];
-    ZMURLSession *voipSession = [OCMockObject niceMockForClass:ZMURLSession.class];
 
-    ZMURLSessionSwitch *urlSwitch = [[ZMURLSessionSwitch alloc] initWithForegroundSession:foregroundSession backgroundSession:backgroundSession voipSession:voipSession];
+    ZMURLSessionSwitch *urlSwitch = [[ZMURLSessionSwitch alloc] initWithForegroundSession:foregroundSession backgroundSession:backgroundSession];
     ZMTransportSession *sut = [[ZMTransportSession alloc]
                                initWithURLSessionSwitch:urlSwitch
                                requestScheduler:(id) self.scheduler
@@ -793,9 +792,8 @@ static XCTestCase *currentTestCase;
     NSURL *url = [NSURL URLWithString:@"https://test1.example.com"];
     ZMURLSession *foregroundSession = [OCMockObject niceMockForClass:ZMURLSession.class];
     ZMURLSession *backgroundSession = [OCMockObject niceMockForClass:ZMURLSession.class];
-    ZMURLSession *voipSession = [OCMockObject niceMockForClass:ZMURLSession.class];
 
-    ZMURLSessionSwitch *urlSwitch = [[ZMURLSessionSwitch alloc] initWithForegroundSession:foregroundSession backgroundSession:backgroundSession voipSession:voipSession];
+    ZMURLSessionSwitch *urlSwitch = [[ZMURLSessionSwitch alloc] initWithForegroundSession:foregroundSession backgroundSession:backgroundSession];
     ZMTransportSession *sut = [[ZMTransportSession alloc]
                                initWithURLSessionSwitch:urlSwitch
                                requestScheduler:(id) self.scheduler

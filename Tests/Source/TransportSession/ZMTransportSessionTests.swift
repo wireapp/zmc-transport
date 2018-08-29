@@ -90,13 +90,10 @@ class ZMTransportSessionTests_Initialization: ZMTBaseTest {
     func testThatItConfiguresSessionsCorrectly() {
         // given
         let userID = userIdentifier.transportString()
-        let voipSession = sut.urlSessionSwitch.voipSession
         let foregroundSession = sut.urlSessionSwitch.foregroundSession
         let backgroundSession = sut.urlSessionSwitch.backgroundSession
 
         // then
-        check(identifier: voipSession.identifier, contains: [ZMURLSessionVoipIdentifier, userID])
-        
         check(identifier: foregroundSession.identifier, contains: [ZMURLSessionForegroundIdentifier, userID])
         
         check(identifier: backgroundSession.identifier, contains: [ZMURLSessionBackgroundIdentifier, userID])
@@ -104,7 +101,7 @@ class ZMTransportSessionTests_Initialization: ZMTBaseTest {
         check(identifier: backgroundConfiguration.identifier, contains: [userID])
         XCTAssertEqual(backgroundConfiguration.sharedContainerIdentifier, containerIdentifier)
         
-        XCTAssertEqual(Set<String>([voipSession.identifier, foregroundSession.identifier, backgroundSession.identifier]).count, 3, "All identifiers should be unique")
+        XCTAssertEqual(Set<String>([foregroundSession.identifier, backgroundSession.identifier]).count, 2, "All identifiers should be unique")
     }
     
 }

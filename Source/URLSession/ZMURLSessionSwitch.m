@@ -31,11 +31,9 @@
 @property (nonatomic) ZMURLSession *currentSession;
 @property (nonatomic) ZMURLSession *foregroundSession;
 @property (nonatomic) ZMURLSession *backgroundSession;
-@property (nonatomic) ZMURLSession *voipSession;
 @property (nonatomic) Class sessionCancelTimerClass;
 
 @property (nonatomic) ZMSessionCancelTimer *cancelForegroundTimer;
-@property (nonatomic) ZMSessionCancelTimer *cancelVoipTimer;
 @end
 
 
@@ -44,22 +42,20 @@
 
 ZM_EMPTY_ASSERTING_INIT();
 
-- (instancetype)initWithForegroundSession:(ZMURLSession *)foregroundSession backgroundSession:(ZMURLSession *)backgroundSession voipSession:(ZMURLSession *)voipSession;
+- (instancetype)initWithForegroundSession:(ZMURLSession *)foregroundSession backgroundSession:(ZMURLSession *)backgroundSession;
 {
-    return [self initWithForegroundSession:foregroundSession backgroundSession:backgroundSession voipSession:voipSession sessionCancelTimerClass:nil];
+    return [self initWithForegroundSession:foregroundSession backgroundSession:backgroundSession sessionCancelTimerClass:nil];
 }
 
-- (instancetype)initWithForegroundSession:(ZMURLSession *)foregroundSession backgroundSession:(ZMURLSession *)backgroundSession voipSession:(ZMURLSession *)voipSession sessionCancelTimerClass:(Class)sessionCancelTimerClass;
+- (instancetype)initWithForegroundSession:(ZMURLSession *)foregroundSession backgroundSession:(ZMURLSession *)backgroundSession sessionCancelTimerClass:(Class)sessionCancelTimerClass;
 {
     Require(foregroundSession != nil);
     Require(backgroundSession != nil);
-    Require(voipSession != nil);
-    
+
     self = [super init];
     if (self) {
         self.foregroundSession = foregroundSession;
         self.backgroundSession = backgroundSession;
-        self.voipSession = voipSession;
         self.currentSession = self.foregroundSession;
         self.sessionCancelTimerClass = sessionCancelTimerClass ?: ZMSessionCancelTimer.class;
     }
@@ -76,8 +72,6 @@ ZM_EMPTY_ASSERTING_INIT();
     self.tornDown = YES;
     [self.foregroundSession tearDown];
     [self.backgroundSession tearDown];
-    [self.voipSession tearDown];
-    [self.cancelVoipTimer cancel];
     [self.cancelForegroundTimer cancel];
 }
 
@@ -92,8 +86,6 @@ ZM_EMPTY_ASSERTING_INIT();
 
     [self.cancelForegroundTimer cancel];
     self.cancelForegroundTimer = nil;
-    [self.cancelVoipTimer cancel];
-    self.cancelVoipTimer = nil;
 }
 
 - (void)switchToBackgroundSession;
@@ -106,15 +98,11 @@ ZM_EMPTY_ASSERTING_INIT();
     [self.cancelForegroundTimer cancel];
     self.cancelForegroundTimer = [[self.sessionCancelTimerClass alloc] initWithURLSession:self.foregroundSession timeout:ZMSessionCancelTimerDefaultTimeout];
     [self.cancelForegroundTimer start];
-    
-    [self.cancelVoipTimer cancel];
-    self.cancelVoipTimer = [[self.sessionCancelTimerClass alloc] initWithURLSession:self.voipSession timeout:ZMSessionCancelTimerDefaultTimeout];
-    [self.cancelVoipTimer start];
 }
 
 - (NSArray <ZMURLSession *>*)allSessions
 {
-    return @[self.foregroundSession, self.backgroundSession, self.voipSession];
+    return @[self.foregroundSession, self.backgroundSession];
 }
 
 @end
