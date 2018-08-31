@@ -47,6 +47,7 @@ static BOOL hasUTJSONSupport(void)
 typedef NS_ENUM(NSUInteger, ZMTransportRequestSessionType) {
     ZMTransportRequestSessionTypeUseDefaultSession,
     ZMTransportRequestSessionTypeUseBackgroundSessionOnly,
+    ZMTransportRequestSessionTypeUseVoipSessionOnly,
 };
 
 @interface ZMCompletionHandler ()
@@ -588,9 +589,20 @@ typedef NS_ENUM(NSUInteger, ZMTransportRequestSessionType) {
     return self.transportSessionType == ZMTransportRequestSessionTypeUseBackgroundSessionOnly;
 }
 
+- (BOOL)shouldUseVoipSession
+{
+    return self.transportSessionType == ZMTransportRequestSessionTypeUseVoipSessionOnly;
+}
+
+
 - (void)forceToBackgroundSession
 {
     self.transportSessionType = ZMTransportRequestSessionTypeUseBackgroundSessionOnly;
+}
+
+- (void)forceToVoipSession;
+{
+    self.transportSessionType = ZMTransportRequestSessionTypeUseVoipSessionOnly;
 }
 
 - (NSString *)completionHandlerDescription;

@@ -35,11 +35,12 @@ NS_ASSUME_NONNULL_BEGIN
 /// The foreground session
 @property (nonatomic, readonly) ZMURLSession *foregroundSession;
 @property (nonatomic, readonly) ZMURLSession *backgroundSession;
+@property (nonatomic, readonly) ZMURLSession *voipSession;
 
 @property (nonatomic, readonly) NSArray <ZMURLSession *> *allSessions;
 
-- (instancetype)initWithForegroundSession:(ZMURLSession *)foregroundSession backgroundSession:(ZMURLSession *)backgroundSession;
-- (instancetype)initWithForegroundSession:(ZMURLSession *)foregroundSession backgroundSession:(ZMURLSession *)backgroundSession sessionCancelTimerClass:(nullable Class)sessionCancelTimerClass NS_DESIGNATED_INITIALIZER;
+- (instancetype)initWithForegroundSession:(ZMURLSession *)foregroundSession backgroundSession:(ZMURLSession *)backgroundSession voipSession:(ZMURLSession *)voipSession;
+- (instancetype)initWithForegroundSession:(ZMURLSession *)foregroundSession backgroundSession:(ZMURLSession *)backgroundSession voipSession:(ZMURLSession *)voipSession sessionCancelTimerClass:(nullable Class)sessionCancelTimerClass NS_DESIGNATED_INITIALIZER;
 
 - (void)tearDown;
 

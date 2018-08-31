@@ -83,6 +83,7 @@ static NSHashTable *sessionCancelTimers;
 @property (nonatomic) ZMURLSessionSwitch *sut;
 @property (nonatomic) ZMURLSession *foregroundSession;
 @property (nonatomic) ZMURLSession *backgroundSession;
+@property (nonatomic) ZMURLSession *voipSession;
 
 @end
 
@@ -98,12 +99,15 @@ static NSHashTable *sessionCancelTimers;
     NSOperationQueue *q = [NSOperationQueue zm_serialQueueWithName:self.name];
     ZMURLSession *sessionA = [ZMURLSession sessionWithConfiguration:[NSURLSessionConfiguration defaultSessionConfiguration] delegate:(id) self delegateQueue:q identifier:@"session-a"];
     ZMURLSession *sessionB = [ZMURLSession sessionWithConfiguration:[NSURLSessionConfiguration defaultSessionConfiguration] delegate:(id) self delegateQueue:q identifier:@"session-b"];
+    ZMURLSession *sessionC = [ZMURLSession sessionWithConfiguration:[NSURLSessionConfiguration defaultSessionConfiguration] delegate:(id) self delegateQueue:q identifier: @"session-c"];
 
     self.foregroundSession = sessionA;
     self.backgroundSession = sessionB;
+    self.voipSession = sessionC;
 
     self.sut = [[ZMURLSessionSwitch alloc] initWithForegroundSession:self.foregroundSession
                                                    backgroundSession:self.backgroundSession
+                                                      voipSession:self.voipSession
                                              sessionCancelTimerClass:FakeSessionCancelTimer.class];
 }
 
@@ -112,8 +116,6 @@ static NSHashTable *sessionCancelTimers;
     sessionCancelTimers = nil;
     [self.sut tearDown];
     self.sut = nil;
-    self.foregroundSession = nil;
-    self.backgroundSession = nil;
     [super tearDown];
 }
 
@@ -153,7 +155,7 @@ static NSHashTable *sessionCancelTimers;
 {
     // when
     NSArray *allSessions = self.sut.allSessions;
-    NSArray *expectedSessions = @[self.sut.foregroundSession, self.sut.backgroundSession];
+    NSArray *expectedSessions = @[self.sut.foregroundSession, self.sut.backgroundSession, self.voipSession];
     
     // then
     XCTAssertEqualObjects(allSessions, expectedSessions);
@@ -166,10 +168,11 @@ static NSHashTable *sessionCancelTimers;
     
     // then
     NSArray *timers = sessionCancelTimers.allObjects;
-    XCTAssertEqual(timers.count, 1u);
+    XCTAssertEqual(timers.count, 2u);
     NSArray <ZMURLSession *>*sessions = [timers mapWithBlock:^id(FakeSessionCancelTimer *obj) {
         return obj.session;
     }];
+    XCTAssertTrue([sessions containsObject: self.voipSession]);
     XCTAssertTrue([sessions containsObject: self.foregroundSession]);
 
     XCTAssertEqual([timers.firstObject timeout], ZMSessionCancelTimerDefaultTimeout);
