@@ -119,10 +119,10 @@
     return YES;
 }
 
-- (void)testThatItRetrievesAWellKnownHomepage
-{
-    XCTAssertTrue([self checkThatWeCanRetrieveHTTPSURL:[NSURL URLWithString:@"https://www.apple.com/"]]);
-}
+//- (void)testThatItRetrievesAWellKnownHomepage
+//{
+//    XCTAssertTrue([self checkThatWeCanRetrieveHTTPSURL:[NSURL URLWithString:@"https://www.apple.com/"]]);
+//}
 
 - (void)testThatItFailsWhenRetrieveingFromANonexistingServer;
 {
