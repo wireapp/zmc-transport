@@ -20,9 +20,13 @@ import Foundation
 
 // Swift migration notice: this protocol conforms to NSObjectProtocol only to be usable from Obj-C.
 @objc public protocol BackendEnvironmentProvider: NSObjectProtocol {
+    /// Backend base URL.
     var backendURL: URL { get }
+    /// URL for SSL WebSocket connection.
     var backendWSURL: URL { get }
+    /// URL for version blacklist file.
     var blackListURL: URL { get }
+    /// Frontent URL, used to open the necessary web resources, like password reset.
     var frontendURL: URL { get }
 }
 
