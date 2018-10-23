@@ -202,6 +202,13 @@ static CFStringRef copyDescription(const void *info)
             isMobileConnection = YES;
         }
         globalReachable &= serverReachable;
+
+        BOOL isReachable = [self isReachableWithFlag:flags];
+
+        ZMLogInfo(@"isReachable: %d", isReachable);
+
+        globalReachable &= isReachable;
+
         ZMLogInfo(@"FINAL REACHABILITY: %d", globalReachable);
     }
     
