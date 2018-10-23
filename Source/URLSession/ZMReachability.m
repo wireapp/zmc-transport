@@ -186,9 +186,6 @@ static CFStringRef copyDescription(const void *info)
                                                                kSCNetworkReachabilityFlagsIsWWAN |
                                                                0);
 
-    SCNetworkReachabilityFlags flagsofInterestClone = flagsofInterest;
-    flagsofInterestClone = flagsofInterestClone;
-    
     BOOL globalReachable = YES;
     BOOL isMobileConnection = NO;
     
