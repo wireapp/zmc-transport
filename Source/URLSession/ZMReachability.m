@@ -183,7 +183,6 @@ static CFStringRef copyDescription(const void *info)
         NSString *name = [self.referenceToName objectForKey:obj];
         NSNumber *flagsNumber = [self.referenceToFlag objectForKey:obj];
         SCNetworkReachabilityFlags flags = (SCNetworkReachabilityFlags) [flagsNumber unsignedIntValue];
-        // When WWAN is enable but the user disable the mobile data for Wire app in Setting, flags contains kSCNetworkReachabilityFlagsIsWWAN but not kSCNetworkReachabilityFlagsReachable. serverReachable is true. Added check for kSCNetworkReachabilityFlagsReachable at the end for final reachability calculation.
         BOOL serverReachable = [self isReachableWithFlag:flags];
 
         if(!serverReachable) {
