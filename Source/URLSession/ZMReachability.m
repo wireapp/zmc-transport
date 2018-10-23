@@ -175,6 +175,8 @@ static CFStringRef copyDescription(const void *info)
 {
     ZMLogDebug(@"UpdateStatus: %@", self);
     // This method is called on the workQueue.
+
+    // binary value is 0b00000000000001110000000000101110
     static SCNetworkReachabilityFlags const flagsofInterest = (kSCNetworkReachabilityFlagsReachable |
                                                                kSCNetworkReachabilityFlagsConnectionRequired |
                                                                kSCNetworkReachabilityFlagsConnectionOnTraffic |
@@ -183,6 +185,9 @@ static CFStringRef copyDescription(const void *info)
                                                                kSCNetworkReachabilityFlagsIsDirect |
                                                                kSCNetworkReachabilityFlagsIsWWAN |
                                                                0);
+
+    SCNetworkReachabilityFlags flagsofInterestClone = flagsofInterest;
+    flagsofInterestClone = flagsofInterestClone;
     
     BOOL globalReachable = YES;
     BOOL isMobileConnection = NO;
@@ -191,6 +196,7 @@ static CFStringRef copyDescription(const void *info)
         NSString *name = [self.referenceToName objectForKey:obj];
         NSNumber *flagsNumber = [self.referenceToFlag objectForKey:obj];
         SCNetworkReachabilityFlags flags = (SCNetworkReachabilityFlags) [flagsNumber unsignedIntValue];
+        // When WWAN is enable but the user disable the mobile data for Wire app in Setting, flags contains kSCNetworkReachabilityFlagsIsWWAN but not kSCNetworkReachabilityFlagsReachable. serverReachable is true. Added check for kSCNetworkReachabilityFlagsReachable at the end for final reachability calculation.
         BOOL serverReachable = (0 != (flags & flagsofInterest));
         if(!serverReachable) {
             ZMLogWarn(@"REACHABILITY: %@ NOT reachable!", name);
