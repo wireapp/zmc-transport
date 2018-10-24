@@ -176,6 +176,14 @@ static CFStringRef copyDescription(const void *info)
     ZMLogDebug(@"UpdateStatus: %@", self);
     // This method is called on the workQueue.
 
+    static SCNetworkReachabilityFlags const flagsofInterest = (kSCNetworkReachabilityFlagsReachable |
+                                                               kSCNetworkReachabilityFlagsConnectionRequired |
+                                                               kSCNetworkReachabilityFlagsConnectionOnTraffic |
+                                                               kSCNetworkReachabilityFlagsConnectionOnDemand |
+                                                               kSCNetworkReachabilityFlagsIsLocalAddress |
+                                                               kSCNetworkReachabilityFlagsIsDirect |
+                                                               0);
+
     BOOL globalReachable = YES;
     BOOL isMobileConnection = NO;
     
@@ -183,7 +191,8 @@ static CFStringRef copyDescription(const void *info)
         NSString *name = [self.referenceToName objectForKey:obj];
         NSNumber *flagsNumber = [self.referenceToFlag objectForKey:obj];
         SCNetworkReachabilityFlags flags = (SCNetworkReachabilityFlags) [flagsNumber unsignedIntValue];
-        BOOL serverReachable = [self isReachableWithFlag:flags];
+
+        BOOL serverReachable = (0 != (flags & flagsofInterest));
 
         if(!serverReachable) {
             ZMLogWarn(@"REACHABILITY: %@ NOT reachable!", name);
