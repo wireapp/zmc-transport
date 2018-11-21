@@ -25,15 +25,36 @@ import UIKit
 @objc public class BackgroundActivity: NSObject {
 
     /// The name of the task, used for debugging purposes.
-    public let name: String
+    @objc public let name: String
 
     /// The block of code called from the main thead when the background timer is about to expire.
-    public var expirationHandler: (() -> Void)?
-
+    @objc public var expirationHandler: (() -> Void)?
 
     init(name: String, expirationHandler: (() -> Void)?) {
         self.name = name
         self.expirationHandler = expirationHandler
+    }
+
+    // MARK: - Execution
+
+    /**
+     * Executes the task on the specified queue.
+     *
+     * You can take advantage of this method to make sure you don't execute code when background execution
+     * is no longer available, with nil-coleascing.
+     *
+     * For example, when you request:
+     *
+     * ~~~swift
+     * let task = BackgroundActivityFactory.shared.startBackgroundActivity(withName: "Test")
+     * task?.execute(on: .main) { print("Hello background world") }
+     * ~~~
+     *
+     * If the app is being suspended, the code will not be executed at all.
+     */
+
+    @objc public func execute(on queue: ZMSGroupQueue, block: @escaping () -> Void) {
+        queue.performGroupedBlock(block)
     }
 
 }

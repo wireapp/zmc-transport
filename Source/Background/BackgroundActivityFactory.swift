@@ -19,13 +19,6 @@
 import UIKit
 import WireUtilities
 
-@objc public protocol BackgroundActivityManager: NSObjectProtocol {
-    func beginBackgroundTask(withName name: String?, expirationHandler: (() -> Void)?) -> UIBackgroundTaskIdentifier
-    func endBackgroundTask(_ task: UIBackgroundTaskIdentifier)
-}
-
-extension UIApplication: BackgroundActivityManager {}
-
 /**
  * Manages the creation and lifecycle of background tasks.
  *
@@ -46,24 +39,28 @@ extension UIApplication: BackgroundActivityManager {}
  */
 
 @objcMembers open class BackgroundActivityFactory: NSObject {
-    
-    private static let _instance : BackgroundActivityFactory = BackgroundActivityFactory()
-    
-    open weak var activityManager : BackgroundActivityManager? = nil
-    open weak var mainGroupQueue : ZMSGroupQueue? = nil
 
-    open var isActive: Bool {
+    /// Get the shared instance.
+    @objc(sharedFactory)
+    public static let shared: BackgroundActivityFactory = BackgroundActivityFactory()
+
+    // MARK: - Configuration
+
+    /// The activity manager to use to.
+    public weak var activityManager: BackgroundActivityManager? = nil
+
+    /// The queue to access the main thread.
+    public weak var mainGroupQueue: ZMSGroupQueue? = nil
+
+    // MARK: - State
+
+    /// Whether any tasks are active.
+    public var isActive: Bool {
         return currentBackgroundTask != nil && self.currentBackgroundTask != UIBackgroundTaskInvalid
     }
 
-    private var currentBackgroundTask: UIBackgroundTaskIdentifier?
-    private var activities: Set<BackgroundActivity> = []
-
-    /// Get the shared instance.
-    @objc open class func sharedInstance() -> BackgroundActivityFactory
-    {
-        return _instance
-    }
+    private(set) var currentBackgroundTask: UIBackgroundTaskIdentifier?
+    private(set) var activities: Set<BackgroundActivity> = []
 
     // MARK: - Starting Background Activities
 
@@ -74,8 +71,8 @@ extension UIApplication: BackgroundActivityManager {}
      * - warning: If this method returns `nil`, you should **not** perform the work yu are planning to do.
      */
 
-    @objc open func backgroundActivity(withName name: String) -> BackgroundActivity?
-    {
+    @objc(startBackgroundActivityWithName:)
+    public func startBackgroundActivity(withName name: String) -> BackgroundActivity? {
         return startActivityIfPossible(name, nil)
     }
 
@@ -86,8 +83,8 @@ extension UIApplication: BackgroundActivityManager {}
      * - warning: If this method returns `nil`, you should **not** perform the work yu are planning to do.
      */
 
-    @objc open func backgroundActivity(withName name: String, expirationHandler: @escaping (() -> Void)) -> BackgroundActivity?
-    {
+    @objc(startBackgroundActivityWithName:expirationHandler:)
+    public func startBackgroundActivity(withName name: String, expirationHandler: @escaping (() -> Void)) -> BackgroundActivity? {
         return startActivityIfPossible(name, expirationHandler)
     }
 
@@ -97,7 +94,7 @@ extension UIApplication: BackgroundActivityManager {}
      * Call this method when the app resumes from foreground.
      */
 
-    @objc open func resume() {
+    @objc public func resume() {
         mainGroupQueue?.performGroupedBlock {
             if self.currentBackgroundTask == UIBackgroundTaskInvalid {
                 self.currentBackgroundTask = nil
@@ -105,7 +102,12 @@ extension UIApplication: BackgroundActivityManager {}
         }
     }
 
-    @objc open func endActivity(_ activity: BackgroundActivity) {
+    /**
+     * Ends the activity and the active background task if possible.
+     * - parameter activity: The activity to end.
+     */
+
+    @objc public func endActivity(_ activity: BackgroundActivity) {
         mainGroupQueue?.performGroupedBlock {
             guard self.isActive else {
                 return
@@ -113,7 +115,7 @@ extension UIApplication: BackgroundActivityManager {}
 
             self.activities.remove(activity)
 
-            if self.activities.count == 0 {
+            if self.activities.isEmpty {
                 self.finishBackgroundTask()
             }
         }
