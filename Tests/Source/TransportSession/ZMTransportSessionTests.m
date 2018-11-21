@@ -1864,7 +1864,7 @@ static XCTestCase *currentTestCase;
         configuration = NSURLSessionConfiguration.defaultSessionConfiguration;
     }
     
-    ZMURLSession *session = [ZMURLSession sessionWithConfiguration:configuration delegate:delegate delegateQueue:NSOperationQueue.mainQueue identifier:backgroundSession ? ZMURLSessionBackgroundIdentifier : @"default-session"];
+    ZMURLSession *session = [[ZMURLSession alloc] initWithConfiguration:configuration delegate:delegate delegateQueue:NSOperationQueue.mainQueue identifier:backgroundSession ? ZMURLSessionBackgroundIdentifier : @"default-session"];
     if (backgroundSession) {
         XCTAssertTrue(session.isBackgroundSession);
     }
@@ -2363,7 +2363,7 @@ static XCTestCase *currentTestCase;
     
     id mockDelegate = [OCMockObject niceMockForProtocol:@protocol(ZMURLSessionDelegate)];
     NSURLSessionConfiguration *configuration = [NSURLSessionConfiguration backgroundSessionConfigurationWithIdentifier:self.name];
-    ZMURLSession *session = [ZMURLSession sessionWithConfiguration:configuration delegate:mockDelegate delegateQueue:self.queue identifier:@"test-session"];
+    ZMURLSession *session = [[ZMURLSession alloc] initWithConfiguration:configuration delegate:mockDelegate delegateQueue:self.queue identifier:@"test-session"];
     XCTestExpectation *expectation = [self expectationWithDescription:@"It should call the completion handler on the main thread"];
     
     // when

@@ -38,7 +38,7 @@ import WireUtilities
  * 2. We end the active background task and block new activities from starting
  */
 
-@objcMembers open class BackgroundActivityFactory: NSObject {
+@objc public final class BackgroundActivityFactory: NSObject {
 
     /// Get the shared instance.
     @objc(sharedFactory)
@@ -47,20 +47,20 @@ import WireUtilities
     // MARK: - Configuration
 
     /// The activity manager to use to.
-    public weak var activityManager: BackgroundActivityManager? = nil
-
-    /// The queue to access the main thread.
-    public weak var mainGroupQueue: ZMSGroupQueue? = nil
+    @objc public weak var activityManager: BackgroundActivityManager? = nil
 
     // MARK: - State
 
     /// Whether any tasks are active.
-    public var isActive: Bool {
+    @objc public var isActive: Bool {
         return currentBackgroundTask != nil && self.currentBackgroundTask != UIBackgroundTaskInvalid
     }
 
-    private(set) var currentBackgroundTask: UIBackgroundTaskIdentifier?
-    private(set) var activities: Set<BackgroundActivity> = []
+    @objc var mainQueue: DispatchQueue = .main
+    private let isolationQueue = DispatchQueue(label: "BackgroundActivityFactory.IsolationQueue")
+
+    var currentBackgroundTask: UIBackgroundTaskIdentifier?
+    var activities: Set<BackgroundActivity> = []
 
     // MARK: - Starting Background Activities
 
@@ -95,9 +95,9 @@ import WireUtilities
      */
 
     @objc public func resume() {
-        mainGroupQueue?.performGroupedBlock {
-            if self.currentBackgroundTask == UIBackgroundTaskInvalid {
-                self.currentBackgroundTask = nil
+        isolationQueue.sync {
+            if currentBackgroundTask == UIBackgroundTaskInvalid {
+                currentBackgroundTask = nil
             }
         }
     }
@@ -108,15 +108,15 @@ import WireUtilities
      */
 
     @objc public func endBackgroundActivity(_ activity: BackgroundActivity) {
-        mainGroupQueue?.performGroupedBlock {
-            guard self.isActive else {
+        isolationQueue.sync {
+            guard isActive else {
                 return
             }
 
-            self.activities.remove(activity)
+            activities.remove(activity)
 
-            if self.activities.isEmpty {
-                self.finishBackgroundTask()
+            if activities.isEmpty {
+                finishBackgroundTask()
             }
         }
     }
@@ -125,31 +125,35 @@ import WireUtilities
 
     /// Starts the background activity of the system allows it.
     func startActivityIfPossible(_ name: String, _ expirationHandler: (() -> Void)?) -> BackgroundActivity? {
-        // Do not start new tasks if the background timer is running.
-        guard self.currentBackgroundTask != UIBackgroundTaskInvalid else { return nil }
-        guard let mainGroupQueue = mainGroupQueue, let activityManager = activityManager else { return nil }
+        return isolationQueue.sync {
+            // Do not start new tasks if the background timer is running.
+            guard currentBackgroundTask != UIBackgroundTaskInvalid else { return nil }
+            guard let activityManager = activityManager else { return nil }
 
-        let activity = BackgroundActivity(name: name, expirationHandler: expirationHandler)
+            // Try to create the task
+            let activity = BackgroundActivity(name: name, expirationHandler: expirationHandler)
 
-        mainGroupQueue.performGroupedBlock {
-            if self.currentBackgroundTask == nil {
-                self.currentBackgroundTask = activityManager.beginBackgroundTask(withName: "BackgroundActivityFactory", expirationHandler: self.handleExpiration)
+            if currentBackgroundTask == nil {
+                let task = activityManager.beginBackgroundTask(withName: "BackgroundActivityFactory", expirationHandler: handleExpiration)
+                guard task != UIBackgroundTaskInvalid else { return nil }
+                currentBackgroundTask = task
             }
 
-            self.activities.insert(activity)
+            activities.insert(activity)
+            return activity
         }
-
-        return activity
     }
 
     /// Called when the background timer is about to expire.
     func handleExpiration() {
-        mainGroupQueue?.performGroupedBlock {
-            self.activities.forEach { $0.expirationHandler?() }
-            self.activities.removeAll()
+        isolationQueue.sync {
+            activities.forEach { activity in
+                mainQueue.async { activity.expirationHandler?() }
+            }
+            activities.removeAll()
 
-            self.finishBackgroundTask()
-            self.currentBackgroundTask = UIBackgroundTaskInvalid
+            finishBackgroundTask()
+            currentBackgroundTask = UIBackgroundTaskInvalid
         }
     }
 
@@ -157,7 +161,8 @@ import WireUtilities
     func finishBackgroundTask() {
         if let currentBackgroundTask = self.currentBackgroundTask {
             self.activityManager?.endBackgroundTask(currentBackgroundTask)
+            self.currentBackgroundTask = nil
         }
     }
-    
+
 }

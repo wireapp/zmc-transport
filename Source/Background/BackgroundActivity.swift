@@ -38,9 +38,7 @@ import UIKit
     // MARK: - Execution
 
     /**
-     * Executes the task on the specified queue.
-     *
-     * - parameter queue: The queue on which the task should be executed.
+     * Executes the task.
      * - parameter block: The block to execute with extended lifetime.
      * - parameter activity: A reference to the current activity, so you can stop it before your block returns.
      *
@@ -50,7 +48,7 @@ import UIKit
      * For example, when you request:
      *
      * ~~~swift
-     * BackgroundActivityFactory.shared.startBackgroundActivity(withName: "Test")?.execute(on: .main) {
+     * BackgroundActivityFactory.shared.startBackgroundActivity(withName: "Test")?.execute {
      *     defer { BackgroundActivityFactory.shared.endBackgroundActivity($0) }
      *     // perform the long task
      *     print("Hello background world")
@@ -60,11 +58,9 @@ import UIKit
      * If the app is being suspended, the code will not be executed at all.
      */
 
-    @objc(executeBlockOnQueue:block:)
-    public func execute(on queue: ZMSGroupQueue, block: @escaping (_ activity: BackgroundActivity) -> Void) {
-        queue.performGroupedBlock {
-            block(self)
-        }
+    @objc(executeBlock:)
+    public func execute(block: @escaping (_ activity: BackgroundActivity) -> Void) {
+        block(self)
     }
 
 }

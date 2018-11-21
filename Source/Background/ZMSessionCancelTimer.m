@@ -23,19 +23,18 @@
 #import <WireTransport/WireTransport-Swift.h>
 
 #import "ZMSessionCancelTimer.h"
+#import "ZMSessionCancelTimer+Internal.h"
 #import "ZMURLSession.h"
-#import "ZMBackgroundActivity.h"
 #import "ZMTransportSession.h"
 
 const NSTimeInterval ZMSessionCancelTimerDefaultTimeout = 5;
 
-
 @interface ZMSessionCancelTimer () <ZMTimerClient>
 
 @property (nonatomic) ZMURLSession *session;
-@property (nonatomic) ZMTimer *timer;
 @property (nonatomic) NSTimeInterval timeout;
-@property (nonatomic) ZMBackgroundActivity *activity;
+@property (nonatomic, readwrite) ZMTimer *timer;
+@property (nonatomic, readwrite) BackgroundActivity *activity;
 
 @end
 
@@ -57,25 +56,42 @@ ZM_EMPTY_ASSERTING_INIT();
 
 - (void)start;
 {
-    self.activity = [[BackgroundActivityFactory sharedInstance] backgroundActivityWithName:NSStringFromClass(self.class)];
-    [self.timer fireAfterTimeInterval:self.timeout];
+    self.activity = [[BackgroundActivityFactory sharedFactory] startBackgroundActivityWithName:NSStringFromClass(self.class)];
+
+    __weak ZMSessionCancelTimer *weakSelf = self;
+    self.activity.expirationHandler = ^{
+        ZMSessionCancelTimer *strongSelf = weakSelf;
+        if (strongSelf) {
+            [strongSelf timerDidFire:strongSelf.timer];
+        }
+    };
+
+    if (self.activity) {
+        [self.timer fireAfterTimeInterval:self.timeout];
+    } else {
+        [self timerDidFire:self.timer];
+    }
 }
 
 - (void)cancel;
 {
     [self.timer cancel];
-    [self.activity endActivity];
+    if (self.activity) {
+        [[BackgroundActivityFactory sharedFactory] endBackgroundActivity:self.activity];
+    }
     self.activity = nil;
 }
 
 - (void)timerDidFire:(ZMTimer *)timer
 {
     NOT_USED(timer);
-    ZMBackgroundActivity *activity = self.activity;
+    BackgroundActivity *activity = self.activity;
     self.activity = nil;
     [self.session cancelAllTasksWithCompletionHandler:^{
         [ZMTransportSession notifyNewRequestsAvailable:self];
-        [activity endActivity];
+        if (activity) {
+            [[BackgroundActivityFactory sharedFactory] endBackgroundActivity:activity];
+        }
     }];
 }
 
