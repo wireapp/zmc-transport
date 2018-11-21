@@ -107,7 +107,7 @@ import WireUtilities
      * - parameter activity: The activity to end.
      */
 
-    @objc public func endActivity(_ activity: BackgroundActivity) {
+    @objc public func endBackgroundActivity(_ activity: BackgroundActivity) {
         mainGroupQueue?.performGroupedBlock {
             guard self.isActive else {
                 return
