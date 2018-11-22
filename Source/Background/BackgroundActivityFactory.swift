@@ -124,7 +124,7 @@ import WireUtilities
     // MARK: - Helpers
 
     /// Starts the background activity of the system allows it.
-    func startActivityIfPossible(_ name: String, _ expirationHandler: (() -> Void)?) -> BackgroundActivity? {
+    private func startActivityIfPossible(_ name: String, _ expirationHandler: (() -> Void)?) -> BackgroundActivity? {
         return isolationQueue.sync {
             // Do not start new tasks if the background timer is running.
             guard currentBackgroundTask != UIBackgroundTaskInvalid else { return nil }
@@ -145,7 +145,7 @@ import WireUtilities
     }
 
     /// Called when the background timer is about to expire.
-    func handleExpiration() {
+    private func handleExpiration() {
         isolationQueue.sync {
             activities.forEach { activity in
                 mainQueue.async { activity.expirationHandler?() }
@@ -158,7 +158,7 @@ import WireUtilities
     }
 
     /// Ends the current background task.
-    func finishBackgroundTask() {
+    private func finishBackgroundTask() {
         if let currentBackgroundTask = self.currentBackgroundTask {
             self.activityManager?.endBackgroundTask(currentBackgroundTask)
             self.currentBackgroundTask = nil
