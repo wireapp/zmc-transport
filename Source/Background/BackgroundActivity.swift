@@ -63,4 +63,18 @@ import UIKit
         block(self)
     }
 
+    // MARK: - Hashable
+
+    public override var hash: Int {
+        return ObjectIdentifier(self).hashValue
+    }
+
+    public override func isEqual(_ object: Any?) -> Bool {
+        guard let otherActivity = object as? BackgroundActivity else {
+            return false
+        }
+
+        return ObjectIdentifier(self) == ObjectIdentifier(otherActivity)
+    }
+
 }
