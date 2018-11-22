@@ -29,6 +29,12 @@ import WireTesting
     /// Whether the activity is expiring.
     @objc private(set) var isExpiring: Bool = false
 
+    /// A hook to intercept when a task is started.
+    @objc var startTaskHandler: ((String?) -> Void)?
+
+    /// A hook to intercept when a task is ended.
+    @objc var endTaskHandler: ((String?) -> Void)?
+
     /// The number of tasks that can be active at the same time. Defaults to 1.
     @objc var limit: Int = 1
 
@@ -61,12 +67,16 @@ import WireTesting
         let identifier = lastIdentifier.increment()
 
         tasks[identifier] = task
+        startTaskHandler?(name)
         return identifier
     }
 
     func endBackgroundTask(_ task: UIBackgroundTaskIdentifier) {
         assert(task != UIBackgroundTaskInvalid, "The task is invalid.")
+
+        let name = tasks[task]?.name
         tasks[task] = nil
+        endTaskHandler?(name)
     }
 
     // MARK: - Helpers

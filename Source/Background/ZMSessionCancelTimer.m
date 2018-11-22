@@ -58,18 +58,17 @@ ZM_EMPTY_ASSERTING_INIT();
 {
     self.activity = [[BackgroundActivityFactory sharedFactory] startBackgroundActivityWithName:NSStringFromClass(self.class)];
 
+    // Configure the expiration timer to cancel the tasks if the app is being suspended
     __weak ZMSessionCancelTimer *weakSelf = self;
     self.activity.expirationHandler = ^{
-        ZMSessionCancelTimer *strongSelf = weakSelf;
-        if (strongSelf) {
-            [strongSelf timerDidFire:strongSelf.timer];
-        }
+        [weakSelf handleExpiration];
     };
 
+    // If the app can perform background activites, start the timer, otherwise, cancel requests immediately
     if (self.activity) {
         [self.timer fireAfterTimeInterval:self.timeout];
     } else {
-        [self timerDidFire:self.timer];
+        [self handleExpiration];
     }
 }
 
@@ -85,8 +84,20 @@ ZM_EMPTY_ASSERTING_INIT();
 - (void)timerDidFire:(ZMTimer *)timer
 {
     NOT_USED(timer);
+    [self handleExpiration];
+}
+
+- (void)handleExpiration
+{
+    // Cancel the timer if the app is expiring
+    if (self.timer.state == ZMTimerStateStarted) {
+        [self.timer cancel];
+    }
+
+    // Cancel requests and end the background activity
     BackgroundActivity *activity = self.activity;
     self.activity = nil;
+
     [self.session cancelAllTasksWithCompletionHandler:^{
         [ZMTransportSession notifyNewRequestsAvailable:self];
         if (activity) {

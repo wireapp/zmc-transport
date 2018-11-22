@@ -127,7 +127,7 @@ class BackgroundActivityFactoryTests: XCTestCase {
 
 extension BackgroundActivityFactory {
 
-    fileprivate func reset() {
+    @objc func reset() {
         currentBackgroundTask = nil
         activities.removeAll()
         activityManager = nil

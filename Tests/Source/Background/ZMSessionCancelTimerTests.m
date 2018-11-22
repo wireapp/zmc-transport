@@ -19,7 +19,6 @@
 
 @import XCTest;
 @import WireTesting;
-@import OCMock;
 
 #import <WireTransport/WireTransport-Swift.h>
 #import "WireTransport_ios_tests-Swift.h"
@@ -48,8 +47,7 @@
 - (void)tearDown
 {
     self.activityManager = nil;
-    BackgroundActivityFactory.sharedFactory.mainQueue = dispatch_get_main_queue();
-    BackgroundActivityFactory.sharedFactory.activityManager = nil;
+    [BackgroundActivityFactory.sharedFactory reset];
     [super tearDown];
 }
 
@@ -60,7 +58,7 @@
     ZMSessionCancelTimer *sut = [[ZMSessionCancelTimer alloc] initWithURLSession:session timeout:0.05];
 
     // EXPECTATIONS
-    XCTestExpectation *cancelledCalledExpectation = [self expectationWithDescription:@"requests are cancelled"];
+    __block XCTestExpectation *cancelledCalledExpectation = [self expectationWithDescription:@"requests are cancelled"];
 
     session.cancellationHandler = ^{
         [cancelledCalledExpectation fulfill];
@@ -70,7 +68,7 @@
     [sut start];
 
     // THEN
-    [self waitForExpectations:@[cancelledCalledExpectation] timeout:0.5];
+    [self waitForExpectations:@[cancelledCalledExpectation] timeout:5];
 }
 
 - (void)testThatItNotifiesTheOperationLoopAfterAllTasksHaveBeenCancelled;
@@ -88,7 +86,7 @@
     [sut start];
 
     // THEN
-    [self waitForExpectations:@[newRequestsExpectation] timeout:0.5];
+    [self waitForExpectations:@[newRequestsExpectation] timeout:5];
 }
 
 - (void)testThatItBeginsABackgroundActivityWhenStarting
@@ -112,10 +110,12 @@
     ZMSessionCancelTimer *sut = [[ZMSessionCancelTimer alloc] initWithURLSession:session timeout:0.05];
 
     // EXPECTATIONS
-    NSPredicate *deactivatedPredicate = [NSPredicate predicateWithFormat:@"isActive == NO"];
-    XCTestExpectation *taskCancelledExpectation = [self expectationForPredicate:deactivatedPredicate evaluatedWithObject:BackgroundActivityFactory.sharedFactory handler:^BOOL{
-        return self.activityManager.numberOfTasks == 0;
-    }];
+    __block XCTestExpectation *taskCancelledExpectation = [self expectationWithDescription:@"the background task is ended"];
+
+    self.activityManager.endTaskHandler = ^(NSString * _Nullable name) {
+        NOT_USED(name);
+        [taskCancelledExpectation fulfill];
+    };
 
     // WHEN
     [sut start];
@@ -132,13 +132,19 @@
     [self.activityManager triggerExpiration];
 
     // EXPECTATIONS
-    NSPredicate *cancelCalledPredicate = [NSPredicate predicateWithFormat:@"wasCancelledCalled == true"];
-    XCTestExpectation *cancelledCalledExpectation = [self expectationForPredicate:cancelCalledPredicate evaluatedWithObject:session handler:nil];
+    __block XCTestExpectation *cancelledCalledExpectation = [self expectationWithDescription:@"network requests are cancelled"];
 
-    NSPredicate *activatedPredicate = [NSPredicate predicateWithFormat:@"isActive == true"];
-    XCTestExpectation *taskCreatedExpectation = [self expectationForPredicate:activatedPredicate evaluatedWithObject:BackgroundActivityFactory.sharedFactory handler:nil];
-
+    __block XCTestExpectation *taskCreatedExpectation = [self expectationWithDescription:@"the background task is not started"];
     taskCreatedExpectation.inverted = YES;
+
+    session.cancellationHandler = ^{
+        [cancelledCalledExpectation fulfill];
+    };
+
+    self.activityManager.startTaskHandler = ^(NSString * _Nullable name) {
+        NOT_USED(name);
+        [taskCreatedExpectation fulfill];
+    };
 
     // WHEN
     [sut start];
@@ -146,37 +152,39 @@
     XCTAssertEqual(self.activityManager.numberOfTasks, 0);
 
     // THEN
-    [self waitForExpectations:@[cancelledCalledExpectation, taskCreatedExpectation] timeout:0.5];
+    [self waitForExpectations:@[cancelledCalledExpectation, taskCreatedExpectation] timeout:1];
 }
 
 - (void)testThatItEndsTheBackgroundTaskWhenItIsCancelled;
 {
     // GIVEN
     ZMMockURLSession *session = [ZMMockURLSession createMockSession];
-    ZMSessionCancelTimer *sut = [[ZMSessionCancelTimer alloc] initWithURLSession:session timeout:2];
+    ZMSessionCancelTimer *sut = [[ZMSessionCancelTimer alloc] initWithURLSession:session timeout:10];
 
     // EXPECTATIONS
+    __block XCTestExpectation *taskEndedExpectation = [self expectationWithDescription:@"the background task is ended"];
 
-//    XCTestExpectation *taskEndedExpectation = [self expectationForPredicate:deactivatedPredicate evaluatedWithObject:BackgroundActivityFactory.sharedFactory handler:^BOOL{
-//        return self.activityManager.numberOfTasks == 0;
-//    }];
+    self.activityManager.endTaskHandler = ^(NSString * _Nullable name) {
+        NOT_USED(name);
+        [taskEndedExpectation fulfill];
+    };
 
     // WHEN
     [sut start];
     [sut cancel];
 
     // THEN
-//    [self waitForExpectations:@[taskEndedExpectation] timeout:0.5];
+    [self waitForExpectations:@[taskEndedExpectation] timeout:5];
 }
 
 - (void)testThatItCancelsWhenTheApplicationCallsTheExpirationTimer
 {
     // GIVEN
     ZMMockURLSession *session = [ZMMockURLSession createMockSession];
-    ZMSessionCancelTimer *sut = [[ZMSessionCancelTimer alloc] initWithURLSession:session timeout:2];
+    ZMSessionCancelTimer *sut = [[ZMSessionCancelTimer alloc] initWithURLSession:session timeout:10];
 
     // EXPECTATIONS
-    XCTestExpectation *cancelledCalledExpectation = [self expectationWithDescription:@"requests are cancelled"];
+    __block XCTestExpectation *cancelledCalledExpectation = [self expectationWithDescription:@"requests are cancelled"];
 
     session.cancellationHandler = ^{
         [cancelledCalledExpectation fulfill];
@@ -187,7 +195,7 @@
     [self.activityManager triggerExpiration];
 
     // THEN
-    [self waitForExpectations:@[cancelledCalledExpectation] timeout:0.5];
+    [self waitForExpectations:@[cancelledCalledExpectation] timeout:5];
 }
 
 @end
