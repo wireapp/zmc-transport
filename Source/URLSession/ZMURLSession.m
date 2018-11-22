@@ -86,8 +86,8 @@ ZM_EMPTY_ASSERTING_INIT();
     Require(queue != nil);
     self = [self initWithDelegate:delegate identifier:identifier];
     if(self) {
-        self->_backingSession = [NSURLSession sessionWithConfiguration:configuration delegate:self delegateQueue:queue];
-        self->_backingSession.sessionDescription = identifier;
+        self.backingSession = [NSURLSession sessionWithConfiguration:configuration delegate:self delegateQueue:queue];
+        self.backingSession.sessionDescription = identifier;
     }
     return self;
 }

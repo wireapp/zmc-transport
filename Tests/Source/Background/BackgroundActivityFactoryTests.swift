@@ -27,6 +27,7 @@ class BackgroundActivityFactoryTests: XCTestCase {
     var activityManager: MockBackgroundActivityManager!
 
     override func setUp() {
+        super.setUp()
         activityManager = MockBackgroundActivityManager()
         factory = BackgroundActivityFactory.shared
         factory.activityManager = activityManager
