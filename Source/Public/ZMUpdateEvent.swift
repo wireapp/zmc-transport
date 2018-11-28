@@ -48,6 +48,7 @@ import WireUtilities
     case conversationTyping = 13
     case conversationCodeUpdate = 14
     case conversationAccessModeUpdate = 15
+    case conversationMessageTimerUpdate = 31
     case userConnection = 16
     case userNew = 17
     case userUpdate = 18
@@ -65,7 +66,6 @@ import WireUtilities
     case teamConversationCreate = 28
     case teamConversationDelete = 29
     case teamMemberUpdate = 30
-    case conversationMessageTimerUpdate = 31
 
     // Current max value: userPropertiesDelete = 33
 }
