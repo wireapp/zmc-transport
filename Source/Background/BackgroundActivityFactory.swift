@@ -171,7 +171,7 @@ private let zmLog = ZMSLog(tag: "background-activity")
     private func handleExpiration() {
         zmLog.debug("Handle expiration")
         let activities = isolationQueue.sync {
-            return activities
+            return self.activities
         }
         activities.forEach { activity in
             zmLog.debug("Handle expiration: notifying \(activity)")
