@@ -55,7 +55,9 @@ private let zmLog = ZMSLog(tag: "background-activity")
 
     /// Whether any tasks are active.
     @objc public var isActive: Bool {
-        return currentBackgroundTask != nil && self.currentBackgroundTask != UIBackgroundTaskInvalid
+        return isolationQueue.sync {
+            return self.currentBackgroundTask != nil && self.currentBackgroundTask != UIBackgroundTaskInvalid
+        }
     }
 
     @objc var mainQueue: DispatchQueue = .main
@@ -112,8 +114,8 @@ private let zmLog = ZMSLog(tag: "background-activity")
 
     @objc public func endBackgroundActivity(_ activity: BackgroundActivity) {
         isolationQueue.sync {
-            guard isActive else {
-                zmLog.debug("End background activity: tasks are not active")
+            guard self.currentBackgroundTask != UIBackgroundTaskInvalid else {
+                zmLog.debug("End background activity: current background task is invalid")
                 return
             }
 
