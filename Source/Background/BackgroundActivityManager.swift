@@ -36,7 +36,9 @@ import UIKit
 extension BackgroundActivityManager {
     var stateDescription: String {
         if applicationState == .background {
-            return "App state: \(applicationState), time remaining: \(String(format: "%.2f", backgroundTimeRemaining))"
+            // Sometimes time remaining is very large even if we run in background
+            let time = backgroundTimeRemaining > 100000 ? "No Limit" : String(format: "%.2f", backgroundTimeRemaining)
+            return "App state: \(applicationState), time remaining: \(time)"
         } else {
             return "App state: \(applicationState)"
         }
