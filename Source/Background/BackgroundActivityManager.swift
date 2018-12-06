@@ -28,6 +28,22 @@ import UIKit
 
     /// End the background task.
     func endBackgroundTask(_ task: UIBackgroundTaskIdentifier)
+    
+    var backgroundTimeRemaining: TimeInterval { get }
+    var applicationState: UIApplication.State { get }
+}
+
+extension UIApplication.State: CustomDebugStringConvertible {
+    public var debugDescription: String {
+        switch self {
+        case .active:
+            return "active"
+        case .background:
+            return "background"
+        case .inactive:
+            return "inactive"
+        }
+    }
 }
 
 extension UIApplication: BackgroundActivityManager {}
