@@ -33,6 +33,16 @@ import UIKit
     var applicationState: UIApplication.State { get }
 }
 
+extension BackgroundActivityManager {
+    var stateDescription: String {
+        if applicationState == .background {
+            return "App state: \(applicationState), time remaining: \(String(format: "%.2f", backgroundTimeRemaining))"
+        } else {
+            return "App state: \(applicationState)"
+        }
+    }
+}
+
 extension UIApplication.State: CustomDebugStringConvertible {
     public var debugDescription: String {
         switch self {

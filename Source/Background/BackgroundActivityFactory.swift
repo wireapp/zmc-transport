@@ -124,7 +124,7 @@ private let zmLog = ZMSLog(tag: "background-activity")
             }
 
             if activities.remove(activity) != nil {
-                zmLog.debug("End background activity: removed \(activity), \(activities.count) others left. App state: \(activityManager.applicationState), time remaining: \(String(format: "%.2f", activityManager.backgroundTimeRemaining))")
+                zmLog.debug("End background activity: removed \(activity), \(activities.count) others left. \(activityManager.stateDescription)")
             } else {
                 zmLog.debug("End background activity: could not remove \(activity), \(activities.count) others left")
             }
@@ -146,7 +146,7 @@ private let zmLog = ZMSLog(tag: "background-activity")
                 return nil 
             }
             
-            zmLog.debug("Start activity [\(name)]: app state: \(activityManager.applicationState), time remaining: \(String(format: "%.2f", activityManager.backgroundTimeRemaining))")
+            zmLog.debug("Start activity [\(name)]: \(activityManager.stateDescription))")
             // Do not start new tasks if the background timer is running.
             guard currentBackgroundTask != UIBackgroundTaskInvalid else { 
                 zmLog.debug("Start activity [\(name)]: failed, currentBackgroundTask is invalid")
