@@ -209,6 +209,8 @@ private let zmLog = ZMSLog(tag: "background-activity")
 
     /// Ends the current background task.
     private func finishBackgroundTask() {
+        // No need to keep any activities after finishing
+        activities.removeAll()
         if let currentBackgroundTask = self.currentBackgroundTask {
             if let activityManager = activityManager {
                 zmLog.debug("Finishing background task: \(currentBackgroundTask)")
