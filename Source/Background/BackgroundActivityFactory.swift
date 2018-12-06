@@ -137,14 +137,16 @@ private let zmLog = ZMSLog(tag: "background-activity")
     /// Starts the background activity of the system allows it.
     private func startActivityIfPossible(_ name: String, _ expirationHandler: (() -> Void)?) -> BackgroundActivity? {
         return isolationQueue.sync {
+            guard let activityManager = activityManager else {
+                zmLog.debug("Start activity [\(name)]: failed, activityManager is nil")
+                return nil 
+            }
+            
+            zmLog.debug("Start activity [\(name)]: app state: \(activityManager.applicationState), time remaining: \(String(format: "%.2f", activityManager.backgroundTimeRemaining))")
             // Do not start new tasks if the background timer is running.
             guard currentBackgroundTask != UIBackgroundTaskInvalid else { 
-                zmLog.debug("Start activity: failed, currentBackgroundTask is invalid")
+                zmLog.debug("Start activity [\(name)]: failed, currentBackgroundTask is invalid")
                 return nil         
-            }
-            guard let activityManager = activityManager else {
-                zmLog.debug("Start activity: failed, activityManager is nil")
-                return nil 
             }
 
             // Try to create the task
@@ -154,18 +156,18 @@ private let zmLog = ZMSLog(tag: "background-activity")
                 zmLog.debug("Start activity: no current background task, starting new")
                 let task = activityManager.beginBackgroundTask(withName: "BackgroundActivityFactory", expirationHandler: handleExpiration)
                 guard task != UIBackgroundTaskInvalid else {
-                    zmLog.debug("Start activity: failed to begin new background task")
+                    zmLog.debug("Start activity [\(name)]: failed to begin new background task")
                     return nil         
                 }
-                zmLog.debug("Start activity: started new background task: \(task)")
+                zmLog.debug("Start activity [\(name)]: started new background task: \(task)")
                 currentBackgroundTask = task
             }
 
             let (inserted, _) = activities.insert(activity)
             if inserted {
-                zmLog.debug("Start activity: started \(activity)")
+                zmLog.debug("Start activity [\(name)]: started \(activity)")
             } else {
-                zmLog.debug("Start activity: could not insert activity \(activity)")
+                zmLog.debug("Start activity [\(name)]: could not insert activity \(activity)")
             }
             return activity
         }
