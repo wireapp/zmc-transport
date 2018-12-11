@@ -21,8 +21,6 @@
 @import WireSystem;
 #import <mach-o/dyld.h>
 
-static BOOL verifyServerTrustWithPinnedKeys(SecTrustRef const serverTrust, NSArray *pinnedKeys);
-
 // To dump certificate data, use
 //     CFIndex const certCount = SecTrustGetCertificateCount(serverTrust);
 // and
@@ -150,7 +148,7 @@ static SecKeyRef publicKeyAssociatedWithServerTrust(SecTrustRef const serverTrus
     return key;
 }
 
-static BOOL verifyServerTrustWithPinnedKeys(SecTrustRef const serverTrust, NSArray *pinnedKeys)
+BOOL verifyServerTrustWithPinnedKeys(SecTrustRef const serverTrust, NSArray *pinnedKeys)
 {
     SecTrustResultType result;
     if (SecTrustEvaluate(serverTrust, &result) != noErr) {

@@ -16,8 +16,8 @@
 // along with this program. If not, see http://www.gnu.org/licenses/.
 // 
 
-
 @import Security;
 
-
+DEPRECATED_ATTRIBUTE
 extern BOOL verifyServerTrust(SecTrustRef const serverTrust, NSString *host);
+extern BOOL verifyServerTrustWithPinnedKeys(SecTrustRef const serverTrust, NSArray *pinnedKeys);
