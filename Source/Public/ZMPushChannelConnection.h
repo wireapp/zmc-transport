@@ -35,19 +35,19 @@ NS_ASSUME_NONNULL_BEGIN
 @interface ZMPushChannelConnection : NSObject
 
 - (instancetype)initWithEnvironment:(id <BackendEnvironmentProvider>)environment
-                                consumer:(id<ZMPushChannelConsumer>)consumer
-                                queue:(id<ZMSGroupQueue>)queue
-                            accessToken:(ZMAccessToken *)accessToken
-                                clientID:(NSString *)clientID
-                        userAgentString:(NSString *)userAgentString;
+                           consumer:(id<ZMPushChannelConsumer>)consumer
+                              queue:(id<ZMSGroupQueue>)queue
+                        accessToken:(ZMAccessToken *)accessToken
+                           clientID:(NSString *)clientID
+                    userAgentString:(NSString *)userAgentString;
 
 - (instancetype)initWithEnvironment:(id <BackendEnvironmentProvider>)environment
-                                consumer:(id<ZMPushChannelConsumer>)consumer
-                                queue:(id<ZMSGroupQueue>)queue
-                            webSocket:(nullable ZMWebSocket *)webSocket
-                            accessToken:(ZMAccessToken *)accessToken
-                                clientID:(nullable NSString *)clientID
-                        userAgentString:(NSString *)userAgentString NS_DESIGNATED_INITIALIZER;
+                           consumer:(id<ZMPushChannelConsumer>)consumer
+                              queue:(id<ZMSGroupQueue>)queue
+                          webSocket:(nullable ZMWebSocket *)webSocket
+                        accessToken:(ZMAccessToken *)accessToken
+                           clientID:(nullable NSString *)clientID
+                    userAgentString:(NSString *)userAgentString NS_DESIGNATED_INITIALIZER;
 
 @property (nonatomic, readonly, weak) id<ZMPushChannelConsumer> consumer;
 @property (nonatomic, readonly) BOOL isOpen;
