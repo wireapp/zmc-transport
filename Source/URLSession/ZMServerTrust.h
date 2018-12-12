@@ -18,6 +18,4 @@
 
 @import Security;
 
-DEPRECATED_ATTRIBUTE
-extern BOOL verifyServerTrust(SecTrustRef const serverTrust, NSString *host);
 extern BOOL verifyServerTrustWithPinnedKeys(SecTrustRef const serverTrust, NSArray *pinnedKeys);
