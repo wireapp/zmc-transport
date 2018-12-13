@@ -25,27 +25,27 @@ import WireTransport
     }
 }
 
-@objcMembers public class TestTrustVerificator: NSObject, URLSessionDelegate {
+class TestTrustVerificator: NSObject, URLSessionDelegate {
 
-    private var session: URLSession!
-    private var trustProvider: BackendTrustProvider!
+    var session: URLSession!
+    var trustProvider: BackendTrustProvider!
     private let callback: (Bool) -> Void
 
-    public init(callback: @escaping (Bool) -> Void) {
+    init(trustProvider: BackendTrustProvider = MockCertificateTrust(), callback: @escaping (Bool) -> Void) {
         self.callback = callback
         super.init()
         session = URLSession(configuration: .default, delegate: self, delegateQueue: nil)
-        trustProvider = MockEnvironment()
+        self.trustProvider = trustProvider
     }
 
-    public func urlSession(_ session: URLSession, didReceive challenge: URLAuthenticationChallenge, completionHandler: @escaping (URLSession.AuthChallengeDisposition, URLCredential?) -> Void) {
+    func urlSession(_ session: URLSession, didReceive challenge: URLAuthenticationChallenge, completionHandler: @escaping (URLSession.AuthChallengeDisposition, URLCredential?) -> Void) {
         let protectionSpace = challenge.protectionSpace
         guard protectionSpace.authenticationMethod == NSURLAuthenticationMethodServerTrust else { return callback(false) }
         let trusted = trustProvider.verifyServerTrust(trust: protectionSpace.serverTrust!, host: protectionSpace.host)
         callback(trusted)
     }
 
-    @objc(verifyURL:) public func verify(url: URL) {
+    func verify(url: URL) {
         session.dataTask(with: url).resume()
     }
 

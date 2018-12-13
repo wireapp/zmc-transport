@@ -22,7 +22,7 @@ struct TrustData: Decodable {
     struct Host: Decodable {
         enum Rule: String, Decodable {
             case endsWith = "ends_with"
-            case exact
+            case equals
         }
         let rule: Rule
         let value: String
@@ -63,7 +63,7 @@ extension TrustData.Host {
         switch rule {
         case .endsWith:
             return host.hasSuffix(value)
-        case .exact:
+        case .equals:
             return host == value
         }
     }

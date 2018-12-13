@@ -49,50 +49,51 @@ import Foundation
     }
 }
 
-// Swift migration notice: this class conforms to NSObject only to be usable from Obj-C.
-@objcMembers
-public class BackendEnvironment: NSObject, BackendEnvironmentProvider, Decodable {
+public class BackendEnvironment: NSObject {
+    let endpoints: BackendEndpointsProvider
+    let certificateTrust: BackendTrustProvider
     
-    public let backendURL: URL
-    public let backendWSURL: URL
-    public let blackListURL: URL
-    public let frontendURL: URL
-    let trustData: [TrustData]
-
-    public convenience init(backendURL: URL, backendWSURL: URL, blackListURL: URL, frontendURL: URL) {
-        self.init(backendURL: backendURL, backendWSURL: backendWSURL, blackListURL: blackListURL, frontendURL: frontendURL, trustData: [])
+    init(endpoints: BackendEndpointsProvider, certificateTrust: BackendTrustProvider) {
+        self.endpoints = endpoints
+        self.certificateTrust = certificateTrust
     }
     
-    init(backendURL: URL, backendWSURL: URL, blackListURL: URL, frontendURL: URL, trustData: [TrustData]) {
-        self.backendURL   = backendURL
-        self.backendWSURL = backendWSURL
-        self.blackListURL = blackListURL
-        self.frontendURL  = frontendURL
-        self.trustData = trustData
-        super.init()
-    }
-
     // Will try to deserialize backend environment from .json files inside configurationBundle.
-    public static func from(environmentType: EnvironmentType, configurationBundle: Bundle) -> Self? {
+    public static func from(environmentType: EnvironmentType, configurationBundle: Bundle) -> BackendEnvironment? {        
+        struct SerializedData: Decodable {
+            let endpoints: BackendEndpoints
+            let pinnedKeys: [TrustData]
+        }
+
         guard let path = configurationBundle.path(forResource: environmentType.stringValue, ofType: "json") else { return nil }
         guard let data = try? Data(contentsOf: URL(fileURLWithPath: path)) else { return nil }
         let decoder = JSONDecoder()
         decoder.dataDecodingStrategy = .base64
-        return try? decoder.decode(self, from: data)
+        guard let backendData = try? decoder.decode(SerializedData.self, from: data) else { return nil }
+        let certificateTrust = ServerCertificateTrust(trustData: backendData.pinnedKeys)
+        return BackendEnvironment(endpoints: backendData.endpoints, certificateTrust: certificateTrust) 
+    }
+
+}
+
+extension BackendEnvironment: BackendEnvironmentProvider {
+    public var backendURL: URL {
+        return endpoints.backendURL
+    }
+    
+    public var backendWSURL: URL {
+        return endpoints.backendWSURL
+    }
+    
+    public var blackListURL: URL {
+        return endpoints.blackListURL
+    }
+    
+    public var frontendURL: URL {
+        return endpoints.frontendURL
     }
     
     public func verifyServerTrust(trust: SecTrust, host: String?) -> Bool {
-        guard let host = host else { return false }
-        let pinnedKeys = trustData
-            .lazy
-            .filter { trust in
-                trust.matches(host: host)
-            }
-            .compactMap { trust in
-                trust.certificateKey
-            }
-            .prefix(upTo: 1)
-
-        return verifyServerTrustWithPinnedKeys(trust, Array(pinnedKeys))
+        return certificateTrust.verifyServerTrust(trust: trust, host: host)
     }
 }
