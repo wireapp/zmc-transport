@@ -19,21 +19,29 @@
 import Foundation
 import WireTransport
 
+@objc public class TestTrustProvider: NSObject, BackendTrustProvider {
+    public func verifyServerTrust(trust: SecTrust, host: String?) -> Bool {
+        return true
+    }
+}
+
 @objcMembers public class TestTrustVerificator: NSObject, URLSessionDelegate {
 
     private var session: URLSession!
+    private var trustProvider: BackendTrustProvider!
     private let callback: (Bool) -> Void
 
     public init(callback: @escaping (Bool) -> Void) {
         self.callback = callback
         super.init()
         session = URLSession(configuration: .default, delegate: self, delegateQueue: nil)
+        trustProvider = MockEnvironment()
     }
 
     public func urlSession(_ session: URLSession, didReceive challenge: URLAuthenticationChallenge, completionHandler: @escaping (URLSession.AuthChallengeDisposition, URLCredential?) -> Void) {
         let protectionSpace = challenge.protectionSpace
         guard protectionSpace.authenticationMethod == NSURLAuthenticationMethodServerTrust else { return callback(false) }
-        let trusted = verifyServerTrust(protectionSpace.serverTrust, protectionSpace.host)
+        let trusted = trustProvider.verifyServerTrust(trust: protectionSpace.serverTrust!, host: protectionSpace.host)
         callback(trusted)
     }
 

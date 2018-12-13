@@ -28,7 +28,6 @@
 		546E89E11B33015000DD1042 /* ZMPersistentCookieStorageTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 546E89C21B33015000DD1042 /* ZMPersistentCookieStorageTests.m */; };
 		546E89E51B33015000DD1042 /* ZMTemporaryFileListForBackgroundRequestTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 546E89C51B33015000DD1042 /* ZMTemporaryFileListForBackgroundRequestTests.m */; };
 		546E89E71B33015000DD1042 /* ZMDataBufferTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 546E89C81B33015000DD1042 /* ZMDataBufferTests.m */; };
-		546E89E91B33015000DD1042 /* ZMLiveWebSocketTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 546E89C91B33015000DD1042 /* ZMLiveWebSocketTests.m */; };
 		546E89EB1B33015000DD1042 /* ZMNetworkSocketTest.m in Sources */ = {isa = PBXBuildFile; fileRef = 546E89CA1B33015000DD1042 /* ZMNetworkSocketTest.m */; };
 		546E89ED1B33015000DD1042 /* ZMPushChannelConnectionTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 546E89CB1B33015000DD1042 /* ZMPushChannelConnectionTests.m */; };
 		546E89EF1B33015000DD1042 /* ZMTransportPushChannelTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 546E89CC1B33015000DD1042 /* ZMTransportPushChannelTests.m */; };
@@ -238,7 +237,6 @@
 		546E89C41B33015000DD1042 /* ZMSessionCancelTimerTests.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ZMSessionCancelTimerTests.m; sourceTree = "<group>"; };
 		546E89C51B33015000DD1042 /* ZMTemporaryFileListForBackgroundRequestTests.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ZMTemporaryFileListForBackgroundRequestTests.m; sourceTree = "<group>"; };
 		546E89C81B33015000DD1042 /* ZMDataBufferTests.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ZMDataBufferTests.m; sourceTree = "<group>"; };
-		546E89C91B33015000DD1042 /* ZMLiveWebSocketTests.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ZMLiveWebSocketTests.m; sourceTree = "<group>"; };
 		546E89CA1B33015000DD1042 /* ZMNetworkSocketTest.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ZMNetworkSocketTest.m; sourceTree = "<group>"; };
 		546E89CB1B33015000DD1042 /* ZMPushChannelConnectionTests.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ZMPushChannelConnectionTests.m; sourceTree = "<group>"; };
 		546E89CC1B33015000DD1042 /* ZMTransportPushChannelTests.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ZMTransportPushChannelTests.m; sourceTree = "<group>"; };
@@ -549,7 +547,6 @@
 			isa = PBXGroup;
 			children = (
 				546E89C81B33015000DD1042 /* ZMDataBufferTests.m */,
-				546E89C91B33015000DD1042 /* ZMLiveWebSocketTests.m */,
 				546E89CA1B33015000DD1042 /* ZMNetworkSocketTest.m */,
 				546E89CB1B33015000DD1042 /* ZMPushChannelConnectionTests.m */,
 				546E89CC1B33015000DD1042 /* ZMTransportPushChannelTests.m */,
@@ -1122,7 +1119,6 @@
 				5E2C352821A56FD50034F1EE /* BackgroundActivityFactoryTests.swift in Sources */,
 				546E89EB1B33015000DD1042 /* ZMNetworkSocketTest.m in Sources */,
 				16B6859C1EC1BBF00055BEA3 /* ZMServerTrustTests.m in Sources */,
-				546E89E91B33015000DD1042 /* ZMLiveWebSocketTests.m in Sources */,
 				546E89EF1B33015000DD1042 /* ZMTransportPushChannelTests.m in Sources */,
 				5431AC011DB4C8330040343C /* RequestLoopDetectionTests.swift in Sources */,
 				546E89F91B33015000DD1042 /* ZMTransportRequestTests.m in Sources */,
