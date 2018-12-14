@@ -57,8 +57,12 @@ class BackendTrustProviderTests: XCTestCase {
         let decoder = JSONDecoder()
         decoder.keyDecodingStrategy = .convertFromSnakeCase
         
-        guard let certificatesURL = Bundle(for: type(of: self)).url(forResource: "certificates", withExtension: "json") else { XCTFail("Could find certificates.json"); return } 
-        guard let trustDataURL = Bundle(for: type(of: self)).url(forResource: "trust_data", withExtension: "json") else { XCTFail("Could find trust_data.json"); return } 
+        let mainBundle = Bundle(for: type(of: self))
+        guard let backendBundlePath = mainBundle.path(forResource: "Backend", ofType: "bundle") else { XCTFail("Could not find backend.bundle"); return }
+        guard let backendBundle = Bundle(path: backendBundlePath) else { XCTFail("Could not load backend.bundle"); return }
+        
+        guard let certificatesURL = mainBundle.url(forResource: "certificates", withExtension: "json") else { XCTFail("Could find certificates.json"); return } 
+        guard let trustDataURL = backendBundle.url(forResource: "production", withExtension: "json") else { XCTFail("Could find trust_data.json"); return } 
         
         do {
             let certsData = try Data(contentsOf: certificatesURL)            
@@ -70,6 +74,7 @@ class BackendTrustProviderTests: XCTestCase {
         
         do {
             let trustData = try Data(contentsOf: trustDataURL)
+            
             self.pinnedKeys = try decoder.decode(PinnedKeysData.self, from: trustData)
         } catch {
             XCTFail("Error reading pinned keys: \(error)")
@@ -100,7 +105,6 @@ class BackendTrustProviderTests: XCTestCase {
                 XCTFail("Server should be trusted!")
             }
         }
-        
         
         // when
         trustVerificator.verify(url: URL(string: "https://www.youtube.com")!)

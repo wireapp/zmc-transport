@@ -18,6 +18,8 @@
 
 import Foundation
 
+let log = ZMSLog(tag: "backend-environment")
+
 @objc public enum EnvironmentType: Int {
     case production
     case staging
@@ -62,16 +64,28 @@ public class BackendEnvironment: NSObject {
     public static func from(environmentType: EnvironmentType, configurationBundle: Bundle) -> BackendEnvironment? {        
         struct SerializedData: Decodable {
             let endpoints: BackendEndpoints
-            let pinnedKeys: [TrustData]
+            let pinnedKeys: [TrustData]?
         }
 
-        guard let path = configurationBundle.path(forResource: environmentType.stringValue, ofType: "json") else { return nil }
-        guard let data = try? Data(contentsOf: URL(fileURLWithPath: path)) else { return nil }
+        guard let path = configurationBundle.path(forResource: environmentType.stringValue, ofType: "json") else {
+            log.error("Could not find \(environmentType.stringValue).json inside bundle \(configurationBundle)")
+            return nil 
+        }
+        guard let data = try? Data(contentsOf: URL(fileURLWithPath: path)) else { 
+            log.error("Could not read \(environmentType.stringValue).json")
+            return nil 
+        }
         let decoder = JSONDecoder()
-        decoder.dataDecodingStrategy = .base64
-        guard let backendData = try? decoder.decode(SerializedData.self, from: data) else { return nil }
-        let certificateTrust = ServerCertificateTrust(trustData: backendData.pinnedKeys)
-        return BackendEnvironment(endpoints: backendData.endpoints, certificateTrust: certificateTrust) 
+        decoder.keyDecodingStrategy = .convertFromSnakeCase
+        do {
+            let backendData = try decoder.decode(SerializedData.self, from: data)
+            let pinnedKeys = backendData.pinnedKeys ?? []
+            let certificateTrust = ServerCertificateTrust(trustData: pinnedKeys)
+            return BackendEnvironment(endpoints: backendData.endpoints, certificateTrust: certificateTrust) 
+        } catch {
+            log.error("Could decode information from \(environmentType.stringValue).json")
+            return nil
+        }
     }
 
 }
