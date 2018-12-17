@@ -43,7 +43,7 @@ struct TrustData: Decodable {
             throw DecodingError.dataCorruptedError(forKey: CodingKeys.certificateKey, in: container, debugDescription: "Error decoding certificate for pinned key")
         }
         
-        guard let certificateKey = SecCertificateCopyPublicKey(certificate) else {
+        guard let certificateKey = _SecCertificateCopyPublicKey(certificate) else {
             throw DecodingError.dataCorruptedError(forKey: CodingKeys.certificateKey, in: container, debugDescription: "Error extracting pinned key from certificate")
         }
         self.certificateKey = certificateKey
