@@ -29,8 +29,8 @@ class ServerCertificateTrust: NSObject, BackendTrustProvider {
         guard let host = host else { return false }
         let pinnedKeys = trustData
             .lazy
-            .filter { trust in
-                trust.matches(host: host)
+            .filter { trustData in
+                trustData.matches(host: host)
             }
             .compactMap { trust in
                 trust.certificateKey
