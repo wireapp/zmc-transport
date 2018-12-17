@@ -484,12 +484,9 @@
 		3E88BD0B1B1F370700232589 /* Resources */ = {
 			isa = PBXGroup;
 			children = (
-				09F028C51B7252FC00BADDB6 /* Lorem Ipsum.txt */,
 				09F027D61B721EBE00BADDB6 /* Configurations */,
 				3E88BD211B1F383000232589 /* WireTransport-Info.plist */,
 				3E88BD221B1F383000232589 /* WireTransport-Test-Info.plist */,
-				F108BCC721C3CB6C00E1BBE3 /* Backend.bundle */,
-				F1D1282121C2722E0090045E /* certificates.json */,
 			);
 			path = Resources;
 			sourceTree = "<group>";
@@ -510,6 +507,7 @@
 		546E89BD1B33015000DD1042 /* Tests */ = {
 			isa = PBXGroup;
 			children = (
+				F173092A21C7EC91008F82EE /* Resources */,
 				546E89BE1B33015000DD1042 /* Source */,
 			);
 			path = Tests;
@@ -830,6 +828,16 @@
 				BF9D0AFE1F1CC0C5005D4C31 /* SessionProtocols.swift */,
 			);
 			name = "Unauthenticated Session";
+			sourceTree = "<group>";
+		};
+		F173092A21C7EC91008F82EE /* Resources */ = {
+			isa = PBXGroup;
+			children = (
+				F1D1282121C2722E0090045E /* certificates.json */,
+				F108BCC721C3CB6C00E1BBE3 /* Backend.bundle */,
+				09F028C51B7252FC00BADDB6 /* Lorem Ipsum.txt */,
+			);
+			path = Resources;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
