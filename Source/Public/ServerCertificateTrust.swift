@@ -32,8 +32,8 @@ class ServerCertificateTrust: NSObject, BackendTrustProvider {
             .filter { trustData in
                 trustData.matches(host: host)
             }
-            .compactMap { trust in
-                trust.certificateKey
+            .compactMap { trustData in
+                trustData.certificateKey
             }
             .prefix(1)
         
