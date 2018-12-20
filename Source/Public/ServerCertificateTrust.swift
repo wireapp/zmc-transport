@@ -28,16 +28,14 @@ class ServerCertificateTrust: NSObject, BackendTrustProvider {
     public func verifyServerTrust(trust: SecTrust, host: String?) -> Bool {
         guard let host = host else { return false }
         let pinnedKeys = trustData
-            .lazy
             .filter { trustData in
                 trustData.matches(host: host)
             }
-            .compactMap { trustData in
+            .map { trustData in
                 trustData.certificateKey
             }
-            .prefix(1)
-        
-        return verifyServerTrustWithPinnedKeys(trust, Array(pinnedKeys))
+            
+        return verifyServerTrustWithPinnedKeys(trust, pinnedKeys)
     }
 
 }
