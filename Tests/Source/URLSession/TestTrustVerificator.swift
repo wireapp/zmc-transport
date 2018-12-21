@@ -19,12 +19,6 @@
 import Foundation
 import WireTransport
 
-@objc public class TestTrustProvider: NSObject, BackendTrustProvider {
-    public func verifyServerTrust(trust: SecTrust, host: String?) -> Bool {
-        return true
-    }
-}
-
 class TestTrustVerificator: NSObject, URLSessionDelegate {
 
     var session: URLSession!

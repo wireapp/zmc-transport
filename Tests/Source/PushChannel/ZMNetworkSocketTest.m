@@ -31,7 +31,7 @@
 @property (nonatomic) NSInteger openCounter;
 @property (nonatomic) NSInteger closeCounter;
 @property (nonatomic) dispatch_queue_t queue;
-@property (nonatomic) TestTrustProvider *trustProvider;
+@property (nonatomic) MockCertificateTrust *trustProvider;
 
 @end
 
@@ -45,7 +45,7 @@
     self.closeCounter = 0;
     self.dataRead = [NSMutableData dataWithCapacity:16 * 1024];
     self.queue = dispatch_get_main_queue();
-    self.trustProvider = [[TestTrustProvider alloc] init];
+    self.trustProvider = [[MockCertificateTrust alloc] init];
 }
 
 - (void)tearDown

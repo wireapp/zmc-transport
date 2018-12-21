@@ -43,7 +43,7 @@
 @property (nonatomic) NSMutableArray *finishedBackgroundSessions;
 @property (nonatomic) NSMutableArray *completedTasks;
 @property (nonatomic) NSMutableArray *firedTimers;
-@property (nonatomic) TestTrustProvider *trustProvider;
+@property (nonatomic) MockCertificateTrust *trustProvider;
 
 
 @end
@@ -70,7 +70,7 @@ static NSString * const DataKey = @"data";
     self.firedTimers = [NSMutableArray array];
     self.finishedBackgroundSessions = [NSMutableArray array];
     self.receivedDataCount = 0;
-    self.trustProvider = [[TestTrustProvider alloc] init];
+    self.trustProvider = [[MockCertificateTrust alloc] init];
 
     self.queue = [NSOperationQueue zm_serialQueueWithName:self.name];
     self.sut = (id) [[ZMURLSession alloc] initWithConfiguration:NSURLSessionConfiguration.defaultSessionConfiguration
