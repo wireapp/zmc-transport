@@ -98,7 +98,7 @@ static NSHashTable *sessionCancelTimers;
     [super setUp];
     sessionCancelTimers = [NSHashTable weakObjectsHashTable];
     
-    TestTrustProvider *trustProvider = [[TestTrustProvider alloc] init];
+    MockCertificateTrust *trustProvider = [[MockCertificateTrust alloc] init];
     
     NSOperationQueue *q = [NSOperationQueue zm_serialQueueWithName:self.name];
     ZMURLSession *sessionA = [[ZMURLSession alloc] initWithConfiguration:[NSURLSessionConfiguration defaultSessionConfiguration] trustProvider:trustProvider delegate:(id) self delegateQueue:q identifier:@"session-a"];

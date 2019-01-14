@@ -39,7 +39,7 @@
 @property (nonatomic) NSHTTPURLResponse *closeResponse;
 @property (nonatomic) NSError *closeError;
 @property (nonatomic) dispatch_queue_t queue;
-@property (nonatomic) TestTrustProvider *trustProvider;
+@property (nonatomic) MockCertificateTrust *trustProvider;
 
 @end
 
@@ -82,7 +82,7 @@
     self.networkSocketMock = [OCMockObject niceMockForClass:NetworkSocket.class];
     [self verifyMockLater:self.networkSocketMock];
     self.queue = dispatch_get_main_queue();
-    self.trustProvider = [[TestTrustProvider alloc] init];
+    self.trustProvider = [[MockCertificateTrust alloc] init];
     self.URL = [NSURL URLWithString:@"wss://echo.websocket.org"];
     self.sut = (id)[[ZMWebSocket alloc] initWithConsumer:self
                                                    queue:self.queue
