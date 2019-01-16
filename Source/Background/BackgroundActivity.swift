@@ -29,6 +29,8 @@ fileprivate let activityCounterQueue = DispatchQueue(label: "wire-transport.back
 
     /// The name of the task, used for debugging purposes.
     @objc public let name: String
+    /// Globally unique index of background activity
+    public let index: Int
 
     /// The block of code called from the main thead when the background timer is about to expire.
     @objc public var expirationHandler: (() -> Void)?
