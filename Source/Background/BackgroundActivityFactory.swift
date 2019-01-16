@@ -60,6 +60,7 @@ private let zmLog = ZMSLog(tag: "background-activity")
         }
     }
 
+    @objc var mainQueue: DispatchQueue = .main
     private let isolationQueue = DispatchQueue(label: "BackgroundActivityFactory.IsolationQueue")
 
     var currentBackgroundTask: UIBackgroundTaskIdentifier?
