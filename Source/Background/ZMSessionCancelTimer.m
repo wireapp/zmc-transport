@@ -75,9 +75,7 @@ ZM_EMPTY_ASSERTING_INIT();
 - (void)cancel;
 {
     [self.timer cancel];
-    if (self.activity) {
-        [[BackgroundActivityFactory sharedFactory] endBackgroundActivity:self.activity];
-    }
+    [[BackgroundActivityFactory sharedFactory] endBackgroundActivity:self.activity];
     self.activity = nil;
 }
 
@@ -100,9 +98,7 @@ ZM_EMPTY_ASSERTING_INIT();
 
     [self.session cancelAllTasksWithCompletionHandler:^{
         [ZMTransportSession notifyNewRequestsAvailable:self];
-        if (activity) {
-            [[BackgroundActivityFactory sharedFactory] endBackgroundActivity:activity];
-        }
+        [[BackgroundActivityFactory sharedFactory] endBackgroundActivity:activity];
     }];
 }
 

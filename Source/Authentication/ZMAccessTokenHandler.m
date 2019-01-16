@@ -235,9 +235,7 @@ static NSTimeInterval const GraceperiodToRenewAccessToken = 40;
     }
     
     [self updateBackoffWithResponse:response];
-    if (self.activity) {
-        [BackgroundActivityFactory.sharedFactory endBackgroundActivity:self.activity];
-    }
+    [BackgroundActivityFactory.sharedFactory endBackgroundActivity:self.activity];
 }
 
 - (void)updateBackoffWithResponse:(ZMTransportResponse *)response;
