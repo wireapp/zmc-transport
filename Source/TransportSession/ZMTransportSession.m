@@ -379,7 +379,7 @@ static NSInteger const DefaultMaximumRequests = 6;
     //
     // N.B.: This part of the method needs to be thread safe!
     //
-    
+    [request startBackgroundActivity];
     RequireString(request.hasRequiredPayload, "Payload vs. method");
     
     ZM_WEAK(self);
