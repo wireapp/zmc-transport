@@ -112,7 +112,8 @@ private let zmLog = ZMSLog(tag: "background-activity")
      * - parameter activity: The activity to end.
      */
 
-    @objc public func endBackgroundActivity(_ activity: BackgroundActivity) {
+    @objc public func endBackgroundActivity(_ activity: BackgroundActivity?) {
+        guard let activity = activity else { return }
         isolationQueue.sync {
             guard currentBackgroundTask != UIBackgroundTaskInvalid else {
                 zmLog.debug("End background activity: current background task is invalid")
