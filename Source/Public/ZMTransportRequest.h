@@ -143,9 +143,6 @@ typedef NS_ENUM(int8_t, ZMTransportAccept) {
 
 - (BOOL)hasRequiredPayload;
 
-/// If this is called, the request is going to be executed only on a background session
-- (void)forceToBackgroundSession;
-
 /// If this is called, the request is going to be executed on the voip session only
 - (void)forceToVoipSession;
 

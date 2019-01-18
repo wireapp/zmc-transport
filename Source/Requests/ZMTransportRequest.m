@@ -225,7 +225,6 @@ typedef NS_ENUM(NSUInteger, ZMTransportRequestSessionType) {
                                                 contentDisposition:nil];
     request.fileUploadURL = url;
     request.shouldFailInsteadOfRetry = YES;
-    [request forceToBackgroundSession];
     return request;
 }
 
@@ -589,12 +588,6 @@ typedef NS_ENUM(NSUInteger, ZMTransportRequestSessionType) {
 - (BOOL)shouldUseVoipSession
 {
     return self.transportSessionType == ZMTransportRequestSessionTypeUseVoipSessionOnly;
-}
-
-
-- (void)forceToBackgroundSession
-{
-    self.transportSessionType = ZMTransportRequestSessionTypeUseBackgroundSessionOnly;
 }
 
 - (void)forceToVoipSession;

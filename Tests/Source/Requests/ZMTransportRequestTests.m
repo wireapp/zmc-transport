@@ -143,7 +143,6 @@
     XCTAssertNil(request.contentDisposition);
     XCTAssertNil(request.binaryData);
     XCTAssertEqualObjects(fileURL, request.fileUploadURL);
-    XCTAssertTrue(request.shouldUseOnlyBackgroundSession);
     XCTAssertTrue(request.shouldFailInsteadOfRetry);
 }
 
@@ -583,19 +582,6 @@
     XCTAssertFalse(request.shouldUseVoipSession);
 }
 
-- (void)testThatARequestShouldUseOnlyBackgroundSessionWhenForced
-{
-    // given
-    ZMTransportRequest *request = [ZMTransportRequest requestGetFromPath:@"Foo"];
-
-    // when
-    [request forceToBackgroundSession];
-    
-    // then
-    XCTAssertTrue(request.shouldUseOnlyBackgroundSession);
-    XCTAssertFalse(request.shouldUseVoipSession);
-}
-
 - (void)testThatARequestShouldUseOnlyVoipSessionWhenForced
 {
     // given
@@ -950,9 +936,6 @@
 {
     // given
     ZMTransportRequest *sut = [[ZMTransportRequest alloc] initWithPath:@"/foo" method:ZMMethodPOST payload:nil];
-    if (usingBackgroundSession) {
-        [sut forceToBackgroundSession];
-    }
     
     NSMutableURLRequest *request = [[NSMutableURLRequest alloc] init];
     
