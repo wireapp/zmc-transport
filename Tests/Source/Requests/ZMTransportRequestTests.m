@@ -578,7 +578,6 @@
     ZMTransportRequest *request = [ZMTransportRequest requestGetFromPath:@"Foo"];
     
     // then
-    XCTAssertFalse(request.shouldUseOnlyBackgroundSession);
     XCTAssertFalse(request.shouldUseVoipSession);
 }
 

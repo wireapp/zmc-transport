@@ -125,7 +125,6 @@ typedef NS_ENUM(int8_t, ZMTransportAccept) {
 @property (nonatomic) BOOL doesNotFollowRedirects;
 
 /// If true, the request should only be sent through background session
-@property (nonatomic, readonly) BOOL shouldUseOnlyBackgroundSession;
 @property (nonatomic, readonly) BOOL shouldUseVoipSession;
 
 @property (nonatomic, readonly, copy, nullable) NSDictionary *contentDisposition; ///< C.f. <https://tools.ietf.org/html/rfc2183>
