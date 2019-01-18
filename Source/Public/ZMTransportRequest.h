@@ -29,7 +29,7 @@ NS_ASSUME_NONNULL_BEGIN
 @class ZMTaskIdentifier;
 @class ZMURLSession;
 
-typedef void(^ZMTaskCreatedBlock)(ZMTaskIdentifier *);
+typedef void(^ZMTaskCreatedBlock)(NSUInteger);
 typedef void(^ZMCompletionHandlerBlock)(ZMTransportResponse *);
 typedef void(^ZMAccessTokenHandlerBlock)(NSString *token, NSString *type);
 typedef void(^ZMProgressHandlerBlock)(float);
