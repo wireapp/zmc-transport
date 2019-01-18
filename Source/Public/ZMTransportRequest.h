@@ -143,9 +143,6 @@ typedef NS_ENUM(int8_t, ZMTransportAccept) {
 
 - (BOOL)hasRequiredPayload;
 
-/// If this is called, the request is going to be executed on the voip session only
-- (void)forceToVoipSession;
-
 @property (nonatomic, readonly) ZMTransportAccept acceptedResponseMediaTypes; ///< C.f. RFC 7231 section 5.3.2 <http://tools.ietf.org/html/rfc7231#section-5.3.2>
 
 @end

@@ -582,21 +582,6 @@
     XCTAssertFalse(request.shouldUseVoipSession);
 }
 
-- (void)testThatARequestShouldUseOnlyVoipSessionWhenForced
-{
-    // given
-    ZMTransportRequest *request = [ZMTransportRequest requestGetFromPath:@"Foo"];
-    
-    // when
-    [request forceToVoipSession];
-    
-    // then
-    XCTAssertTrue(request.shouldUseVoipSession);
-    XCTAssertFalse(request.shouldUseOnlyBackgroundSession);
-
-}
-
-
 @end
 
 

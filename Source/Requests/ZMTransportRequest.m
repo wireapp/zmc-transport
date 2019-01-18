@@ -590,11 +590,6 @@ typedef NS_ENUM(NSUInteger, ZMTransportRequestSessionType) {
     return self.transportSessionType == ZMTransportRequestSessionTypeUseVoipSessionOnly;
 }
 
-- (void)forceToVoipSession;
-{
-    self.transportSessionType = ZMTransportRequestSessionTypeUseVoipSessionOnly;
-}
-
 - (NSString *)completionHandlerDescription;
 {
     return [NSString stringWithFormat:@"%@ %@", self.methodAsString, self.path];
