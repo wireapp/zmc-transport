@@ -147,7 +147,6 @@ typedef NS_ENUM(NSUInteger, ZMTransportRequestSessionType) {
 /// Hash of the content debug information. This is used to identify the content of the request (e.g. detect repeated requests with the same content)
 @property (nonatomic) NSUInteger contentDebugInformationHash;
 @property (nonatomic) BOOL shouldCompress;
-@property (nonatomic) NSURL *fileUploadURL;
 @property (nonatomic) NSDate *startOfUploadTimestamp;
 @property (nonatomic) ZMTransportRequestSessionType transportSessionType;
 @property (nonatomic) float progress;
@@ -316,10 +315,9 @@ typedef NS_ENUM(NSUInteger, ZMTransportRequestSessionType) {
 {
     static NSString * const ContentTypeHeader = @"Content-Type";
     
-    BOOL isFileUploadWithContentType = (self.binaryDataType != nil) && (self.fileUploadURL != nil);
     BOOL hasBinaryData = (self.binaryDataType != nil) && (self.binaryData != nil);
     
-    if (hasBinaryData || isFileUploadWithContentType) {
+    if (hasBinaryData) {
         NSString *mediaType;
         if (! hasUTJSONSupport()) {
             if ([self.binaryDataType isEqualToString:@"public.json"]) {

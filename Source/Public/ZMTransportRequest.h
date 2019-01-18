@@ -113,7 +113,6 @@ typedef NS_ENUM(int8_t, ZMTransportAccept) {
 @property (nonatomic, readonly, copy) NSString *path;
 @property (nonatomic, readonly) ZMTransportRequestMethod method;
 @property (nonatomic, readonly, copy, nullable) NSData *binaryData;
-@property (nonatomic, readonly, nullable) NSURL *fileUploadURL;
 @property (nonatomic, readonly, copy, nullable) NSString *binaryDataType; ///< Uniform type identifier (UTI) of the binary data
 @property (nonatomic, readonly) BOOL needsAuthentication;
 @property (nonatomic, readonly) BOOL responseWillContainAccessToken;
