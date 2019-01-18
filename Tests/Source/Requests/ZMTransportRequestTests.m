@@ -571,16 +571,6 @@
     XCTAssertNoThrow([transportRequest updateProgress:1.0f]);
 }
 
-
-- (void)testThatARequestShouldBeExecutedOnlyOnForegroundSessionByDefault
-{
-    // given
-    ZMTransportRequest *request = [ZMTransportRequest requestGetFromPath:@"Foo"];
-    
-    // then
-    XCTAssertFalse(request.shouldUseVoipSession);
-}
-
 @end
 
 
