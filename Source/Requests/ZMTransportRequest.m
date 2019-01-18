@@ -453,7 +453,7 @@ static BOOL hasUTJSONSupport(void)
     }
 }
 
-- (void)callTaskCreationHandlersWithIdentifier:(NSUInteger)identifier sessionIdentifier:(__unused NSString *)sessionIdentifier;
+- (void)callTaskCreationHandlersWithIdentifier:(NSUInteger)identifier;
 {
     NSString *label = [NSString stringWithFormat:@"Task created handler of REQ %@ %@ -> %lu ", self.methodAsString, self.path, (unsigned long)identifier];
     ZMSDispatchGroup *handlerGroup = [ZMSDispatchGroup groupWithLabel:@"ZMTransportRequest task creation handler"];

@@ -483,7 +483,7 @@ totalBytesExpectedToSend:(int64_t)totalBytesExpectedToSend
         [self setRequest:transportRequest forTask:task];
     }
     
-    [transportRequest callTaskCreationHandlersWithIdentifier:task.taskIdentifier sessionIdentifier:self.identifier];
+    [transportRequest callTaskCreationHandlersWithIdentifier:task.taskIdentifier];
     return task;
 }
 

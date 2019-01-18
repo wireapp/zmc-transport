@@ -126,7 +126,7 @@ typedef NS_ENUM(int8_t, ZMTransportAccept) {
 - (void)addTaskCreatedHandler:(ZMTaskCreatedHandler *)taskCreatedHandler NS_SWIFT_NAME(add(_:));
 - (void)addCompletionHandler:(ZMCompletionHandler *)completionHandler NS_SWIFT_NAME(add(_:));
 - (void)addProgressHandler:(ZMTaskProgressHandler *)progressHandler NS_SWIFT_NAME(add(_:));
-- (void)callTaskCreationHandlersWithIdentifier:(NSUInteger)identifier sessionIdentifier:(NSString *)sessionIdentifier;
+- (void)callTaskCreationHandlersWithIdentifier:(NSUInteger)identifier;
 - (void)completeWithResponse:(ZMTransportResponse *)response;
 - (void)updateProgress:(float)progress;
 - (BOOL)isEqualToRequest:(ZMTransportRequest *)request;

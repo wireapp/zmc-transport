@@ -247,7 +247,7 @@
     [transportRequest addTaskCreatedHandler:handler];
     
     // when
-    [transportRequest callTaskCreationHandlersWithIdentifier:2 sessionIdentifier:@"test-session"];
+    [transportRequest callTaskCreationHandlersWithIdentifier:2];
     
     // then
     XCTAssert([self waitForCustomExpectationsWithTimeout:0.5]);
@@ -276,7 +276,7 @@
     [transportRequest addTaskCreatedHandler:secondHandler];
     
     // when
-    [transportRequest callTaskCreationHandlersWithIdentifier:2 sessionIdentifier:@"test-session"];
+    [transportRequest callTaskCreationHandlersWithIdentifier:2];
     
     // then
     XCTAssert([self waitForCustomExpectationsWithTimeout:0.5]);
@@ -288,7 +288,7 @@
     ZMTransportRequest *transportRequest = [ZMTransportRequest requestWithPath:@"/something" method:ZMMethodPUT payload:@{}];
     
     // when
-    XCTAssertNoThrow([transportRequest callTaskCreationHandlersWithIdentifier:0 sessionIdentifier:@""]);
+    XCTAssertNoThrow([transportRequest callTaskCreationHandlersWithIdentifier:0]);
 }
 
 - (void)testThatItSetsStartOfUploadTimestamp
