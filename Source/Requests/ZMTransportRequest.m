@@ -369,11 +369,10 @@ static BOOL hasUTJSONSupport(void)
 
 - (void)setTimeoutIntervalOnRequestIfNeeded:(NSMutableURLRequest *)request
                   applicationIsBackgrounded:(BOOL)inBackground
-                     usingBackgroundSession:(BOOL)usingBackgroundSession
 {
     // We only want to override the timeout for requests using
     // the foregroundsession while we are running in the background
-    if (! inBackground || usingBackgroundSession) {
+    if (! inBackground) {
         return;
     }
     

@@ -845,29 +845,18 @@
 
 @implementation ZMTransportRequestTests (TimeoutOverride)
 
-- (void)testThatItSetsTheTimeoutOverrideWhenTheApplicationisInTheBackgroundAndTheRequestDoesNotEnforceTheBackgroundSession;
+- (void)testThatItSetsTheTimeoutOverrideWhenTheApplicationisInTheBackground;
 {
-    [self checkThatItDoesSetTheTimeoutInterval:YES applicationInBackground:YES usingBackgroundSession:NO];
+    [self checkThatItDoesSetTheTimeoutInterval:YES applicationInBackground:YES];
 }
 
-- (void)testThatItDoesNotSetTheTimeoutOverrideWhenTheApplicationisInTheBackgroundAndTheRequestDoesEnforceTheBackgroundSession;
+- (void)testThatItDoesNotSetTheTimeoutOverrideWhenTheApplicationisNotInTheBackgroundAnd;
 {
-    [self checkThatItDoesSetTheTimeoutInterval:NO applicationInBackground:YES usingBackgroundSession:YES];
-}
-
-- (void)testThatItDoesNotSetTheTimeoutOverrideWhenTheApplicationisNotInTheBackgroundAndTheRequestDoesNotEnforceTheBackgroundSession;
-{
-    [self checkThatItDoesSetTheTimeoutInterval:NO applicationInBackground:NO usingBackgroundSession:NO];
-}
-
-- (void)testThatItDoesNotSetTheTimeoutOverrideWhenTheApplicationisNotInTheBackgroundAndTheRequestDoesEnforceTheBackgroundSession;
-{
-    [self checkThatItDoesSetTheTimeoutInterval:NO applicationInBackground:NO usingBackgroundSession:YES];
+    [self checkThatItDoesSetTheTimeoutInterval:NO applicationInBackground:NO];
 }
 
 - (void)checkThatItDoesSetTheTimeoutInterval:(BOOL)shouldSetInterval
                      applicationInBackground:(BOOL)backgrounded
-                      usingBackgroundSession:(BOOL)usingBackgroundSession
 {
     // given
     ZMTransportRequest *sut = [[ZMTransportRequest alloc] initWithPath:@"/foo" method:ZMMethodPOST payload:nil];
@@ -875,7 +864,7 @@
     NSMutableURLRequest *request = [[NSMutableURLRequest alloc] init];
     
     // when
-    [sut setTimeoutIntervalOnRequestIfNeeded:request applicationIsBackgrounded:backgrounded usingBackgroundSession:usingBackgroundSession];
+    [sut setTimeoutIntervalOnRequestIfNeeded:request applicationIsBackgrounded:backgrounded];
     
     // then
     if (shouldSetInterval) {

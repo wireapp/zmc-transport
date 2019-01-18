@@ -385,8 +385,7 @@ static NSInteger const DefaultMaximumRequests = 6;
     NSMutableURLRequest *URLRequest = [[NSMutableURLRequest alloc] initWithURL:url];
     [URLRequest configureWithRequest:request];
     [request setTimeoutIntervalOnRequestIfNeeded:URLRequest
-                       applicationIsBackgrounded:self.applicationIsBackgrounded
-                          usingBackgroundSession:NO];
+                       applicationIsBackgrounded:self.applicationIsBackgrounded];
     
     [self.accessTokenHandler checkIfRequest:request needsToFetchAccessTokenInURLRequest:URLRequest];
     
