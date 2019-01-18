@@ -30,7 +30,6 @@
 #import "ZMTransportCodec.h"
 #import "NSData+Multipart.h"
 #import "ZMURLSession.h"
-#import "ZMTaskIdentifier.h"
 #import "ZMTransportRequest+AssetGet.h"
 
 const NSTimeInterval ZMTransportRequestDefaultExpirationInterval = 60;
