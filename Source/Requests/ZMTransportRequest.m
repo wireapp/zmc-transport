@@ -42,13 +42,6 @@ static BOOL hasUTJSONSupport(void)
     return (&UTTypeIsDynamic != NULL);
 }
 
-
-typedef NS_ENUM(NSUInteger, ZMTransportRequestSessionType) {
-    ZMTransportRequestSessionTypeUseDefaultSession,
-    ZMTransportRequestSessionTypeUseBackgroundSessionOnly,
-    ZMTransportRequestSessionTypeUseVoipSessionOnly,
-};
-
 @interface ZMCompletionHandler ()
 
 
@@ -148,7 +141,6 @@ typedef NS_ENUM(NSUInteger, ZMTransportRequestSessionType) {
 @property (nonatomic) NSUInteger contentDebugInformationHash;
 @property (nonatomic) BOOL shouldCompress;
 @property (nonatomic) NSDate *startOfUploadTimestamp;
-@property (nonatomic) ZMTransportRequestSessionType transportSessionType;
 @property (nonatomic) float progress;
 @property (nonatomic) NSMutableDictionary <NSString *, NSString *> *additionalHeaderFields;
 @property (nonatomic) BackgroundActivity *activity;
