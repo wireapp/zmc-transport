@@ -386,7 +386,7 @@ static NSInteger const DefaultMaximumRequests = 6;
     [URLRequest configureWithRequest:request];
     [request setTimeoutIntervalOnRequestIfNeeded:URLRequest
                        applicationIsBackgrounded:self.applicationIsBackgrounded
-                          usingBackgroundSession:session.isBackgroundSession];
+                          usingBackgroundSession:NO];
     
     [self.accessTokenHandler checkIfRequest:request needsToFetchAccessTokenInURLRequest:URLRequest];
     

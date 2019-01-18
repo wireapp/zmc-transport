@@ -469,11 +469,6 @@ totalBytesExpectedToSend:(int64_t)totalBytesExpectedToSend
 
 @implementation ZMURLSession (TaskGeneration)
 
-- (BOOL)isBackgroundSession;
-{
-    return NO;//[self.identifier hasPrefix:ZMURLSessionBackgroundIdentifier];
-}
-
 - (NSURLSessionTask *)taskWithRequest:(NSURLRequest *)request bodyData:(NSData *)bodyData transportRequest:(ZMTransportRequest *)transportRequest;
 {
     NSURLSessionTask *task;
@@ -483,30 +478,11 @@ totalBytesExpectedToSend:(int64_t)totalBytesExpectedToSend
         return nil;
     }
     
-    if (nil != transportRequest.fileUploadURL) {
-        RequireString(self.isBackgroundSession, "File uploads need to set 'forceToBackgroundSession' on the request");
-        task = [self.backingSession uploadTaskWithRequest:request fromFile:transportRequest.fileUploadURL];
-        ZMLogDebug(@"Created file upload task: %@, url: %@", task, transportRequest.fileUploadURL);
+    if (bodyData != nil) {
+        task = [self.backingSession uploadTaskWithRequest:request fromData:bodyData];
+    } else {
+        task = [self.backingSession dataTaskWithRequest:request];
     }
-    else if (self.isBackgroundSession) {
-         if (bodyData != nil) {
-            NSURL *fileURL = [self.temporaryFiles temporaryFileWithBodyData:bodyData];
-            VerifyReturnNil(fileURL != nil);
-            task = [self.backingSession uploadTaskWithRequest:request fromFile:fileURL];
-            [self.temporaryFiles setTemporaryFile:fileURL forTaskIdentifier:task.taskIdentifier];
-        } else {
-            task = [self.backingSession downloadTaskWithRequest:request];
-        }
-        ZMLogDebug(@"Created background task: %@ %@ %@", task, task.originalRequest.HTTPMethod, task.originalRequest.URL);
-    }
-    else {
-        if (bodyData != nil) {
-            task = [self.backingSession uploadTaskWithRequest:request fromData:bodyData];
-        } else {
-            task = [self.backingSession dataTaskWithRequest:request];
-        }
-    }
-    
     if (transportRequest != nil) {
         [self setRequest:transportRequest forTask:task];
     }

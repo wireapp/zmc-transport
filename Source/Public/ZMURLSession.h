@@ -60,8 +60,6 @@ NS_ASSUME_NONNULL_BEGIN
 
 @interface ZMURLSession (TaskGeneration)
 
-@property (nonatomic, readonly) BOOL isBackgroundSession;
-
 - (nullable NSURLSessionTask *)taskWithRequest:(NSURLRequest *)request bodyData:(nullable NSData *)bodyData transportRequest:(nullable ZMTransportRequest *)request;
 
 @end

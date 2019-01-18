@@ -389,7 +389,6 @@ static XCTestCase *currentTestCase;
     self.URLSession = [OCMockObject mockForClass:ZMURLSession.class];
     NSURLSessionConfiguration *config = [NSURLSessionConfiguration defaultSessionConfiguration];
     (void)[(ZMURLSession *) [[(id) self.URLSession stub] andReturn:config] configuration];
-    [[[(id)self.URLSession stub] andReturnValue:@NO] isBackgroundSession];
     [[(id)self.URLSession stub] tearDown];
     [self verifyMockLater:self.URLSession];
     

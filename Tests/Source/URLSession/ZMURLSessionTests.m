@@ -526,11 +526,6 @@ willPerformHTTPRedirection:response
 
 @implementation ZMURLSessionTests (TaskGeneration)
 
-- (void)testThatItDetectsAForegroundSession;
-{
-    XCTAssertFalse(self.sut.isBackgroundSession);
-}
-
 - (void)testThatItCreatesADataTask;
 {
     // given
