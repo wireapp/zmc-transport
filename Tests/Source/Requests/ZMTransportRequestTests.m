@@ -125,27 +125,6 @@
     XCTAssertFalse(request.shouldFailInsteadOfRetry);
 }
 
-- (void)testThatFileUploadRequestSetsProperties;
-{
-    // given
-    NSURL *fileURL = [NSURL URLWithString:@"/url/to/some/private/file"];
-    NSString *path = @"some/path";
-    
-    // when
-    NSString *contentType = @"multipart/mixed; boundary=frontier";
-    ZMTransportRequest *request = [ZMTransportRequest uploadRequestWithFileURL:fileURL path:path contentType:contentType];
-    
-    // then
-    XCTAssertNotNil(request);
-    XCTAssertNil(request.payload);
-    XCTAssertEqualObjects(request.path, path);
-    XCTAssertEqual(request.method, ZMMethodPOST);
-    XCTAssertNil(request.contentDisposition);
-    XCTAssertNil(request.binaryData);
-    XCTAssertEqualObjects(fileURL, request.fileUploadURL);
-    XCTAssertTrue(request.shouldFailInsteadOfRetry);
-}
-
 - (void)testThatEmptyPUTRequestSetsProperties;
 {
     // given
@@ -753,24 +732,6 @@
     // then
     XCTAssertNil(request.HTTPBody);
     XCTAssertNil([request valueForHTTPHeaderField:@"Content-Type"]);
-}
-
-- (void)testThatItSetsTheContentTypeForFileUploadRequests;
-{
-    // given
-    NSString *contentType = @"multipart/mixed; boundary=frontier";
-    NSURL *fileURL = [NSURL URLWithString:@"file://url/to/file"];
-    ZMTransportRequest *sut = [ZMTransportRequest uploadRequestWithFileURL:fileURL
-                                                                      path:[[NSBundle mainBundle] bundlePath]
-                                                               contentType:contentType];
-    NSMutableURLRequest *request = [[NSMutableURLRequest alloc] init];
-    
-    // when
-    [sut setBodyDataAndMediaTypeOnHTTPRequest:request];
-    
-    // then
-    XCTAssertNil(request.HTTPBody);
-    XCTAssertEqualObjects([request valueForHTTPHeaderField:@"Content-Type"], contentType);
 }
 
 - (void)testThatItSetsTheContentDispositionForImageRequest;

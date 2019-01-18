@@ -96,7 +96,6 @@ typedef NS_ENUM(int8_t, ZMTransportAccept) {
 
 + (instancetype)requestGetFromPath:(NSString *)path;
 + (instancetype)compressedGetFromPath:(NSString *)path;
-+ (instancetype)uploadRequestWithFileURL:(NSURL *)url path:(NSString *)path contentType:(NSString *)contentType;
 
 + (instancetype)emptyPutRequestWithPath:(NSString *)path;
 + (instancetype)imageGetRequestFromPath:(NSString *)path;
