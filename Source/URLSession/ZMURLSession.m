@@ -24,7 +24,6 @@
 #import "NSError+ZMTransportSession.h"
 #import "ZMTaskIdentifierMap.h"
 #import "ZMServerTrust.h"
-#import "ZMTemporaryFileListForBackgroundRequests.h"
 #import "ZMTransportRequest+Internal.h"
 #import "ZMTLogging.h"
 #import "ZMTransportResponse.h"
@@ -49,7 +48,6 @@ static NSUInteger const ZMTransportDecreasedProgressCancellationLeeway = 1024 * 
 @property (nonatomic, strong) id<BackendTrustProvider> trustProvider;
 
 @property (nonatomic) NSURLSession *backingSession;
-@property (nonatomic) ZMTemporaryFileListForBackgroundRequests *temporaryFiles;
 
 @property (nonatomic) BOOL tornDown;
 @end
@@ -73,7 +71,6 @@ ZM_EMPTY_ASSERTING_INIT();
         _taskIdentifierToRequest = [[ZMTaskIdentifierMap alloc] init];
         _taskIdentifierToData = [[ZMTaskIdentifierMap alloc] init];
         self.identifier = identifier;
-        self.temporaryFiles = [[ZMTemporaryFileListForBackgroundRequests alloc] init];
     }
     return self;
 }
@@ -160,7 +157,6 @@ ZM_EMPTY_ASSERTING_INIT();
     [self.taskIdentifierToRequest removeObjectForTaskIdentifier:task.taskIdentifier];
     [self.taskIdentifierToTimeoutTimer removeObjectForTaskIdentifier:task.taskIdentifier];
     [self.taskIdentifierToData removeObjectForTaskIdentifier:task.taskIdentifier];
-    [self.temporaryFiles deleteFileForTaskID:task.taskIdentifier];
 }
 
 - (NSString *)description;

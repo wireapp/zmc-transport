@@ -24,7 +24,6 @@
 @import OCMock;
 
 #import "ZMURLSession+Internal.h"
-#import "ZMTemporaryFileListForBackgroundRequests.h"
 #import "Fakes.h"
 #import "WireTransport_ios_tests-Swift.h"
 
