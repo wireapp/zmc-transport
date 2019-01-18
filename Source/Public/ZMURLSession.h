@@ -29,10 +29,6 @@ NS_ASSUME_NONNULL_BEGIN
 @protocol ZMURLSessionDelegate;
 @protocol BackendTrustProvider;
 
-extern NSString * const ZMURLSessionBackgroundIdentifier;
-extern NSString * const ZMURLSessionForegroundIdentifier;
-extern NSString * const ZMURLSessionVoipIdentifier;
-
 @interface ZMURLSession : NSObject <TearDownCapable>
 
 @property (nonatomic, readonly) NSString *identifier;

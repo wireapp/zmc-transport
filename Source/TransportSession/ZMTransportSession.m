@@ -155,8 +155,7 @@ static NSInteger const DefaultMaximumRequests = 6;
     NSOperationQueue *queue = [NSOperationQueue zm_serialQueueWithName:[ZMTransportSession identifierWithPrefix:@"ZMTransportSession" userIdentifier:userIdentifier]];
     ZMSDispatchGroup *group = [ZMSDispatchGroup groupWithLabel:[ZMTransportSession identifierWithPrefix:@"ZMTransportSession init" userIdentifier:userIdentifier]];
     
-    
-    NSString *identifier = [NSString stringWithFormat:@"%@-%@", ZMURLSessionForegroundIdentifier, userIdentifier.transportString];
+    NSString *identifier = [ZMTransportSession identifierWithPrefix:@"foreground-session" userIdentifier:userIdentifier];
     ZMURLSession *session = [[ZMURLSession alloc] initWithConfiguration:[[self class] foregroundSessionConfiguration] trustProvider:environment delegate:self delegateQueue:queue identifier:identifier];
     
     ZMTransportRequestScheduler *scheduler = [[ZMTransportRequestScheduler alloc] initWithSession:self operationQueue:queue group:group reachability:reachability];

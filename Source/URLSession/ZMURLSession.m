@@ -471,7 +471,7 @@ totalBytesExpectedToSend:(int64_t)totalBytesExpectedToSend
 
 - (BOOL)isBackgroundSession;
 {
-    return [self.identifier hasPrefix:ZMURLSessionBackgroundIdentifier];
+    return NO;//[self.identifier hasPrefix:ZMURLSessionBackgroundIdentifier];
 }
 
 - (NSURLSessionTask *)taskWithRequest:(NSURLRequest *)request bodyData:(NSData *)bodyData transportRequest:(ZMTransportRequest *)transportRequest;
