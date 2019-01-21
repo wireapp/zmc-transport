@@ -381,18 +381,6 @@ static BOOL hasUTJSONSupport(void)
     }];
 }
 
-- (void)setTimeoutIntervalOnRequestIfNeeded:(NSMutableURLRequest *)request
-                  applicationIsBackgrounded:(BOOL)inBackground
-{
-    // We only want to override the timeout for requests using
-    // the foregroundsession while we are running in the background
-    if (! inBackground) {
-        return;
-    }
-    
-    request.timeoutInterval = ZMTransportRequestReducedExpirationInterval;
-}
-
 - (void)setContentDispositionOnHTTPRequest:(NSMutableURLRequest *)URLRequest;
 {
     if (self.contentDisposition == nil) {

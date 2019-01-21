@@ -43,8 +43,6 @@
 @end
 @interface ZMTransportRequestTests (Payload)
 @end
-@interface ZMTransportRequestTests (TimeoutOverride)
-@end
 @interface ZMTransportRequestTests (Debugging)
 @end
 
@@ -880,41 +878,6 @@
 }
 
 @end
-
-
-@implementation ZMTransportRequestTests (TimeoutOverride)
-
-- (void)testThatItSetsTheTimeoutOverrideWhenTheApplicationisInTheBackground;
-{
-    [self checkThatItDoesSetTheTimeoutInterval:YES applicationInBackground:YES];
-}
-
-- (void)testThatItDoesNotSetTheTimeoutOverrideWhenTheApplicationisNotInTheBackgroundAnd;
-{
-    [self checkThatItDoesSetTheTimeoutInterval:NO applicationInBackground:NO];
-}
-
-- (void)checkThatItDoesSetTheTimeoutInterval:(BOOL)shouldSetInterval
-                     applicationInBackground:(BOOL)backgrounded
-{
-    // given
-    ZMTransportRequest *sut = [[ZMTransportRequest alloc] initWithPath:@"/foo" method:ZMMethodPOST payload:nil];
-    
-    NSMutableURLRequest *request = [[NSMutableURLRequest alloc] init];
-    
-    // when
-    [sut setTimeoutIntervalOnRequestIfNeeded:request applicationIsBackgrounded:backgrounded];
-    
-    // then
-    if (shouldSetInterval) {
-        XCTAssertEqual(request.timeoutInterval, 25);
-    } else {
-        XCTAssertEqual(request.timeoutInterval, 60);
-    }
-}
-
-@end
-
 
 @implementation ZMTransportRequestTests (Debugging)
 
