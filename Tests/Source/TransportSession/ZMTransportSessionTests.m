@@ -41,7 +41,6 @@
 #import "NSError+ZMTransportSession.h"
 #import "ZMUserAgent.h"
 #import "ZMURLSession.h"
-#import "ZMURLSessionSwitch.h"
 #import "Fakes.h"
 #import "ZMPersistentCookieStorage.h"
 #import "WireTransport_ios_tests-Swift.h"
