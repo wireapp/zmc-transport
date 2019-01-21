@@ -54,7 +54,6 @@ static NSInteger const DefaultMaximumRequests = 6;
 @interface ZMTransportSession () <ZMAccessTokenHandlerDelegate, ZMTimerClient>
 
 @property (nonatomic) Class pushChannelClass;
-@property (nonatomic) BOOL applicationIsBackgrounded;
 @property (nonatomic) BOOL shouldKeepWebsocketOpen;
 
 @property (atomic) BOOL firstRequestFired;
@@ -513,7 +512,6 @@ static NSInteger const DefaultMaximumRequests = 6;
         [queue addOperationWithBlock:^{
             // We need to kick into 'Flush' 1st, to get rid of any items stuck in "5xx back-off":
             self.requestScheduler.schedulerState = ZMTransportRequestSchedulerStateFlush;
-            self.applicationIsBackgrounded = YES;
             self.requestScheduler.schedulerState = ZMTransportRequestSchedulerStateNormal;
             [ZMTransportSession notifyNewRequestsAvailable:self];
             [group leave];
@@ -536,7 +534,6 @@ static NSInteger const DefaultMaximumRequests = 6;
     if ((queue != nil) && (group != nil)) {
         [group enter];
         [queue addOperationWithBlock:^{
-            self.applicationIsBackgrounded = NO;
             [self.requestScheduler applicationWillEnterForeground];
             self.requestScheduler.schedulerState = ZMTransportRequestSchedulerStateNormal;
             [group leave];
