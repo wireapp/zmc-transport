@@ -258,7 +258,7 @@
     // given
     XCTestExpectation *expectation = [self expectationWithDescription:@"Task created handler called"];
     ZMTransportRequest *transportRequest = [ZMTransportRequest requestWithPath:@"/something" method:ZMMethodPUT payload:@{}];
-    ZMTaskIdentifier *expectedIdentifier = [ZMTaskIdentifier identifierWithIdentifier:2 sessionIdentifier:@"test-session"];
+    ZMTaskIdentifier *expectedIdentifier = [ZMTaskIdentifier identifierWithIdentifier:2];
     
     ZMTaskCreatedHandler *handler = [ZMTaskCreatedHandler handlerOnGroupQueue:self.fakeSyncContext block:^(ZMTaskIdentifier *identifier) {
         XCTAssertEqualObjects(identifier, expectedIdentifier);
@@ -281,7 +281,7 @@
     XCTestExpectation *secondExpectation = [self expectationWithDescription:@"Second task created handler called"];;
     
     ZMTransportRequest *transportRequest = [ZMTransportRequest requestWithPath:@"/something" method:ZMMethodPUT payload:@{}];
-    ZMTaskIdentifier *expectedIdentifier = [ZMTaskIdentifier identifierWithIdentifier:2 sessionIdentifier:@"test-session"];
+    ZMTaskIdentifier *expectedIdentifier = [ZMTaskIdentifier identifierWithIdentifier:2];
     
     ZMTaskCreatedHandler *firstHandler = [ZMTaskCreatedHandler handlerOnGroupQueue:self.fakeSyncContext block:^(ZMTaskIdentifier *identifier) {
         XCTAssertEqualObjects(identifier, expectedIdentifier);

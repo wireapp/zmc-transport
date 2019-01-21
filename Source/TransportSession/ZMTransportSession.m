@@ -735,10 +735,7 @@ static NSInteger const DefaultMaximumRequests = 6;
 
 - (void)cancelTaskWithIdentifier:(ZMTaskIdentifier *)identifier;
 {
-    if ([identifier.sessionIdentifier isEqualToString:self.session.identifier]) {
-        [self.session cancelTaskWithIdentifier:identifier.identifier completionHandler:nil];
-        return;
-    }
+    [self.session cancelTaskWithIdentifier:identifier.identifier completionHandler:nil];
 }
 
 @end
