@@ -102,8 +102,7 @@ static NSInteger const DefaultMaximumRequests = 6;
     return [self initWithEnvironment:nil
                        cookieStorage:nil
                         reachability:nil
-                  initialAccessToken:nil
-          applicationGroupIdentifier:nil];
+                  initialAccessToken:nil];
 }
 
 + (void)setUpConfiguration:(NSURLSessionConfiguration *)configuration;
@@ -149,7 +148,6 @@ static NSInteger const DefaultMaximumRequests = 6;
                       cookieStorage:(ZMPersistentCookieStorage *)cookieStorage
                        reachability:(id<ReachabilityProvider, TearDownCapable>)reachability
                  initialAccessToken:(ZMAccessToken *)initialAccessToken
-         applicationGroupIdentifier:(__unused NSString *)applicationGroupIdentifier
 {
     NSUUID *userIdentifier = cookieStorage.userIdentifier;
     NSOperationQueue *queue = [NSOperationQueue zm_serialQueueWithName:[ZMTransportSession identifierWithPrefix:@"ZMTransportSession" userIdentifier:userIdentifier]];
