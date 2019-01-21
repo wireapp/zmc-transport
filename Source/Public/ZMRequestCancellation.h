@@ -18,12 +18,13 @@
 
 
 @import Foundation;
+#import "ZMTaskIdentifier.h"
 
 NS_ASSUME_NONNULL_BEGIN
 
 @protocol ZMRequestCancellation <NSObject>
 
-- (void)cancelTaskWithIdentifier:(NSUInteger)taskIdentifier;
+- (void)cancelTaskWithIdentifier:(ZMTaskIdentifier *)taskIdentifier;
 
 @end
 

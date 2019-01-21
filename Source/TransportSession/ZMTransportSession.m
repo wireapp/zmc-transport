@@ -733,9 +733,12 @@ static NSInteger const DefaultMaximumRequests = 6;
 
 @implementation ZMTransportSession (RequestCancellation)
 
-- (void)cancelTaskWithIdentifier:(NSUInteger)identifier;
+- (void)cancelTaskWithIdentifier:(ZMTaskIdentifier *)identifier;
 {
-    [self.session cancelTaskWithIdentifier:identifier completionHandler:nil];
+    if ([identifier.sessionIdentifier isEqualToString:self.session.identifier]) {
+        [self.session cancelTaskWithIdentifier:identifier.identifier completionHandler:nil];
+        return;
+    }
 }
 
 @end

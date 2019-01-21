@@ -26,6 +26,7 @@ NS_ASSUME_NONNULL_BEGIN
 @class ZMTransportResponse;
 @protocol ZMTransportData;
 @protocol ZMSGroupQueue;
+@class ZMTaskIdentifier;
 @class ZMURLSession;
 
 typedef void(^ZMTaskCreatedBlock)(NSUInteger);
