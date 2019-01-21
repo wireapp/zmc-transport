@@ -206,6 +206,18 @@ static BOOL hasUTJSONSupport(void)
     return [self requestWithPath:path method:ZMMethodGET payload:nil shouldCompress:YES];
 }
 
++ (instancetype)uploadRequestWithFileURL:(NSURL *)url path:(NSString *)path contentType:(NSString *)contentType;
+{
+    ZMTransportRequest *request = [[self.class alloc] initWithPath:path
+                                                            method:ZMMethodPOST
+                                                        binaryData:nil
+                                                              type:contentType
+                                                contentDisposition:nil];
+    request.fileUploadURL = url;
+    request.shouldFailInsteadOfRetry = YES;
+    return request;
+}
+
 + (instancetype)emptyPutRequestWithPath:(NSString *)path;
 {
     NSString *type = (hasUTJSONSupport() ? ((__bridge NSString *) kUTTypeJSON) : @"public.json");
