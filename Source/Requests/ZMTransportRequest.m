@@ -139,6 +139,7 @@ static BOOL hasUTJSONSupport(void)
 /// Hash of the content debug information. This is used to identify the content of the request (e.g. detect repeated requests with the same content)
 @property (nonatomic) NSUInteger contentDebugInformationHash;
 @property (nonatomic) BOOL shouldCompress;
+@property (nonatomic) NSURL *fileUploadURL;
 @property (nonatomic) NSDate *startOfUploadTimestamp;
 @property (nonatomic) float progress;
 @property (nonatomic) NSMutableDictionary <NSString *, NSString *> *additionalHeaderFields;
@@ -318,9 +319,10 @@ static BOOL hasUTJSONSupport(void)
 {
     static NSString * const ContentTypeHeader = @"Content-Type";
     
+    BOOL isFileUploadWithContentType = (self.binaryDataType != nil) && (self.fileUploadURL != nil);
     BOOL hasBinaryData = (self.binaryDataType != nil) && (self.binaryData != nil);
     
-    if (hasBinaryData) {
+    if (hasBinaryData || isFileUploadWithContentType) {
         NSString *mediaType;
         if (! hasUTJSONSupport()) {
             if ([self.binaryDataType isEqualToString:@"public.json"]) {
