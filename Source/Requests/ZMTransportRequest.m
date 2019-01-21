@@ -468,9 +468,10 @@ static BOOL hasUTJSONSupport(void)
     }
 }
 
-- (void)callTaskCreationHandlersWithIdentifier:(NSUInteger)identifier;
+- (void)callTaskCreationHandlersWithIdentifier:(NSUInteger)identifier sessionIdentifier:(NSString *)sessionIdentifier;
 {
-    NSString *label = [NSString stringWithFormat:@"Task created handler of REQ %@ %@ -> %lu ", self.methodAsString, self.path, (unsigned long)identifier];
+    ZMTaskIdentifier *taskIdentifier = [ZMTaskIdentifier identifierWithIdentifier:identifier sessionIdentifier:sessionIdentifier];
+    NSString *label = [NSString stringWithFormat:@"Task created handler of REQ %@ %@ -> %@ ", self.methodAsString, self.path, taskIdentifier];
     ZMSDispatchGroup *handlerGroup = [ZMSDispatchGroup groupWithLabel:@"ZMTransportRequest task creation handler"];
 
     // TODO Alexis: do not execute if creationActivity is nil
@@ -481,7 +482,7 @@ static BOOL hasUTJSONSupport(void)
         if (nil != queue) {
             [queue performGroupedBlock:^{
                 ZMSTimePoint *tp = [ZMSTimePoint timePointWithInterval:6 label:label];
-                handler.block(identifier);
+                handler.block(taskIdentifier);
                 [tp warnIfLongerThanInterval];
                 [handlerGroup leave];
             }];

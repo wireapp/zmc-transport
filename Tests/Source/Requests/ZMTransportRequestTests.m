@@ -258,10 +258,10 @@
     // given
     XCTestExpectation *expectation = [self expectationWithDescription:@"Task created handler called"];
     ZMTransportRequest *transportRequest = [ZMTransportRequest requestWithPath:@"/something" method:ZMMethodPUT payload:@{}];
-    NSUInteger expectedIdentifier = 2;
+    ZMTaskIdentifier *expectedIdentifier = [ZMTaskIdentifier identifierWithIdentifier:2 sessionIdentifier:@"test-session"];
     
-    ZMTaskCreatedHandler *handler = [ZMTaskCreatedHandler handlerOnGroupQueue:self.fakeSyncContext block:^(NSUInteger identifier) {
-        XCTAssertEqual(identifier, expectedIdentifier);
+    ZMTaskCreatedHandler *handler = [ZMTaskCreatedHandler handlerOnGroupQueue:self.fakeSyncContext block:^(ZMTaskIdentifier *identifier) {
+        XCTAssertEqualObjects(identifier, expectedIdentifier);
         [expectation fulfill];
     }];
     
@@ -281,15 +281,15 @@
     XCTestExpectation *secondExpectation = [self expectationWithDescription:@"Second task created handler called"];;
     
     ZMTransportRequest *transportRequest = [ZMTransportRequest requestWithPath:@"/something" method:ZMMethodPUT payload:@{}];
-    NSUInteger expectedIdentifier = 2;
+    ZMTaskIdentifier *expectedIdentifier = [ZMTaskIdentifier identifierWithIdentifier:2 sessionIdentifier:@"test-session"];
     
-    ZMTaskCreatedHandler *firstHandler = [ZMTaskCreatedHandler handlerOnGroupQueue:self.fakeSyncContext block:^(NSUInteger identifier) {
-        XCTAssertEqual(identifier, expectedIdentifier);
+    ZMTaskCreatedHandler *firstHandler = [ZMTaskCreatedHandler handlerOnGroupQueue:self.fakeSyncContext block:^(ZMTaskIdentifier *identifier) {
+        XCTAssertEqualObjects(identifier, expectedIdentifier);
         [firstExpectation fulfill];
     }];
     
-    ZMTaskCreatedHandler *secondHandler = [ZMTaskCreatedHandler handlerOnGroupQueue:self.fakeSyncContext block:^(NSUInteger identifier) {
-        XCTAssertEqual(identifier, expectedIdentifier);
+    ZMTaskCreatedHandler *secondHandler = [ZMTaskCreatedHandler handlerOnGroupQueue:self.fakeSyncContext block:^(ZMTaskIdentifier *identifier) {
+        XCTAssertEqualObjects(identifier, expectedIdentifier);
         [secondExpectation fulfill];
     }];
     
