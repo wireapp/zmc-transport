@@ -40,7 +40,6 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, readonly) NSArray <ZMURLSession *> *allSessions;
 
 - (instancetype)initWithForegroundSession:(ZMURLSession *)foregroundSession backgroundSession:(ZMURLSession *)backgroundSession voipSession:(ZMURLSession *)voipSession;
-- (instancetype)initWithForegroundSession:(ZMURLSession *)foregroundSession backgroundSession:(ZMURLSession *)backgroundSession voipSession:(ZMURLSession *)voipSession sessionCancelTimerClass:(nullable Class)sessionCancelTimerClass NS_DESIGNATED_INITIALIZER;
 
 - (void)tearDown;
 

@@ -756,46 +756,6 @@ static XCTestCase *currentTestCase;
     XCTAssertEqualObjects(payload, [NSJSONSerialization JSONObjectWithData:requestData options:0 error:NULL]);
 }
 
-- (void)testThatItSendsARequestThatShuouldUseForegroundSessionOnlyOnForegroundSessionWhenURLSwitchIsInBackground
-{
-    // given
-    NSURL *url = [NSURL URLWithString:@"https://test1.example.com"];
-    self.environment.backendURL = url;
-    self.environment.backendWSURL = url;
-    ZMURLSession *foregroundSession = [OCMockObject niceMockForClass:ZMURLSession.class];
-    ZMURLSession *backgroundSession = [OCMockObject niceMockForClass:ZMURLSession.class];
-    ZMURLSession *voipSession = [OCMockObject niceMockForClass:ZMURLSession.class];
-
-    ZMURLSessionSwitch *urlSwitch = [[ZMURLSessionSwitch alloc] initWithForegroundSession:foregroundSession backgroundSession:backgroundSession voipSession:voipSession];
-    ZMTransportSession *sut = [[ZMTransportSession alloc]
-                               initWithURLSessionSwitch:urlSwitch
-                               requestScheduler:(id) self.scheduler
-                               reachability:self.reachability
-                               queue:self.queue
-                               group:self.dispatchGroup
-                               environment:self.environment
-                               pushChannelClass:nil
-                               cookieStorage:self.cookieStorage
-                               initialAccessToken:nil];
-    
-    sut.accessToken = self.validAccessToken;
-    id<ZMTransportData> payload = @{@"numbers": @[@4, @8, @15, @16, @23, @42]};
-    [urlSwitch switchToBackgroundSession];
-    
-    // expect
-    [[(id)foregroundSession reject] taskWithRequest:OCMOCK_ANY bodyData:OCMOCK_ANY transportRequest:OCMOCK_ANY];
-    [[[(id)backgroundSession expect] andReturn:nil] taskWithRequest:OCMOCK_ANY bodyData:OCMOCK_ANY transportRequest:OCMOCK_ANY];
-    
-    // when
-    ZMTransportRequest *request = [ZMTransportRequest requestWithPath:self.dummyPath method:ZMMethodPOST payload:payload];
-    [sut sendSchedulerItem:request];
-    
-    // then
-    [sut tearDown];
-    [(id)foregroundSession verify];
-    [(id)backgroundSession verify];
-}
-
 - (void)testThatItSendsARequestOnBackgroundSessionWhenURLSwitchIsOnBackground
 {
     // given
