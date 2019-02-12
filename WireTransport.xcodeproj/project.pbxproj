@@ -41,7 +41,6 @@
 		546E89FF1B33015000DD1042 /* ZMTransportCodecTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 546E89D61B33015000DD1042 /* ZMTransportCodecTests.m */; };
 		546E8A011B33015000DD1042 /* ZMTransportRequestSchedulerTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 546E89D81B33015000DD1042 /* ZMTransportRequestSchedulerTests.m */; };
 		546E8A031B33015000DD1042 /* ZMTransportSessionTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 546E89D91B33015000DD1042 /* ZMTransportSessionTests.m */; };
-		546E8A051B33015000DD1042 /* ZMURLSessionSwitchTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 546E89DB1B33015000DD1042 /* ZMURLSessionSwitchTests.m */; };
 		546E8A071B33015000DD1042 /* ZMURLSessionTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 546E89DC1B33015000DD1042 /* ZMURLSessionTests.m */; };
 		547712251B751FA700223568 /* ocmock.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 547712191B751FA300223568 /* ocmock.framework */; };
 		547712291B751FD000223568 /* ocmock.framework in CopyFiles */ = {isa = PBXBuildFile; fileRef = 547712191B751FA300223568 /* ocmock.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
@@ -256,7 +255,6 @@
 		546E89D61B33015000DD1042 /* ZMTransportCodecTests.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ZMTransportCodecTests.m; sourceTree = "<group>"; };
 		546E89D81B33015000DD1042 /* ZMTransportRequestSchedulerTests.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ZMTransportRequestSchedulerTests.m; sourceTree = "<group>"; };
 		546E89D91B33015000DD1042 /* ZMTransportSessionTests.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ZMTransportSessionTests.m; sourceTree = "<group>"; };
-		546E89DB1B33015000DD1042 /* ZMURLSessionSwitchTests.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ZMURLSessionSwitchTests.m; sourceTree = "<group>"; };
 		546E89DC1B33015000DD1042 /* ZMURLSessionTests.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ZMURLSessionTests.m; sourceTree = "<group>"; };
 		5477120A1B751F7900223568 /* .gitignore */ = {isa = PBXFileReference; lastKnownFileType = text; path = .gitignore; sourceTree = "<group>"; };
 		5477120B1B751F7900223568 /* ios-test-host.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = "ios-test-host.xcconfig"; sourceTree = "<group>"; };
@@ -606,7 +604,6 @@
 		546E89DA1B33015000DD1042 /* URLSession */ = {
 			isa = PBXGroup;
 			children = (
-				546E89DB1B33015000DD1042 /* ZMURLSessionSwitchTests.m */,
 				546E89DC1B33015000DD1042 /* ZMURLSessionTests.m */,
 				BFEC39661CC6423700591F36 /* ZMTaskIdentifierTests.m */,
 				F1D1281A21C262120090045E /* ServerCertificateTrustTests.swift */,
@@ -1139,7 +1136,6 @@
 				546E89F51B33015000DD1042 /* ZMExponentialBackoffTests.m in Sources */,
 				546E89F71B33015000DD1042 /* ZMTaskIdentifierMapTests.m in Sources */,
 				F1D1281C21C262280090045E /* ServerCertificateTrustTests.swift in Sources */,
-				546E8A051B33015000DD1042 /* ZMURLSessionSwitchTests.m in Sources */,
 				546E89E11B33015000DD1042 /* ZMPersistentCookieStorageTests.m in Sources */,
 				F118CBBF1F432F25004DCF96 /* ZMTransportSessionTests.swift in Sources */,
 				5E2C352621A567600034F1EE /* MockBackgroundActivityManager.swift in Sources */,
