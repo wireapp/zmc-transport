@@ -21,9 +21,6 @@
 
 #import "ZMURLSessionSwitch.h"
 #import "ZMURLSession.h"
-#import "ZMSessionCancelTimer.h"
-
-
 
 @interface ZMURLSessionSwitch ()
 
