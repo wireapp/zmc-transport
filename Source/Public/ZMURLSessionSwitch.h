@@ -29,9 +29,6 @@ NS_ASSUME_NONNULL_BEGIN
 /// Switch between instances of ZMURLSession. When switching existing tasks in that session are cancelled.
 @interface ZMURLSessionSwitch : NSObject <TearDownCapable>
 
-/// The currently selected session
-@property (nonatomic, readonly) ZMURLSession *currentSession;
-
 /// The foreground session
 @property (nonatomic, readonly) ZMURLSession *foregroundSession;
 @property (nonatomic, readonly) ZMURLSession *backgroundSession;

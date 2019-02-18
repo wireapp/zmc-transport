@@ -25,7 +25,6 @@
 @interface ZMURLSessionSwitch ()
 
 @property (nonatomic) BOOL tornDown;
-@property (nonatomic) ZMURLSession *currentSession;
 @property (nonatomic) ZMURLSession *foregroundSession;
 @property (nonatomic) ZMURLSession *backgroundSession;
 @property (nonatomic) ZMURLSession *voipSession;
@@ -49,14 +48,8 @@ ZM_EMPTY_ASSERTING_INIT();
         self.foregroundSession = foregroundSession;
         self.backgroundSession = backgroundSession;
         self.voipSession = voipSession;
-        self.currentSession = self.foregroundSession;
     }
     return self;
-}
-
-- (ZMURLSession *)currentSession
-{
-    return self.foregroundSession;
 }
 
 - (void)dealloc

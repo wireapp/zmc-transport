@@ -412,7 +412,7 @@ static NSInteger const DefaultMaximumRequests = 6;
     // TODO: Need to set up a timer such that we can fail expired requests before they hit this point of the code -> namely when offline
     
     ZMURLSession *session = request.shouldUseOnlyBackgroundSession ? self.urlSessionSwitch.backgroundSession :
-                            request.shouldUseVoipSession ? self.urlSessionSwitch.voipSession : self.urlSessionSwitch.currentSession;
+                            request.shouldUseVoipSession ? self.urlSessionSwitch.voipSession : self.urlSessionSwitch.foregroundSession;
     
     if (session.configuration.timeoutIntervalForRequest < expirationDate.timeIntervalSinceNow) {
         ZMLogWarn(@"May not be able to time out request. timeoutIntervalForRequest (%g) is too low (%g).",
@@ -608,7 +608,7 @@ static NSInteger const DefaultMaximumRequests = 6;
 - (void)prepareForSuspendedState;
 {
     [[[BackgroundActivityFactory sharedFactory] startBackgroundActivityWithName:@"enqueue access token"] executeBlock:^(BackgroundActivity * activity) {
-        [self.urlSessionSwitch.currentSession countTasksWithCompletionHandler:^(NSUInteger count) {
+        [self.urlSessionSwitch.foregroundSession countTasksWithCompletionHandler:^(NSUInteger count) {
             if (0 < count) {
                 [self sendAccessTokenRequest];
             }

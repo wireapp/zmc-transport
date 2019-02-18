@@ -394,7 +394,7 @@ static XCTestCase *currentTestCase;
     [self verifyMockLater:self.URLSession];
     
     self.URLSessionSwitch = [OCMockObject mockForClass:ZMURLSessionSwitch.class];
-    [[[(id)self.URLSessionSwitch stub] andReturn:self.URLSession] currentSession];
+    [[[(id)self.URLSessionSwitch stub] andReturn:self.URLSession] foregroundSession];
     [[(id)self.URLSessionSwitch stub] tearDown];
     [self verifyMockLater:self.URLSessionSwitch];
     
@@ -1470,9 +1470,6 @@ static XCTestCase *currentTestCase;
         return testResponse;
     }];
     
-    // expect
-    [[[(id)self.URLSessionSwitch expect] andReturn:self.URLSession ] foregroundSession];
-
     // when
     [self.sut sendAccessTokenRequest];
     WaitForAllGroupsToBeEmpty(0.5);
@@ -1503,9 +1500,6 @@ static XCTestCase *currentTestCase;
         
         return testResponse;
     }];
-    
-    // expect
-    [[[(id)self.URLSessionSwitch expect] andReturn:self.URLSession ] foregroundSession];
     
     // when
     [self.sut sendAccessTokenRequest];
@@ -2281,10 +2275,7 @@ static XCTestCase *currentTestCase;
         [accessToken fulfill];
         return testResponse;
     }];
-    
-    // expect
-    [[[(id)self.URLSessionSwitch expect] andReturn:self.URLSession ] foregroundSession];
-    
+        
     // when
     countHandler(1);
     WaitForAllGroupsToBeEmpty(0.5);
