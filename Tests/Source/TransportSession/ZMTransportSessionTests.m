@@ -21,7 +21,7 @@
 @import WireSystem;
 @import OCMock;
 @import WireTesting;
-
+@import WireTransport;
 
 #if TARGET_OS_IPHONE
 @import MobileCoreServices;
@@ -331,7 +331,7 @@ static XCTestCase *currentTestCase;
 @property (nonatomic) NSString *clientID;
 @property (nonatomic) NSUInteger nextTaskIdentifier;
 @property (nonatomic) FakeTransportRequestScheduler *scheduler;
-@property (nonatomic) ZMURLSessionSwitch *URLSessionSwitch;
+@property (nonatomic) MockSessionsDirectory *sessionsDirectory;
 @property (nonatomic) NSUUID *userIdentifier;
 @property (nonatomic) ZMPersistentCookieStorage *cookieStorage;
 @property (nonatomic) FakeReachability *reachability;
@@ -393,10 +393,7 @@ static XCTestCase *currentTestCase;
     [[[(id)self.URLSession stub] andReturnValue:@NO] isBackgroundSession];
     [self verifyMockLater:self.URLSession];
     
-    self.URLSessionSwitch = [OCMockObject mockForClass:ZMURLSessionSwitch.class];
-    [[[(id)self.URLSessionSwitch stub] andReturn:self.URLSession] foregroundSession];
-    [[(id)self.URLSessionSwitch stub] tearDown];
-    [self verifyMockLater:self.URLSessionSwitch];
+    self.sessionsDirectory = [[MockSessionsDirectory alloc] initWithForegroundSession:self.URLSession backgroundSession:nil voipSession:nil];
     
     self.environment = [[MockEnvironment alloc] init];
     self.environment.backendURL = [NSURL URLWithString:@"https://base.example.com"];
@@ -409,7 +406,7 @@ static XCTestCase *currentTestCase;
     BackgroundActivityFactory.sharedFactory.mainQueue = dispatch_get_global_queue(QOS_CLASS_BACKGROUND, 0);
 
     self.sut = [[ZMTransportSession alloc]
-                initWithURLSessionSwitch:self.URLSessionSwitch
+                initWithURLSessionsDirectory:self.sessionsDirectory
                 requestScheduler:(id) self.scheduler
                 reachability:self.reachability
                 queue:self.queue
@@ -455,7 +452,7 @@ static XCTestCase *currentTestCase;
     self.expiredAccessToken = nil;
     self.clientID = nil;
     self.scheduler = nil;
-    self.URLSessionSwitch = nil;
+    self.sessionsDirectory = nil;
 
     [ZMPersistentCookieStorage deleteAllKeychainItems];
     self.cookieStorage = nil;
@@ -547,10 +544,9 @@ static XCTestCase *currentTestCase;
     NSURL *url2 = [NSURL URLWithString:@"https://test2.example.com"];
     self.environment.backendURL = url;
     self.environment.backendWSURL = url2;
-    [[(id) self.URLSessionSwitch stub] tearDown];
     [self.sut tearDown];
     self.sut = [[ZMTransportSession alloc]
-                initWithURLSessionSwitch:self.URLSessionSwitch
+                initWithURLSessionsDirectory:self.sessionsDirectory
                 requestScheduler:(id) self.scheduler
                 reachability:self.reachability
                 queue:self.queue
@@ -766,9 +762,9 @@ static XCTestCase *currentTestCase;
     ZMURLSession *backgroundSession = [OCMockObject niceMockForClass:ZMURLSession.class];
     ZMURLSession *voipSession = [OCMockObject niceMockForClass:ZMURLSession.class];
 
-    ZMURLSessionSwitch *urlSwitch = [[ZMURLSessionSwitch alloc] initWithForegroundSession:foregroundSession backgroundSession:backgroundSession voipSession:voipSession];
+    MockSessionsDirectory *directory = [[MockSessionsDirectory alloc] initWithForegroundSession:foregroundSession backgroundSession:backgroundSession voipSession:voipSession];
     ZMTransportSession *sut = [[ZMTransportSession alloc]
-                               initWithURLSessionSwitch:urlSwitch
+                               initWithURLSessionsDirectory:directory
                                requestScheduler:(id) self.scheduler
                                reachability:self.reachability
                                queue:self.queue
@@ -780,7 +776,6 @@ static XCTestCase *currentTestCase;
     
     sut.accessToken = self.validAccessToken;
     id<ZMTransportData> payload = @{@"numbers": @[@4, @8, @15, @16, @23, @42]};
-    [urlSwitch switchToBackgroundSession];
     
     // expect
     [[(id)backgroundSession expect] taskWithRequest:OCMOCK_ANY bodyData:OCMOCK_ANY transportRequest:OCMOCK_ANY];
@@ -1849,7 +1844,6 @@ static XCTestCase *currentTestCase;
     ZMTransportRequest *request = [ZMTransportRequest requestGetFromPath:@"/foo"];
     
     if (applicationInBackground) {
-        [[(id)self.URLSessionSwitch expect] switchToBackgroundSession];
         [self.sut enterBackground];
         WaitForAllGroupsToBeEmpty(0.5);
     }
@@ -2142,7 +2136,6 @@ static XCTestCase *currentTestCase;
 - (void)testThatItSendsAccessTokenRequestWhenRegainingInternetAndTokenExpired
 {
     // given
-    [[[(id)self.URLSessionSwitch stub] andReturn:self.URLSession] foregroundSession];
     self.sut.accessToken = self.expiredAccessToken;
     [self setAuthenticationCookieData];
     
@@ -2309,10 +2302,6 @@ static XCTestCase *currentTestCase;
 
 - (void)testThatItNotifiesTheSchedulerWhenTheApplicationWillEnterForeground;
 {
-    // given
-    [[(id)self.URLSessionSwitch stub] switchToBackgroundSession];
-    [[(id)self.URLSessionSwitch stub] switchToForegroundSession];
-    
      [self.sut enterBackground];
     WaitForAllGroupsToBeEmpty(0.5);
     int const originalCount = self.scheduler.enterForegroundCount;
@@ -2323,32 +2312,6 @@ static XCTestCase *currentTestCase;
     
     // then
     XCTAssertGreaterThan(self.scheduler.enterForegroundCount, originalCount);
-}
-
-- (void)testThatItNotifiesTheSwitchWhenItEntersBackground
-{
-    // expect
-    [[(id)self.URLSessionSwitch expect] switchToBackgroundSession];
-    
-    // when
-    [self.sut enterBackground];
-    WaitForAllGroupsToBeEmpty(0.5);
-    
-    // then
-    [(id)self.URLSessionSwitch verify];
-}
-
-- (void)testThatItNotifiesTheSwitchWhenItEntersForeground
-{
-    // expect
-    [[(id)self.URLSessionSwitch expect] switchToForegroundSession];
-    
-    // when
-    [self.sut enterForeground];
-    WaitForAllGroupsToBeEmpty(0.5);
-    
-    // then
-    [(id)self.URLSessionSwitch verify];
 }
 
 - (void)testThatItStoresAndCallsTheCompletionHandlerWhen_URLSessionDidFinishEventsForBackgroundURLSession_IsCalled
@@ -2397,7 +2360,7 @@ static XCTestCase *currentTestCase;
     id backgroundSessionMock = [OCMockObject mockForClass:ZMURLSession.class];
     [[(id)backgroundSessionMock expect] isBackgroundSession];
     [(NSURLSession *)[[backgroundSessionMock stub] andReturn:[NSURLSessionConfiguration backgroundSessionConfigurationWithIdentifier:self.name]] configuration];
-    [[[(id)self.URLSessionSwitch stub] andReturn:backgroundSessionMock] backgroundSession];
+    self.sessionsDirectory.backgroundSession = backgroundSessionMock;
     [[(id)self.URLSession expect] taskWithRequest:OCMOCK_ANY bodyData:OCMOCK_ANY transportRequest:foregroundRequest];
     [[(id)backgroundSessionMock expect] taskWithRequest:OCMOCK_ANY bodyData:OCMOCK_ANY transportRequest:backgroundRequest];
 
@@ -2433,7 +2396,7 @@ static XCTestCase *currentTestCase;
     id backgroundSessionMock = [OCMockObject niceMockForClass:ZMURLSession.class];
     id foregroundSessionMock = [OCMockObject niceMockForClass:ZMURLSession.class];
 
-    [[[(id)self.URLSessionSwitch stub] andReturn:@[foregroundSessionMock, backgroundSessionMock]] allSessions];
+    self.sessionsDirectory.allSessions = @[foregroundSessionMock, backgroundSessionMock];
     [[(id)backgroundSessionMock expect] cancelTaskWithIdentifier:42 completionHandler:OCMOCK_ANY];
     [(ZMURLSession *)[[backgroundSessionMock stub] andReturn:@"background-session"] identifier];
     [[(id)foregroundSessionMock reject] cancelTaskWithIdentifier:42 completionHandler:OCMOCK_ANY];

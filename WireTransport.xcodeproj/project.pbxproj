@@ -152,6 +152,7 @@
 		F1D1282021C2665E0090045E /* BackendEndpoints.swift in Sources */ = {isa = PBXBuildFile; fileRef = F1D1281F21C2665E0090045E /* BackendEndpoints.swift */; };
 		F1D1282521C292010090045E /* certificates.json in Resources */ = {isa = PBXBuildFile; fileRef = F1D1282121C2722E0090045E /* certificates.json */; };
 		F1D1282921C2C0690090045E /* BackendEnvironmentTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = F1D1282721C2C0670090045E /* BackendEnvironmentTests.swift */; };
+		F1EDA286221AB6CB00DAF906 /* URLSessionsDirectory.swift in Sources */ = {isa = PBXBuildFile; fileRef = F1EDA285221AB6CB00DAF906 /* URLSessionsDirectory.swift */; };
 		F91EAAC81D8860380010ACBE /* Collections+ZMSafeTypes.swift in Sources */ = {isa = PBXBuildFile; fileRef = F91EAAC71D8860380010ACBE /* Collections+ZMSafeTypes.swift */; };
 		F9331C671CB3D47E00139ECC /* ZMUpdateEventTests.m in Sources */ = {isa = PBXBuildFile; fileRef = F9331C661CB3D47E00139ECC /* ZMUpdateEventTests.m */; };
 		F9C4317E1CD7ADF300A8542F /* ZMKeychainTests.m in Sources */ = {isa = PBXBuildFile; fileRef = F9C4317D1CD7ADF300A8542F /* ZMKeychainTests.m */; };
@@ -375,6 +376,7 @@
 		F1D1281F21C2665E0090045E /* BackendEndpoints.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BackendEndpoints.swift; sourceTree = "<group>"; };
 		F1D1282121C2722E0090045E /* certificates.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = certificates.json; sourceTree = "<group>"; };
 		F1D1282721C2C0670090045E /* BackendEnvironmentTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BackendEnvironmentTests.swift; sourceTree = "<group>"; };
+		F1EDA285221AB6CB00DAF906 /* URLSessionsDirectory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = URLSessionsDirectory.swift; sourceTree = "<group>"; };
 		F91EAAC71D8860380010ACBE /* Collections+ZMSafeTypes.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "Collections+ZMSafeTypes.swift"; sourceTree = "<group>"; };
 		F9331C661CB3D47E00139ECC /* ZMUpdateEventTests.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ZMUpdateEventTests.m; sourceTree = "<group>"; };
 		F9C4317D1CD7ADF300A8542F /* ZMKeychainTests.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ZMKeychainTests.m; sourceTree = "<group>"; };
@@ -719,6 +721,7 @@
 				BF453F191CC6377200403E1C /* ZMRequestCancellation.h */,
 				54CA151C1B32F2C1008D3787 /* ZMURLSession.h */,
 				54CA151D1B32F2C1008D3787 /* ZMURLSessionSwitch.h */,
+				F1EDA285221AB6CB00DAF906 /* URLSessionsDirectory.swift */,
 				54CA151E1B32F2C1008D3787 /* ZMUserAgent.h */,
 				09CC4AC01B7CE44900201C63 /* ZMTaskIdentifierMap.h */,
 				871667FF1BB2CD2A009C6EEA /* ZMKeychain.h */,
@@ -1053,6 +1056,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				54CA15BB1B32F2C1008D3787 /* ZMUserAgent.m in Sources */,
+				F1EDA286221AB6CB00DAF906 /* URLSessionsDirectory.swift in Sources */,
 				5499FFD21B31C66D00835C8B /* ZMTransportPushChannel.m in Sources */,
 				54CA15BF1B32F2C1008D3787 /* NSString+UUID.m in Sources */,
 				BF8E457F1F1778E000CE6A0A /* UnauthenticatedTransportSession.swift in Sources */,
