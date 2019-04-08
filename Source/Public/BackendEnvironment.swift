@@ -55,7 +55,7 @@ public class BackendEnvironment: NSObject {
     let endpoints: BackendEndpointsProvider
     let certificateTrust: BackendTrustProvider
 
-    /// passwordRules
+    /// The rules to create new passwords.
     public let passwordRules: PasswordRuleSet
     
     init(endpoints: BackendEndpointsProvider, certificateTrust: BackendTrustProvider, passwordRules: PasswordRuleSet) {
