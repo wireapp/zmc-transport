@@ -86,7 +86,7 @@ final class UnauthenticatedTransportSessionTests: ZMTBaseTest {
         sessionMock = MockURLSession()
         let endpoints = BackendEndpoints(backendURL: url, backendWSURL: url, blackListURL: url, frontendURL: url)
         let trust = MockCertificateTrust()
-        let environment = BackendEnvironment(endpoints: endpoints, certificateTrust: trust)
+        let environment = BackendEnvironment(endpoints: endpoints, certificateTrust: trust, passwordRules: .default)
         sut = UnauthenticatedTransportSession(environment: environment,
                                               urlSession: sessionMock,
                                               reachability: MockReachability())

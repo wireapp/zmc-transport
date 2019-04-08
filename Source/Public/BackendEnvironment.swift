@@ -54,10 +54,14 @@ let log = ZMSLog(tag: "backend-environment")
 public class BackendEnvironment: NSObject {
     let endpoints: BackendEndpointsProvider
     let certificateTrust: BackendTrustProvider
+
+    /// passwordRules
+    public let passwordRules: PasswordRuleSet
     
-    init(endpoints: BackendEndpointsProvider, certificateTrust: BackendTrustProvider) {
+    init(endpoints: BackendEndpointsProvider, certificateTrust: BackendTrustProvider, passwordRules: PasswordRuleSet) {
         self.endpoints = endpoints
         self.certificateTrust = certificateTrust
+        self.passwordRules = passwordRules
     }
     
     // Will try to deserialize backend environment from .json files inside configurationBundle.
@@ -65,6 +69,7 @@ public class BackendEnvironment: NSObject {
         struct SerializedData: Decodable {
             let endpoints: BackendEndpoints
             let pinnedKeys: [TrustData]?
+            let passwordRules: PasswordRuleSet?
         }
 
         guard let path = configurationBundle.path(forResource: environmentType.stringValue, ofType: "json") else {
@@ -81,7 +86,8 @@ public class BackendEnvironment: NSObject {
             let backendData = try decoder.decode(SerializedData.self, from: data)
             let pinnedKeys = backendData.pinnedKeys ?? []
             let certificateTrust = ServerCertificateTrust(trustData: pinnedKeys)
-            return BackendEnvironment(endpoints: backendData.endpoints, certificateTrust: certificateTrust) 
+            let passwordRules = backendData.passwordRules ?? .default
+            return BackendEnvironment(endpoints: backendData.endpoints, certificateTrust: certificateTrust, passwordRules: passwordRules) 
         } catch {
             log.error("Could decode information from \(environmentType.stringValue).json")
             return nil

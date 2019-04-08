@@ -32,5 +32,15 @@
                 }
             ]
         }
-    ]
+    ],
+    "password_rules": {
+        "minimum-length": 12,
+        "maximum-length": 200,
+        "allowed-characters": [
+            "unicode"
+        ],
+        "required-characters": [
+            "digits"
+        ]
+    }
 }

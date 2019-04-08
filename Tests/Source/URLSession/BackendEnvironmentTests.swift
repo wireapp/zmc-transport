@@ -74,4 +74,24 @@ class BackendEnvironmentTests: XCTestCase {
         XCTAssertEqual(trust.trustData.count, 0, "We should not have any keys")
     }
 
+    func testThatWeCanLoadPasswordRules() {
+        guard let environment = BackendEnvironment.from(environmentType: .production, configurationBundle: backendBundle) else { XCTFail("Could not read environment data from Backend.bundle"); return }
+        let passwordRules = environment.passwordRules
+
+        XCTAssertEqual(passwordRules.minimumLength, 12)
+        XCTAssertEqual(passwordRules.maximumLength, 200)
+        XCTAssertEqual(Set(passwordRules.requiredCharacterSets.keys), [.digits])
+        XCTAssertEqual(passwordRules.allowedCharacters, [.unicode, .digits])
+    }
+
+    func testThatWeFallbackToDefaultPasswordRulesIfTheyAreNotInTheBundle() {
+        guard let environment = BackendEnvironment.from(environmentType: .staging, configurationBundle: backendBundle) else { XCTFail("Could not read environment data from Backend.bundle"); return }
+        let passwordRules = environment.passwordRules
+
+        XCTAssertEqual(passwordRules.minimumLength, 8)
+        XCTAssertEqual(passwordRules.maximumLength, 120)
+        XCTAssertEqual(Set(passwordRules.requiredCharacterSets.keys), [.digits, .lowercase, .uppercase, .special])
+        XCTAssertEqual(passwordRules.allowedCharacters, [.unicode, .digits, .lowercase, .uppercase, .special])
+    }
+
 }
