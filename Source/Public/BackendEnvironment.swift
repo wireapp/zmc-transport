@@ -20,9 +20,10 @@ import Foundation
 
 let log = ZMSLog(tag: "backend-environment")
 
-@objc public enum EnvironmentType: Int {
+public enum EnvironmentType {
     case production
     case staging
+    case custom(host: String)
 
     var stringValue: String {
         switch self {
@@ -30,6 +31,8 @@ let log = ZMSLog(tag: "backend-environment")
             return "production"
         case .staging:
             return "staging"
+        case .custom(host: let host):
+            return "custom-\(host)"
         }
     }
 
@@ -37,6 +40,9 @@ let log = ZMSLog(tag: "backend-environment")
         switch stringValue {
         case EnvironmentType.staging.stringValue:
             self = .staging
+        case _ where stringValue.starts(with: "custom-"):
+            let host = stringValue.dropFirst("custom-".count)
+            self = .custom(host: String(host))
         default:
             self = .production
         }
@@ -58,6 +64,11 @@ public class BackendEnvironment: NSObject {
     init(endpoints: BackendEndpointsProvider, certificateTrust: BackendTrustProvider) {
         self.endpoints = endpoints
         self.certificateTrust = certificateTrust
+    }
+    
+    public convenience init?(host: String) {
+        guard let endpoints = BackendEndpoints(host: host) else { return nil }
+        self.init(endpoints: endpoints, certificateTrust: ServerCertificateTrust(trustData: []))
     }
     
     // Will try to deserialize backend environment from .json files inside configurationBundle.
