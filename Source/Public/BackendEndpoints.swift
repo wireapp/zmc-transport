@@ -31,5 +31,13 @@ class BackendEndpoints: NSObject, BackendEndpointsProvider, Decodable {
         self.frontendURL  = frontendURL
         super.init()
     }
+    
+    convenience init?(host: String) {
+        guard let backendURL = URL(string: "https://wire-https." + host) else { return nil }
+        guard let backendWSURL = URL(string: "https://wire-ssl." + host) else { return nil }
+        guard let blackListURL = URL(string: "https://clientblacklist.wire-https." + host) else { return nil }
+        guard let frontendURL = URL(string: "https://wire-team." + host) else { return nil }
+        self.init(backendURL: backendURL, backendWSURL: backendWSURL, blackListURL: blackListURL, frontendURL: frontendURL)
+    }
 
 }
