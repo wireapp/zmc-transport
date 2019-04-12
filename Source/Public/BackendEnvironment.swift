@@ -48,12 +48,18 @@ public enum EnvironmentType {
         }
     }
 
+    private static let defaultsKey = "ZMBackendEnvironmentType"
+    
     public init(userDefaults: UserDefaults) {
-        if let value = userDefaults.string(forKey: "ZMBackendEnvironmentType") {
+        if let value = userDefaults.string(forKey: EnvironmentType.defaultsKey) {
             self.init(stringValue: value)
         } else {
             self = .production
         }
+    }
+    
+    public func save(in userDefaults: UserDefaults) {
+        userDefaults.setValue(self.stringValue, forKey: EnvironmentType.defaultsKey)
     }
 }
 
