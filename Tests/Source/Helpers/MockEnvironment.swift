@@ -26,5 +26,6 @@ public class MockEnvironment: NSObject, BackendEnvironmentProvider {
     public var backendURL: URL = URL(string: "http://example.com")!
     public var backendWSURL: URL = URL(string: "http://example.com")!
     public var blackListURL: URL = URL(string: "https://clientblacklist.wire.com/prod/ios")!
-    public var frontendURL: URL = URL(string: "http://example.com")!    
+    public var frontendURL: URL = URL(string: "http://example.com")!
+    public var environmentType: EnvironmentTypeProvider = EnvironmentTypeProvider(environmentType: .production)
 }

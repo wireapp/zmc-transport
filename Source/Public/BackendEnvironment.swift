@@ -20,7 +20,7 @@ import Foundation
 
 let log = ZMSLog(tag: "backend-environment")
 
-public enum EnvironmentType {
+public enum EnvironmentType: Equatable {
     case production
     case staging
     case custom(host: String)
@@ -66,15 +66,18 @@ public enum EnvironmentType {
 public class BackendEnvironment: NSObject {
     let endpoints: BackendEndpointsProvider
     let certificateTrust: BackendTrustProvider
+    let type: EnvironmentType
     
-    init(endpoints: BackendEndpointsProvider, certificateTrust: BackendTrustProvider) {
+    init(environmentType: EnvironmentType, endpoints: BackendEndpointsProvider, certificateTrust: BackendTrustProvider) {
+        self.type = environmentType
         self.endpoints = endpoints
         self.certificateTrust = certificateTrust
     }
     
     public convenience init?(host: String) {
         guard let endpoints = BackendEndpoints(host: host) else { return nil }
-        self.init(endpoints: endpoints, certificateTrust: ServerCertificateTrust(trustData: []))
+        let type = EnvironmentType.custom(host: host)
+        self.init(environmentType: type, endpoints: endpoints, certificateTrust: ServerCertificateTrust(trustData: []))
     }
     
     // Will try to deserialize backend environment from .json files inside configurationBundle.
@@ -98,7 +101,7 @@ public class BackendEnvironment: NSObject {
             let backendData = try decoder.decode(SerializedData.self, from: data)
             let pinnedKeys = backendData.pinnedKeys ?? []
             let certificateTrust = ServerCertificateTrust(trustData: pinnedKeys)
-            return BackendEnvironment(endpoints: backendData.endpoints, certificateTrust: certificateTrust) 
+            return BackendEnvironment(environmentType: environmentType, endpoints: backendData.endpoints, certificateTrust: certificateTrust)
         } catch {
             log.error("Could decode information from \(environmentType.stringValue).json")
             return nil
@@ -108,6 +111,10 @@ public class BackendEnvironment: NSObject {
 }
 
 extension BackendEnvironment: BackendEnvironmentProvider {
+    public var environmentType: EnvironmentTypeProvider {
+        return EnvironmentTypeProvider(environmentType: type)
+    }
+    
     public var backendURL: URL {
         return endpoints.backendURL
     }

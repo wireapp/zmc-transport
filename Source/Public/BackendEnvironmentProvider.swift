@@ -24,6 +24,14 @@ import Foundation
     @objc func verifyServerTrust(trust: SecTrust, host: String?) -> Bool
 }
 
+// Wrapper around Swift-only EnvironmentType so that it would be useable in Objective-C
+@objc public class EnvironmentTypeProvider: NSObject {
+    public var value: EnvironmentType
+    init(environmentType: EnvironmentType) {
+        self.value = environmentType
+    }
+}
+
 // Swift migration notice: this protocol conforms to NSObjectProtocol only to be usable from Obj-C.
 @objc public protocol BackendEndpointsProvider: NSObjectProtocol {
     /// Backend base URL.
@@ -36,4 +44,6 @@ import Foundation
     var frontendURL: URL { get }
 }
 
-@objc public protocol BackendEnvironmentProvider: BackendTrustProvider, BackendEndpointsProvider { }
+@objc public protocol BackendEnvironmentProvider: BackendTrustProvider, BackendEndpointsProvider {
+    var environmentType: EnvironmentTypeProvider { get }
+}
