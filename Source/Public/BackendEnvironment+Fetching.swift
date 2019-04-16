@@ -30,7 +30,7 @@ extension BackendEnvironment {
                 BackendEnvironmentLog.log.error("Error fetching configuration from \(url): \(error)")
                 onCompletion(.failure(error))
             } else if let data = data {
-                if let environment = BackendEnvironment(environmentType: .custom, data: data) {
+                if let environment = BackendEnvironment(environmentType: .custom(url: url), data: data) {
                     BackendEnvironmentLog.log.info("Fetched custom configuration from \(url)")
                     onCompletion(.success(environment))
                 } else {

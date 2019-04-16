@@ -25,7 +25,7 @@ enum BackendEnvironmentLog {
 public enum EnvironmentType: Equatable {
     case production
     case staging
-    case custom
+    case custom(url: URL)
 
     var stringValue: String {
         switch self {
@@ -33,8 +33,8 @@ public enum EnvironmentType: Equatable {
             return "production"
         case .staging:
             return "staging"
-        case .custom:
-            return "custom"
+        case .custom(url: let url):
+            return "custom-\(url.absoluteString)"
         }
     }
 
@@ -42,8 +42,13 @@ public enum EnvironmentType: Equatable {
         switch stringValue {
         case EnvironmentType.staging.stringValue:
             self = .staging
-        case EnvironmentType.custom.stringValue:
-            self = .custom
+        case let value where value.hasPrefix("custom-"):
+            let urlString = value.dropFirst("custom-".count)
+            if let url = URL(string: String(urlString)) {
+                self = .custom(url: url)
+            } else {
+                self = .production
+            }
         default:
             self = .production
         }
