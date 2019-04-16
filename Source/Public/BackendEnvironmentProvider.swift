@@ -40,8 +40,9 @@ import Foundation
     var backendWSURL: URL { get }
     /// URL for version blacklist file.
     var blackListURL: URL { get }
-    /// Frontent URL, used to open the necessary web resources, like password reset.
-    var frontendURL: URL { get }
+    var teamsURL: URL { get }
+    var accountsURL: URL { get }
+    var websiteURL: URL { get }
 }
 
 @objc public protocol BackendEnvironmentProvider: BackendTrustProvider, BackendEndpointsProvider {

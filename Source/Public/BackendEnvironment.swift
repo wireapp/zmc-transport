@@ -18,12 +18,14 @@
 
 import Foundation
 
-let log = ZMSLog(tag: "backend-environment")
+enum BackendEnvironmentLog {
+    static let log = ZMSLog(tag: "backend-environment")
+}
 
 public enum EnvironmentType: Equatable {
     case production
     case staging
-    case custom(host: String)
+    case custom
 
     var stringValue: String {
         switch self {
@@ -31,8 +33,8 @@ public enum EnvironmentType: Equatable {
             return "production"
         case .staging:
             return "staging"
-        case .custom(host: let host):
-            return "custom-\(host)"
+        case .custom:
+            return "custom"
         }
     }
 
@@ -40,20 +42,22 @@ public enum EnvironmentType: Equatable {
         switch stringValue {
         case EnvironmentType.staging.stringValue:
             self = .staging
-        case _ where stringValue.starts(with: "custom-"):
-            let host = stringValue.dropFirst("custom-".count)
-            self = .custom(host: String(host))
+        case EnvironmentType.custom.stringValue:
+            self = .custom
         default:
             self = .production
         }
     }
+}
 
+extension EnvironmentType {
     private static let defaultsKey = "ZMBackendEnvironmentType"
     
     public init(userDefaults: UserDefaults) {
         if let value = userDefaults.string(forKey: EnvironmentType.defaultsKey) {
             self.init(stringValue: value)
         } else {
+            BackendEnvironmentLog.log.error("Could not load environment type from user defaults, falling back to production")
             self = .production
         }
     }
@@ -74,40 +78,24 @@ public class BackendEnvironment: NSObject {
         self.certificateTrust = certificateTrust
     }
     
-    public convenience init?(host: String) {
-        guard let endpoints = BackendEndpoints(host: host) else { return nil }
-        let type = EnvironmentType.custom(host: host)
-        self.init(environmentType: type, endpoints: endpoints, certificateTrust: ServerCertificateTrust(trustData: []))
-    }
-    
-    // Will try to deserialize backend environment from .json files inside configurationBundle.
-    public static func from(environmentType: EnvironmentType, configurationBundle: Bundle) -> BackendEnvironment? {        
+    convenience init?(environmentType: EnvironmentType, data: Data) {
         struct SerializedData: Decodable {
             let endpoints: BackendEndpoints
             let pinnedKeys: [TrustData]?
         }
 
-        guard let path = configurationBundle.path(forResource: environmentType.stringValue, ofType: "json") else {
-            log.error("Could not find \(environmentType.stringValue).json inside bundle \(configurationBundle)")
-            return nil 
-        }
-        guard let data = try? Data(contentsOf: URL(fileURLWithPath: path)) else { 
-            log.error("Could not read \(environmentType.stringValue).json")
-            return nil 
-        }
         let decoder = JSONDecoder()
         decoder.keyDecodingStrategy = .convertFromSnakeCase
         do {
             let backendData = try decoder.decode(SerializedData.self, from: data)
             let pinnedKeys = backendData.pinnedKeys ?? []
             let certificateTrust = ServerCertificateTrust(trustData: pinnedKeys)
-            return BackendEnvironment(environmentType: environmentType, endpoints: backendData.endpoints, certificateTrust: certificateTrust)
+            self.init(environmentType: environmentType, endpoints: backendData.endpoints, certificateTrust: certificateTrust)
         } catch {
-            log.error("Could decode information from \(environmentType.stringValue).json")
+            BackendEnvironmentLog.log.error("Could not decode information from data: \(error)")
             return nil
         }
-    }
-
+    }    
 }
 
 extension BackendEnvironment: BackendEnvironmentProvider {
@@ -127,8 +115,16 @@ extension BackendEnvironment: BackendEnvironmentProvider {
         return endpoints.blackListURL
     }
     
-    public var frontendURL: URL {
-        return endpoints.frontendURL
+    public var teamsURL: URL {
+        return endpoints.teamsURL
+    }
+    
+    public var accountsURL: URL {
+        return endpoints.accountsURL
+    }
+    
+    public var websiteURL: URL {
+        return endpoints.websiteURL
     }
     
     public func verifyServerTrust(trust: SecTrust, host: String?) -> Bool {

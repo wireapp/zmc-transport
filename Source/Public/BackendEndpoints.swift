@@ -18,26 +18,21 @@
 
 import Foundation
 
-class BackendEndpoints: NSObject, BackendEndpointsProvider, Decodable {
+class BackendEndpoints: NSObject, BackendEndpointsProvider, Codable {
     let backendURL: URL
     let backendWSURL: URL
     let blackListURL: URL
-    let frontendURL: URL
+    let teamsURL: URL
+    let accountsURL: URL
+    let websiteURL: URL
     
-    init(backendURL: URL, backendWSURL: URL, blackListURL: URL, frontendURL: URL) {
-        self.backendURL   = backendURL
+    init(backendURL: URL, backendWSURL: URL, blackListURL: URL, teamsURL: URL, accountsURL: URL, websiteURL: URL) {
+        self.backendURL = backendURL
         self.backendWSURL = backendWSURL
         self.blackListURL = blackListURL
-        self.frontendURL  = frontendURL
+        self.teamsURL = teamsURL
+        self.accountsURL = accountsURL
+        self.websiteURL = websiteURL
         super.init()
     }
-    
-    convenience init?(host: String) {
-        guard let backendURL = URL(string: "https://wire-https." + host) else { return nil }
-        guard let backendWSURL = URL(string: "https://wire-ssl." + host) else { return nil }
-        guard let blackListURL = URL(string: "https://clientblacklist.wire-https." + host) else { return nil }
-        guard let frontendURL = URL(string: "https://wire-team." + host) else { return nil }
-        self.init(backendURL: backendURL, backendWSURL: backendWSURL, blackListURL: blackListURL, frontendURL: frontendURL)
-    }
-
 }
