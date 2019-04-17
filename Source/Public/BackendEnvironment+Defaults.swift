@@ -50,18 +50,18 @@ extension BackendEnvironment {
         switch type {
         case .custom:
             struct SerializedData: Encodable {
+                let title: String
                 let endpoints: BackendEndpoints
             }
             
-            let endpoints = BackendEndpoints(title: self.endpoints.title,
-                                             backendURL: self.endpoints.backendURL,
+            let endpoints = BackendEndpoints(backendURL: self.endpoints.backendURL,
                                              backendWSURL: self.endpoints.backendWSURL,
                                              blackListURL: self.endpoints.blackListURL,
                                              teamsURL: self.endpoints.teamsURL,
                                              accountsURL: self.endpoints.accountsURL,
                                              websiteURL: self.endpoints.websiteURL)
             
-            let data = SerializedData(endpoints: endpoints)
+            let data = SerializedData(title: title, endpoints: endpoints)
             let encoded = try? JSONEncoder().encode(data)
             userDefaults.set(encoded, forKey: BackendEnvironment.defaultsKey)
         default:

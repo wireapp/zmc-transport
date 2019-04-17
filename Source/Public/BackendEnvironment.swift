@@ -73,11 +73,13 @@ extension EnvironmentType {
 }
 
 public class BackendEnvironment: NSObject {
+    public let title: String
     let endpoints: BackendEndpointsProvider
     let certificateTrust: BackendTrustProvider
     let type: EnvironmentType
     
-    init(environmentType: EnvironmentType, endpoints: BackendEndpointsProvider, certificateTrust: BackendTrustProvider) {
+    init(title: String, environmentType: EnvironmentType, endpoints: BackendEndpointsProvider, certificateTrust: BackendTrustProvider) {
+        self.title = title
         self.type = environmentType
         self.endpoints = endpoints
         self.certificateTrust = certificateTrust
@@ -85,6 +87,7 @@ public class BackendEnvironment: NSObject {
     
     convenience init?(environmentType: EnvironmentType, data: Data) {
         struct SerializedData: Decodable {
+            let title: String
             let endpoints: BackendEndpoints
             let pinnedKeys: [TrustData]?
         }
@@ -95,7 +98,7 @@ public class BackendEnvironment: NSObject {
             let backendData = try decoder.decode(SerializedData.self, from: data)
             let pinnedKeys = backendData.pinnedKeys ?? []
             let certificateTrust = ServerCertificateTrust(trustData: pinnedKeys)
-            self.init(environmentType: environmentType, endpoints: backendData.endpoints, certificateTrust: certificateTrust)
+            self.init(title: backendData.title, environmentType: environmentType, endpoints: backendData.endpoints, certificateTrust: certificateTrust)
         } catch {
             BackendEnvironmentLog.log.error("Could not decode information from data: \(error)")
             return nil
@@ -106,10 +109,6 @@ public class BackendEnvironment: NSObject {
 extension BackendEnvironment: BackendEnvironmentProvider {
     public var environmentType: EnvironmentTypeProvider {
         return EnvironmentTypeProvider(environmentType: type)
-    }
-    
-    public var title: String {
-        return endpoints.title
     }
     
     public var backendURL: URL {
