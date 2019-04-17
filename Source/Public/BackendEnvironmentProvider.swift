@@ -34,6 +34,8 @@ import Foundation
 
 // Swift migration notice: this protocol conforms to NSObjectProtocol only to be usable from Obj-C.
 @objc public protocol BackendEndpointsProvider: NSObjectProtocol {
+    /// Descriptive name of the backend
+    var title: String { get }
     /// Backend base URL.
     var backendURL: URL { get }
     /// URL for SSL WebSocket connection.

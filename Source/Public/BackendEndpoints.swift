@@ -19,6 +19,7 @@
 import Foundation
 
 class BackendEndpoints: NSObject, BackendEndpointsProvider, Codable {
+    let title: String
     let backendURL: URL
     let backendWSURL: URL
     let blackListURL: URL
@@ -26,7 +27,8 @@ class BackendEndpoints: NSObject, BackendEndpointsProvider, Codable {
     let accountsURL: URL
     let websiteURL: URL
     
-    init(backendURL: URL, backendWSURL: URL, blackListURL: URL, teamsURL: URL, accountsURL: URL, websiteURL: URL) {
+    init(title: String, backendURL: URL, backendWSURL: URL, blackListURL: URL, teamsURL: URL, accountsURL: URL, websiteURL: URL) {
+        self.title = title
         self.backendURL = backendURL
         self.backendWSURL = backendWSURL
         self.blackListURL = blackListURL

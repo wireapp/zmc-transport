@@ -108,6 +108,10 @@ extension BackendEnvironment: BackendEnvironmentProvider {
         return EnvironmentTypeProvider(environmentType: type)
     }
     
+    public var title: String {
+        return endpoints.title
+    }
+    
     public var backendURL: URL {
         return endpoints.backendURL
     }

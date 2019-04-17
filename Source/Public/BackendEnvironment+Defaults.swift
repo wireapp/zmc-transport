@@ -53,7 +53,8 @@ extension BackendEnvironment {
                 let endpoints: BackendEndpoints
             }
             
-            let endpoints = BackendEndpoints(backendURL: self.endpoints.backendURL,
+            let endpoints = BackendEndpoints(title: self.endpoints.title,
+                                             backendURL: self.endpoints.backendURL,
                                              backendWSURL: self.endpoints.backendWSURL,
                                              blackListURL: self.endpoints.blackListURL,
                                              teamsURL: self.endpoints.teamsURL,
