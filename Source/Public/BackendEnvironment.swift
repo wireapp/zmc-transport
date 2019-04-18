@@ -18,10 +18,6 @@
 
 import Foundation
 
-enum BackendEnvironmentLog {
-    static let log = ZMSLog(tag: "backend-environment")
-}
-
 public enum EnvironmentType: Equatable {
     case production
     case staging
@@ -62,7 +58,7 @@ extension EnvironmentType {
         if let value = userDefaults.string(forKey: EnvironmentType.defaultsKey) {
             self.init(stringValue: value)
         } else {
-            BackendEnvironmentLog.log.error("Could not load environment type from user defaults, falling back to production")
+            Logging.backendEnvironment.error("Could not load environment type from user defaults, falling back to production")
             self = .production
         }
     }
@@ -100,7 +96,7 @@ public class BackendEnvironment: NSObject {
             let certificateTrust = ServerCertificateTrust(trustData: pinnedKeys)
             self.init(title: backendData.title, environmentType: environmentType, endpoints: backendData.endpoints, certificateTrust: certificateTrust)
         } catch {
-            BackendEnvironmentLog.log.error("Could not decode information from data: \(error)")
+            Logging.backendEnvironment.error("Could not decode information from data: \(error)")
             return nil
         }
     }    

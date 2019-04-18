@@ -27,18 +27,18 @@ extension BackendEnvironment {
     public static func fetchEnvironment(url: URL, onCompletion: @escaping (Result<BackendEnvironment>) -> ()) {
         URLSession.shared.dataTask(with: url) { (data, _, error) in
             if let error = error {
-                BackendEnvironmentLog.log.error("Error fetching configuration from \(url): \(error)")
+                Logging.backendEnvironment.error("Error fetching configuration from \(url): \(error)")
                 onCompletion(.failure(error))
             } else if let data = data {
                 if let environment = BackendEnvironment(environmentType: .custom(url: url), data: data) {
-                    BackendEnvironmentLog.log.info("Fetched custom configuration from \(url)")
+                    Logging.backendEnvironment.info("Fetched custom configuration from \(url)")
                     onCompletion(.success(environment))
                 } else {
-                    BackendEnvironmentLog.log.info("Error parsing response from \(url)")
+                    Logging.backendEnvironment.info("Error parsing response from \(url)")
                     onCompletion(.failure(FetchError.invalidResponse))
                 }
             } else {
-                BackendEnvironmentLog.log.info("Error fetching configuration from \(url)")
+                Logging.backendEnvironment.info("Error fetching configuration from \(url)")
                 onCompletion(.failure(FetchError.requestFailed))
             }
         }.resume()

@@ -27,17 +27,17 @@ extension BackendEnvironment {
         switch environmentType {
         case .production, .staging:
             guard let path = configurationBundle.path(forResource: environmentType.stringValue, ofType: "json") else {
-                BackendEnvironmentLog.log.error("Could not find configuration for \(environmentType.stringValue)")
+                Logging.backendEnvironment.error("Could not find configuration for \(environmentType.stringValue)")
                 return nil
             }
             guard let data = try? Data(contentsOf: URL(fileURLWithPath: path)) else {
-                BackendEnvironmentLog.log.error("Could not read \(path)")
+                Logging.backendEnvironment.error("Could not read \(path)")
                 return nil
             }
             self.init(environmentType: environmentType, data: data)
         case .custom:
             guard let data = userDefaults.data(forKey: BackendEnvironment.defaultsKey) else {
-                BackendEnvironmentLog.log.error("Could not read data from user defaults")
+                Logging.backendEnvironment.error("Could not read data from user defaults")
                 return nil
             }
             self.init(environmentType: environmentType, data: data)
