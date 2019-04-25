@@ -1,1 +1,1 @@
-github "wireapp/wire-ios-utilities" "feature/Swift5"
+github "wireapp/wire-ios-utilities" ~> 31.0
