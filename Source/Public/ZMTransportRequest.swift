@@ -32,8 +32,8 @@ extension String {
     }
 }
 
-extension ZMTransportRequest: PrivateStringConvertible {
-    @objc public var privateDescription: String {
+extension ZMTransportRequest: SafeForLoggingStringConvertible {
+    @objc public var safeForLoggingDescription: String {
         return "\(type(of: self)) \(Unmanaged.passUnretained(self).toOpaque()): method=\(ZMTransportRequest.string(for: self.method)) \(self.path.removingUUIDs)"
     }
 }

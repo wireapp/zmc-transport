@@ -202,7 +202,7 @@ private enum UserKey: String {
 }
 
 
-@objc public extension ZMTransportResponse {
+extension ZMTransportResponse {
 
     /// Extracts the wire cookie data from the response.
     /// - returns: The encrypted cookie data (using the cookies key) if there is any.

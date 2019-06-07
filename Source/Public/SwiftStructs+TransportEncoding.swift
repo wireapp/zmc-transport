@@ -27,7 +27,7 @@ public extension UUID {
     }
 }
 
-public extension Date {
+extension Date {
     
     public func transportString() -> String {
         return (self as NSDate).transportString()
