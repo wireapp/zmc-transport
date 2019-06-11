@@ -29,7 +29,8 @@ extension BackgroundActivity: SafeForLoggingStringConvertible {
 struct ActivityName: SafeForLoggingStringConvertible {
     let name: String
     var safeForLoggingDescription: String {
-        return name.data(using: .utf8)?.zmSHA256Digest().zmHexEncodedString() ?? "n/a"
+        guard let hash = name.data(using: .utf8)?.zmSHA256Digest().zmHexEncodedString() else { return "n/a" }
+        return String(hash.prefix(8))
     }
 }
 
