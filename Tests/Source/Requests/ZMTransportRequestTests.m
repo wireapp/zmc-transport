@@ -996,7 +996,7 @@
     ZMTransportRequest *request = [ZMTransportRequest requestWithPath:@"foo" method:ZMMethodHEAD payload:nil];
     
     // when
-    NSString *privateDescription = [request privateDescription];
+    NSString *privateDescription = [request safeForLoggingDescription];
     
     // then
     XCTAssertTrue([privateDescription rangeOfString:@"HEAD"].location != NSNotFound);
@@ -1011,7 +1011,7 @@
     ZMTransportRequest *request = [ZMTransportRequest requestWithPath:path method:ZMMethodHEAD payload:nil];
     
     // when
-    NSString *privateDescription = [request privateDescription];
+    NSString *privateDescription = [request safeForLoggingDescription];
     
     // then
     XCTAssertTrue([privateDescription rangeOfString:@"useful"].location != NSNotFound);
