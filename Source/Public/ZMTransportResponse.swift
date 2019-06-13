@@ -17,19 +17,12 @@
 //
 
 import Foundation
-import WireSystem
-import WireUtilities
 
-extension BackgroundActivity: SafeForLoggingStringConvertible {
-    public var safeForLoggingDescription: String {
-        return "<BackgroundActivity [\(index)]: \(name.readableHash)>"
+extension ZMTransportResponse: SafeForLoggingStringConvertible {
+    @objc public var safeForLoggingDescription: String {
+        let errorDescription = transportSessionError?.localizedDescription
+        let status = "status: \(httpStatus)"
+        let dataSize = "size: \(self.rawData?.count ?? 0)"
+        return "\(errorDescription ?? status) \(dataSize)"
     }
 }
-
-struct ActivityName: SafeForLoggingStringConvertible {
-    let name: String
-    var safeForLoggingDescription: String {
-        return name.readableHash
-    }
-}
-

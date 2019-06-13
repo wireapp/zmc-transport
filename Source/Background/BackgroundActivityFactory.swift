@@ -140,13 +140,13 @@ private let zmLog = ZMSLog(tag: "background-activity")
         return isolationQueue.sync {
             let activityName = ActivityName(name: name)
             guard let activityManager = activityManager else {
-                zmLog.safePublic("Start activity [\(activityName)]: failed, activityManager is nil")
+                zmLog.safePublic("Start activity <\(activityName)>: failed, activityManager is nil")
                 return nil 
             }
             
             // Do not start new tasks if the background timer is running.
             guard currentBackgroundTask != UIBackgroundTaskIdentifier.invalid else {
-                zmLog.safePublic("Start activity [\(activityName)]: failed, currentBackgroundTask is invalid")
+                zmLog.safePublic("Start activity <\(activityName)>: failed, currentBackgroundTask is invalid")
                 return nil         
             }
 
@@ -154,22 +154,22 @@ private let zmLog = ZMSLog(tag: "background-activity")
             let activity = BackgroundActivity(name: name, expirationHandler: expirationHandler)
 
             if currentBackgroundTask == nil {
-                zmLog.safePublic("Start activity [\(activityName)]: no current background task, starting new")
+                zmLog.safePublic("Start activity <\(activityName)>: no current background task, starting new")
                 let task = activityManager.beginBackgroundTask(withName: name, expirationHandler: handleExpiration)
                 guard task != UIBackgroundTaskIdentifier.invalid else {
-                    zmLog.safePublic("Start activity [\(activityName)]: failed to begin new background task")
+                    zmLog.safePublic("Start activity <\(activityName)>: failed to begin new background task")
                     return nil         
                 }
                 let value = SafeValueForLogging(task.rawValue)
-                zmLog.safePublic("Start activity [\(activityName)]: started new background task: \(value)")
+                zmLog.safePublic("Start activity <\(activityName)>: started new background task: \(value)")
                 currentBackgroundTask = task
             }
 
             let (inserted, _) = activities.insert(activity)
             if inserted {
-                zmLog.safePublic("Start activity [\(activityName)]: started \(activity)")
+                zmLog.safePublic("Start activity <\(activityName)>: started \(activity)")
             } else {
-                zmLog.safePublic("Start activity [\(activityName)]: could not insert activity \(activity)")
+                zmLog.safePublic("Start activity <\(activityName)>: could not insert activity \(activity)")
             }
             return activity
         }

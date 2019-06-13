@@ -22,7 +22,7 @@ import WireUtilities
 
 extension String {
     fileprivate static let UUIDMatcher: NSRegularExpression = {
-        let regex = try! NSRegularExpression(pattern: "[a-f0-9]{8}-[a-f0-9]{4}-4[a-f0-9]{3}-[89aAbB][a-f0-9]{3}-[a-f0-9]{12}", options: .caseInsensitive)
+        let regex = try! NSRegularExpression(pattern: "[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}", options: .caseInsensitive)
         return regex
     }()
     
@@ -53,6 +53,7 @@ extension String {
 
 extension ZMTransportRequest: SafeForLoggingStringConvertible {
     @objc public var safeForLoggingDescription: String {
-        return "\(type(of: self)) \(Unmanaged.passUnretained(self).toOpaque()): method=\(ZMTransportRequest.string(for: self.method)) \(self.path.removingSensitiveInfo)"
+        let identifier = "\(Unmanaged.passUnretained(self).toOpaque())".readableHash
+        return "<\(identifier)> \(ZMTransportRequest.string(for: self.method)) \(self.path.removingSensitiveInfo)"
     }
 }

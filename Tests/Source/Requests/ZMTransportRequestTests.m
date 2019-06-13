@@ -1007,8 +1007,8 @@
 {
     // given
     NSString *clientID = @"608b4f25ba2b193";
-    NSUUID *uuid = [[NSUUID alloc] init];
-    NSString *path = [NSString stringWithFormat:@"do/something/%@/useful?client=%@", uuid.transportString, clientID];
+    NSString *uuid = @"9e86b08a-8de7-11e9-810f-22000a62954d";
+    NSString *path = [NSString stringWithFormat:@"do/something/%@/useful?client=%@", uuid, clientID];
     ZMTransportRequest *request = [ZMTransportRequest requestWithPath:path method:ZMMethodHEAD payload:nil];
     
     // when
@@ -1017,7 +1017,7 @@
     // then
     XCTAssertTrue([privateDescription rangeOfString:@"useful"].location != NSNotFound);
     XCTAssertTrue([privateDescription rangeOfString:@"do/something"].location != NSNotFound);
-    XCTAssertTrue([privateDescription rangeOfString:uuid.transportString].location == NSNotFound);
+    XCTAssertTrue([privateDescription rangeOfString:uuid].location == NSNotFound);
     XCTAssertTrue([privateDescription rangeOfString:clientID].location == NSNotFound);
 }
 
