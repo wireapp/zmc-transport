@@ -1006,8 +1006,9 @@
 - (void)testPrivateDescriptionWithUUID
 {
     // given
+    NSString *clientID = @"608b4f25ba2b193";
     NSUUID *uuid = [[NSUUID alloc] init];
-    NSString *path = [NSString stringWithFormat:@"do/something/%@/useful", uuid.transportString];
+    NSString *path = [NSString stringWithFormat:@"do/something/%@/useful?client=%@", uuid.transportString, clientID];
     ZMTransportRequest *request = [ZMTransportRequest requestWithPath:path method:ZMMethodHEAD payload:nil];
     
     // when
@@ -1017,6 +1018,7 @@
     XCTAssertTrue([privateDescription rangeOfString:@"useful"].location != NSNotFound);
     XCTAssertTrue([privateDescription rangeOfString:@"do/something"].location != NSNotFound);
     XCTAssertTrue([privateDescription rangeOfString:uuid.transportString].location == NSNotFound);
+    XCTAssertTrue([privateDescription rangeOfString:clientID].location == NSNotFound);
 }
 
 @end
