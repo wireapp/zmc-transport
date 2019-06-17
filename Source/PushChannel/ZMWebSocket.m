@@ -38,12 +38,10 @@ NSString * const ZMWebSocketErrorDomain = @"ZMWebSocket";
 
 @property (nonatomic) NSURL *URL;
 @property (nonatomic) id<BackendTrustProvider> trustProvider;
-@property (nonatomic) NSMutableArray *dataPendingTransmission;
 @property (nonatomic, weak) id<ZMWebSocketConsumer> consumer;
 @property (atomic) dispatch_queue_t consumerQueue;
 @property (atomic) ZMSDispatchGroup *consumerGroup;
 @property (nonatomic) dispatch_queue_t networkSocketQueue;
-@property (nonatomic) NetworkSocket *networkSocket;
 @property (nonatomic) BOOL handshakeCompleted;
 @property (nonatomic) DataBuffer *inputBuffer;
 @property (nonatomic) ZMWebSocketHandshake *handshake;
@@ -239,23 +237,6 @@ NSString * const ZMWebSocketErrorDomain = @"ZMWebSocket";
     ZMLogDebug(@"Sending PONG");
     ZMWebSocketFrame *frame = [[ZMWebSocketFrame alloc] initWithPongFrame];
     [self sendFrame:frame];
-}
-
-- (void)sendFrame:(ZMWebSocketFrame *)frame;
-{
-    dispatch_data_t frameData = frame.frameData;
-    if (frameData != nil) {
-        ZM_WEAK(self);
-        [self safelyDispatchOnQueue:^{
-            ZM_STRONG(self);
-            if (self.handshakeCompleted) {
-                [self.networkSocket writeData:(NSData *)frameData];
-            } else {
-                RequireString(self.dataPendingTransmission != nil, "Was already sent & cleared?");
-                [self.dataPendingTransmission addObject:frameData];
-            }
-        }];
-    }
 }
 
 - (void)sendHandshakeFrame

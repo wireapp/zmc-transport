@@ -56,6 +56,11 @@ typedef NS_ENUM(NSInteger, ZMWebSocketErrorCode) {
 - (void)sendBinaryFrameWithData:(NSData *)data;
 - (void)sendPingFrame;
 
+///TODO: private
+- (void)safelyDispatchOnQueue:(void (^)(void))block;
+@property (nonatomic) NetworkSocket *networkSocket;
+@property (nonatomic) NSMutableArray *dataPendingTransmission;
+
 @property (nonatomic, readonly) BOOL handshakeCompleted;
 
 @end
