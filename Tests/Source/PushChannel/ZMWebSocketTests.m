@@ -190,9 +190,37 @@
     [(NetworkSocket *)[(id) self.networkSocketMock expect] writeData:(NSData *)pingData];
     
     // when
-    [self.sut sendPingFrame];
+    [self.sut sendPingFrame];///TODO: copy
 }
 
+- (void)testThatItSendsNoCrash;
+{
+    // given
+    NSString *stringData = [[@[@"HTTP/1.1 101", @"Connection: upgrade", @"Upgrade: websocket", @"Sec-WebSocket-Accept: websocket"] componentsJoinedByString:@"\r\n"] stringByAppendingString:@"\r\n\r\n"];
+    XCTestExpectation *expectation = [self expectationWithDescription:@"didReceiveData"];
+    [self.fakeUIContext performGroupedBlock:^{
+        [self.sut networkSocketDidOpen:self.networkSocketMock];
+    }];
+    void(^sendDataToWebSocket)(id i) = ^(id ZM_UNUSED i){
+        [self.fakeUIContext performGroupedBlock:^{
+            [self.sut didReceiveData:[stringData dataUsingEncoding:NSUTF8StringEncoding] networkSocket:self.networkSocketMock];
+            [expectation fulfill];
+        }];
+    };
+    [[[(id) self.networkSocketMock expect] andDo:sendDataToWebSocket] writeData:OCMOCK_ANY];
+
+    XCTAssertTrue([self waitForCustomExpectationsWithTimeout:0.5]);
+    WaitForAllGroupsToBeEmpty(0.5);
+
+    dispatch_data_t pingData = dispatch_data_create(((uint8_t []){0x89, 0}), 2, NULL, DISPATCH_DATA_DESTRUCTOR_DEFAULT);
+
+    // expect
+    [(NetworkSocket *)[(id) self.networkSocketMock expect] writeData:(NSData *)pingData];
+
+    // when
+    self.sut.handshakeCompleted = false;
+    [self.sut sendPingFrame];///TODO: copy
+}
 @end
 
 

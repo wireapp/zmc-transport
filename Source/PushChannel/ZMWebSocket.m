@@ -44,7 +44,7 @@ NSString * const ZMWebSocketErrorDomain = @"ZMWebSocket";
 @property (atomic) ZMSDispatchGroup *consumerGroup;
 @property (nonatomic) dispatch_queue_t networkSocketQueue;
 @property (nonatomic) NetworkSocket *networkSocket;
-@property (nonatomic) BOOL handshakeCompleted;
+//@property (nonatomic) BOOL handshakeCompleted;
 @property (nonatomic) DataBuffer *inputBuffer;
 @property (nonatomic) ZMWebSocketHandshake *handshake;
 @property (nonatomic) NSError *handshakeError;
