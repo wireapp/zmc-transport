@@ -181,7 +181,6 @@ NSString * const ZMWebSocketErrorDomain = @"ZMWebSocket";
                 [self.networkSocket writeData:data];
             }];
         }
-        self.dataPendingTransmission = nil;
     } else if (handshakeCompleted == ZMWebSocketHandshakeError) {
         ZMLogError(@"Failed to parse WebSocket handshake response: %@", error);
     }
@@ -321,6 +320,8 @@ NSString * const ZMWebSocketErrorDomain = @"ZMWebSocket";
                         ZM_STRONG(self);
                         [self.consumer webSocketDidCompleteHandshake:self HTTPResponse:response];
                     }];
+
+                    self.dataPendingTransmission = nil;
                 }
                 break;
             case ZMWebSocketHandshakeNeedsMoreData:
