@@ -239,6 +239,26 @@ NSString * const ZMWebSocketErrorDomain = @"ZMWebSocket";
     [self sendFrame:frame];
 }
 
+
+- (void)sendFrame:(ZMWebSocketFrame *)frame;
+{
+    dispatch_data_t frameData = frame.frameData;
+    if (frameData != nil) {
+        ZM_WEAK(self);
+        [self safelyDispatchOnQueue:^{
+            ZM_STRONG(self);
+            if (self.handshakeCompleted) {
+                NSData * nsData = (NSData *)frameData;
+                [self.networkSocket writeData: nsData];///TODO: networkSocket is OCMockObject when test, writeData doesn't got called
+            } else {
+                RequireString(self.dataPendingTransmission != nil, "Was already sent & cleared?");
+                [self.dataPendingTransmission addObject:frameData];
+            }
+        }];
+    }
+}
+
+
 - (void)sendHandshakeFrame
 {
     ZM_WEAK(self);

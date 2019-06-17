@@ -20,18 +20,19 @@ import Foundation
 
 extension ZMWebSocket {
 
+/*
     @objc(sendFrame:)
-    func send(_ frame: ZMWebSocketFrame?) {
+    func sendFrame(_ frame: ZMWebSocketFrame?) {
         guard let frameData = frame?.frameData as Any as? Data else { return }
 
-        safelyDispatch(onQueue: { [weak self] in
-            if self?.handshakeCompleted == true {
-                self?.networkSocket.write(data: frameData)
+        safelyDispatch(onQueue: { /*[weak self]  in */
+            if self.handshakeCompleted == true {
+                self.networkSocket.write(data: frameData)
             } else {
-                assert(self?.dataPendingTransmission != nil, "Was already sent & cleared?")
-                self?.dataPendingTransmission.add(frameData)
+                assert(self.dataPendingTransmission != nil, "Was already sent & cleared?")
+                self.dataPendingTransmission.add(frameData)
             }
         })
     }
-
+*/
 }

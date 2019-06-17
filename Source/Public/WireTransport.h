@@ -51,7 +51,7 @@ FOUNDATION_EXPORT const unsigned char TransportVersionString[];
 #import <WireTransport/ZMRequestCancellation.h>
 #import <WireTransport/ZMPushChannel.h>
 
-///TODO: move to provate?
+///TODO: move to private
 #import <WireTransport/ZMWebSocket.h>
 #import <WireTransport/ZMWebSocketFrame.h>
 
