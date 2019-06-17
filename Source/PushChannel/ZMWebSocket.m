@@ -290,6 +290,12 @@ NSString * const ZMWebSocketErrorDomain = @"ZMWebSocket";
     return base64String;
 }
 
+- (void)completeHandshake
+{
+    _handshakeCompleted = YES;
+    self.dataPendingTransmission = nil;
+}
+
 @end
 
 
@@ -314,14 +320,13 @@ NSString * const ZMWebSocketErrorDomain = @"ZMWebSocket";
             case ZMWebSocketHandshakeCompleted:
                 {
                     NSHTTPURLResponse *response = self.handshake.response;
-                    self.handshakeCompleted = YES;
+                    [self completeHandshake];
                     ZM_WEAK(self);
                     [self safelyDispatchOnQueue:^{
                         ZM_STRONG(self);
                         [self.consumer webSocketDidCompleteHandshake:self HTTPResponse:response];
                     }];
 
-                    self.dataPendingTransmission = nil;
                 }
                 break;
             case ZMWebSocketHandshakeNeedsMoreData:
