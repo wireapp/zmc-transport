@@ -325,7 +325,6 @@ NSString * const ZMWebSocketErrorDomain = @"ZMWebSocket";
                         ZM_STRONG(self);
                         [self.consumer webSocketDidCompleteHandshake:self HTTPResponse:response];
                     }];
-
                 }
                 break;
             case ZMWebSocketHandshakeNeedsMoreData:
