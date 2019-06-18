@@ -252,12 +252,8 @@ NSString * const ZMWebSocketErrorDomain = @"ZMWebSocket";
                 [self.networkSocket writeData:(NSData *)frameData];
             }];
         } else {
-            ZM_WEAK(self);
-            [self safelyDispatchOnQueue:^{
-                ZM_STRONG(self);
-                RequireString(self.dataPendingTransmission != nil, "Was already sent & cleared?");
-                [self.dataPendingTransmission addObject:frameData];
-            }];
+            RequireString(self.dataPendingTransmission != nil, "Was already sent & cleared?");
+            [self.dataPendingTransmission addObject:frameData];
         }
     }
 }
