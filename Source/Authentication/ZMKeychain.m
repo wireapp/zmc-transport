@@ -181,13 +181,7 @@ extern NSString *ZMKeychainErrorDescription(OSStatus s)
     }
     
     OSStatus const s = SecItemCopyMatching((__bridge CFDictionaryRef) query, NULL);
-    BOOL success = errSecSuccess == s;
-    if (!success) {
-        return NO;
-    }
-    else {
-        return YES;
-    }
+    return errSecSuccess == s;
 }
 
 + (id)valueForAccount:(NSString *)accountName
