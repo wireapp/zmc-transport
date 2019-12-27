@@ -24,7 +24,6 @@
 		5451EFA01B7A138B002F503B /* Collections+ZMTSafeTypes.m in Sources */ = {isa = PBXBuildFile; fileRef = 5451EF9F1B7A138B002F503B /* Collections+ZMTSafeTypes.m */; };
 		5451EFA31B7A1458002F503B /* Collections+ZMTSafeTypesTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 5451EFA21B7A1458002F503B /* Collections+ZMTSafeTypesTests.m */; };
 		546E89DD1B33015000DD1042 /* ZMAccessTokenHandlerTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 546E89C01B33015000DD1042 /* ZMAccessTokenHandlerTests.m */; };
-		546E89DF1B33015000DD1042 /* ZMAccessTokenTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 546E89C11B33015000DD1042 /* ZMAccessTokenTests.m */; };
 		546E89E11B33015000DD1042 /* ZMPersistentCookieStorageTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 546E89C21B33015000DD1042 /* ZMPersistentCookieStorageTests.m */; };
 		546E89E51B33015000DD1042 /* ZMTemporaryFileListForBackgroundRequestTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 546E89C51B33015000DD1042 /* ZMTemporaryFileListForBackgroundRequestTests.m */; };
 		546E89E71B33015000DD1042 /* ZMDataBufferTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 546E89C81B33015000DD1042 /* ZMDataBufferTests.m */; };
@@ -238,7 +237,6 @@
 		5451EF9F1B7A138B002F503B /* Collections+ZMTSafeTypes.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "Collections+ZMTSafeTypes.m"; sourceTree = "<group>"; };
 		5451EFA21B7A1458002F503B /* Collections+ZMTSafeTypesTests.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "Collections+ZMTSafeTypesTests.m"; sourceTree = "<group>"; };
 		546E89C01B33015000DD1042 /* ZMAccessTokenHandlerTests.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ZMAccessTokenHandlerTests.m; sourceTree = "<group>"; };
-		546E89C11B33015000DD1042 /* ZMAccessTokenTests.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ZMAccessTokenTests.m; sourceTree = "<group>"; };
 		546E89C21B33015000DD1042 /* ZMPersistentCookieStorageTests.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ZMPersistentCookieStorageTests.m; sourceTree = "<group>"; };
 		546E89C51B33015000DD1042 /* ZMTemporaryFileListForBackgroundRequestTests.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ZMTemporaryFileListForBackgroundRequestTests.m; sourceTree = "<group>"; };
 		546E89C81B33015000DD1042 /* ZMDataBufferTests.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ZMDataBufferTests.m; sourceTree = "<group>"; };
@@ -534,7 +532,6 @@
 			isa = PBXGroup;
 			children = (
 				546E89C01B33015000DD1042 /* ZMAccessTokenHandlerTests.m */,
-				546E89C11B33015000DD1042 /* ZMAccessTokenTests.m */,
 				A93DCD7B23B668A800AD8575 /* AccessTokenTests.swift */,
 				546E89C21B33015000DD1042 /* ZMPersistentCookieStorageTests.m */,
 				F9C4317D1CD7ADF300A8542F /* ZMKeychainTests.m */,
@@ -1125,7 +1122,6 @@
 			files = (
 				BF9D0AFD1F1CAACC005D4C31 /* UnauthenticatedTransportSessionTests .swift in Sources */,
 				5E2C354921A5BE7B0034F1EE /* ZMMockURLSession.swift in Sources */,
-				546E89DF1B33015000DD1042 /* ZMAccessTokenTests.m in Sources */,
 				F9C4317E1CD7ADF300A8542F /* ZMKeychainTests.m in Sources */,
 				546E89FF1B33015000DD1042 /* ZMTransportCodecTests.m in Sources */,
 				AF9D8F9E1F20D9B700ABF225 /* TestTrustVerificator.swift in Sources */,
