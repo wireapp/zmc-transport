@@ -267,9 +267,12 @@ import Foundation
         
         let inputBufferCount = 4 * 1024
         var inputBuffer = Data(count: inputBufferCount)
-        let bytesRead = inputBuffer.withUnsafeMutableBytes { (bytes: UnsafeMutablePointer<UInt8>) in
-            inputStream.read(bytes, maxLength: inputBufferCount)
+
+        let bytesRead = inputBuffer.withUnsafeMutableBytes { (pointer: UnsafeMutableRawBufferPointer) -> Int in
+            guard let bytes = pointer.baseAddress?.assumingMemoryBound(to: UInt8.self) else { return 0 }
+            return inputStream.read(bytes, maxLength: inputBufferCount)
         }
+
         guard bytesRead > 0 else {
             return
         }
