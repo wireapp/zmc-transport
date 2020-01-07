@@ -182,8 +182,7 @@ import Foundation
     
     @objc(writeData:)
     public func write(data dataToWrite: Data) {
-        dataToWrite.withUnsafeBytes { (unsafePointer: UnsafePointer<UInt8>) -> Void in
-            let unsafeBufferPointer = UnsafeRawBufferPointer(start: unsafePointer, count: dataToWrite.count)
+        dataToWrite.withUnsafeBytes { (unsafeBufferPointer: UnsafeRawBufferPointer) -> Void in
             self.write(dispatchData: DispatchData(bytes: unsafeBufferPointer))
         }
     }
