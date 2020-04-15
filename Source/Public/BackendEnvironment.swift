@@ -21,6 +21,8 @@ import Foundation
 public enum EnvironmentType: Equatable {
     case production
     case staging
+    case qaDemo
+    case qaDemo2
     case custom(url: URL)
 
     var stringValue: String {
@@ -29,15 +31,23 @@ public enum EnvironmentType: Equatable {
             return "production"
         case .staging:
             return "staging"
+        case .qaDemo:
+            return "qa-demo"
+        case .qaDemo2:
+            return "qa-demo-2"
         case .custom(url: let url):
             return "custom-\(url.absoluteString)"
         }
     }
 
-    init(stringValue: String) {
+    public init(stringValue: String) {
         switch stringValue {
         case EnvironmentType.staging.stringValue:
             self = .staging
+        case EnvironmentType.qaDemo.stringValue:
+            self = .qaDemo
+        case EnvironmentType.qaDemo2.stringValue:
+            self = .qaDemo2
         case let value where value.hasPrefix("custom-"):
             let urlString = value.dropFirst("custom-".count)
             if let url = URL(string: String(urlString)) {
@@ -52,7 +62,7 @@ public enum EnvironmentType: Equatable {
 }
 
 extension EnvironmentType {
-    private static let defaultsKey = "ZMBackendEnvironmentType"
+    static let defaultsKey = "ZMBackendEnvironmentType"
     
     public init(userDefaults: UserDefaults) {
         if let value = userDefaults.string(forKey: EnvironmentType.defaultsKey) {
