@@ -41,7 +41,6 @@ DYLIB_INSTALL_NAME_BASE = @rpath
 FRAMEWORK_VERSION = A
 
 
-
 // Linking
 //
 OTHER_LDFLAGS = -ObjC
