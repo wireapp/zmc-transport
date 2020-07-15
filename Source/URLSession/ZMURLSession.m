@@ -89,6 +89,7 @@ ZM_EMPTY_ASSERTING_INIT();
     Require(queue != nil);
     self = [self initWithDelegate:delegate identifier:identifier];
     if(self) {
+//        self.backingSession = [NSURLSession sessionWithConfiguration:NSURLSessionConfiguration.defaultSessionConfiguration delegate:self delegateQueue:queue];
         self.backingSession = [NSURLSession sessionWithConfiguration:configuration delegate:self delegateQueue:queue];
         self.backingSession.sessionDescription = identifier;
         self.trustProvider = trustProvider;
@@ -291,6 +292,7 @@ ZM_EMPTY_ASSERTING_INIT();
 {
     NOT_USED(URLSession);
     Check(URLSession == self.backingSession);
+    //
     NSURLProtectionSpace *protectionSpace = challenge.protectionSpace;
     if ([protectionSpace.authenticationMethod isEqualToString:NSURLAuthenticationMethodServerTrust]) {
         BOOL const didTrust = [self.trustProvider verifyServerTrustWithTrust:protectionSpace.serverTrust host:protectionSpace.host];
@@ -301,6 +303,7 @@ ZM_EMPTY_ASSERTING_INIT();
             return;
         }
     }
+    //
     completionHandler(NSURLSessionAuthChallengePerformDefaultHandling, challenge.proposedCredential);
 }
 
