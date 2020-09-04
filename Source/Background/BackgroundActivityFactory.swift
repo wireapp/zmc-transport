@@ -220,7 +220,6 @@ private let zmLog = ZMSLog(tag: "background-activity")
 
     /// Ends the current background task.
     private func finishBackgroundTask() {
-        // Notify
         allTasksEndedHandlers.forEach { handler in
             handler()
         }
