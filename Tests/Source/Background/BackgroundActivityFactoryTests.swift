@@ -188,6 +188,7 @@ extension BackgroundActivityFactory {
         currentBackgroundTask = nil
         activities.removeAll()
         activityManager = nil
+        allTasksEndedHandlers = []
         mainQueue = .main
     }
 
