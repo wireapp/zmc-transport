@@ -813,9 +813,8 @@ typedef NS_ENUM(NSUInteger, ZMTransportRequestSessionType) {
     
     ZMMultipartBodyItem *imageBodyItem = [[ZMMultipartBodyItem alloc] initWithData:imageData
                                                                        contentType:mediaType
-                                                                           headers:@{
-                                                                                     @"Content-MD5": [[imageData zmMD5Digest] base64EncodedStringWithOptions:0]
-                                                                                     }];
+                                                                           headers:@{}
+                                          ];
     
     return [NSData multipartDataWithItems:@[metaDataBodyItem, imageBodyItem] boundary:boundary];
 }

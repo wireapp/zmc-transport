@@ -234,7 +234,6 @@
 
     ZMMultipartBodyItem *imageItem = items.lastObject;
     XCTAssertEqualObjects(imageItem.contentType, @"image/jpeg");
-    XCTAssertEqualObjects(imageItem.headers, @{@"Content-MD5": [[data zmMD5Digest] base64EncodedStringWithOptions:0]});
     XCTAssertEqualObjects(imageItem.data, data);
     
     NSString *expectedContentType = [NSString stringWithFormat:@"multipart/mixed; boundary=%@", boundary];
