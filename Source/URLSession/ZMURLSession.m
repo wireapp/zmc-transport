@@ -81,14 +81,19 @@ ZM_EMPTY_ASSERTING_INIT();
     return self;
 }
 
-- (instancetype)initWithConfiguration:(NSURLSessionConfiguration *)configuration trustProvider:(id<BackendTrustProvider>)trustProvider
- delegate:(id<ZMURLSessionDelegate>)delegate delegateQueue:(NSOperationQueue *)queue identifier:(NSString *)identifier
+- (instancetype)initWithConfiguration:(NSURLSessionConfiguration *)configuration
+                        trustProvider:(id<BackendTrustProvider>)trustProvider
+                             delegate:(id<ZMURLSessionDelegate>)delegate
+                        delegateQueue:(NSOperationQueue *)queue
+                           identifier:(NSString *)identifier
+                            userAgent:(NSString *)userAgent
 {
     Require(configuration != nil);
     Require(delegate != nil);
     Require(queue != nil);
     self = [self initWithDelegate:delegate identifier:identifier];
     if(self) {
+        configuration.HTTPAdditionalHeaders = @{ @"User-Agent": userAgent };
         self.backingSession = [NSURLSession sessionWithConfiguration:configuration delegate:self delegateQueue:queue];
         self.backingSession.sessionDescription = identifier;
         self.trustProvider = trustProvider;
@@ -320,24 +325,14 @@ willPerformHTTPRedirection:(NSHTTPURLResponse * __unused)response
 {
     ZMTransportRequest *orginalRequest = [self requestForTask:task];
     if (orginalRequest.doesNotFollowRedirects) {
-        if(completionHandler) {
+        if (completionHandler) {
             completionHandler(nil);
         }
         return;
     }
-    NSURLRequest *finalRequest = request;
-    NSString *AuthenticationHeaderName = @"Authorization";
     
-    // add authentication token
-    NSString *authToken = task.originalRequest.allHTTPHeaderFields[AuthenticationHeaderName];
-    if(authToken != nil) {
-        NSMutableURLRequest *mutableRequest = [request mutableCopy];
-        [mutableRequest setValue:authToken forHTTPHeaderField:AuthenticationHeaderName];
-        finalRequest = mutableRequest;
-    }
-    
-    if(completionHandler) {
-        completionHandler(finalRequest);
+    if (completionHandler) {
+        completionHandler(request);
     }
 }
 
