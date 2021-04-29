@@ -204,7 +204,7 @@ ZM_EMPTY_ASSERTING_INIT();
 
 - (void)pushChannelDidClose:(ZMPushChannelConnection *)channel withResponse:(NSHTTPURLResponse *)response error:(nullable NSError *)error
 {
-    ZMLogInfo(@"Push channel did close.");
+    ZMLogInfo(@"Push channel did close with response: %@ error: %@", response, error);
     
     // Immediately try to re-open the push channel
     [self attemptToOpenPushChannelConnection];
