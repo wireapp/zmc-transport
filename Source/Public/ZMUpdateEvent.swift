@@ -82,7 +82,7 @@ import WireUtilities
 }
 
 extension ZMUpdateEventType {
-    var stringValue: String? {
+    public var stringValue: String? {
         switch self {
         case .unknown:
             return nil
@@ -187,7 +187,7 @@ extension ZMUpdateEventType {
 }
 
 extension ZMParticipantsRemovedReason {
-    var stringValue: String? {
+    public var stringValue: String? {
         switch self {
         case .none:
             return nil
