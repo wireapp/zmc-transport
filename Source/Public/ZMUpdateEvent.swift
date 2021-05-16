@@ -31,7 +31,7 @@ import WireUtilities
     case download
 }
 
-@objc public enum ZMParticipantsRemovedReason : UInt, CaseIterable {
+@objc public enum ZMParticipantsRemovedReason : Int16, CaseIterable {
     case none = 0
     case legalHoldPolicyConflict /// Users don't want / support LH
 }
@@ -211,12 +211,17 @@ extension ZMParticipantsRemovedReason {
 }
 
 extension ZMUpdateEvent {
+
     @objc(updateEventTypeForEventTypeString:) public static func updateEventType(for string: String) -> ZMUpdateEventType {
         return ZMUpdateEventType(string: string)
     }
 
     @objc(eventTypeStringForUpdateEventType:) public static func eventTypeString(for eventType: ZMUpdateEventType) -> String? {
         return eventType.stringValue
+    }
+
+    @objc(updateParticipantsRemovedReasonString:) public static func updateParticipantsRemovedReason(for string: String) -> ZMParticipantsRemovedReason {
+        return ZMParticipantsRemovedReason(string: string)
     }
 
 }
