@@ -37,7 +37,7 @@ public enum ParticipantsRemovedReason : Int16, CaseIterable {
     case legalHoldPolicyConflict /// Users don't want / support LH
 }
 
-public extension ZMParticipantsRemovedReason {
+public extension ParticipantsRemovedReason {
     
     var stringValue: String? {
         switch self {
@@ -49,8 +49,8 @@ public extension ZMParticipantsRemovedReason {
     }
     
     init(string: String) {
-        let result = ZMParticipantsRemovedReason.allCases.lazy
-            .compactMap { eventType -> (ZMParticipantsRemovedReason, String)? in
+        let result = ParticipantsRemovedReason.allCases.lazy
+            .compactMap { eventType -> (ParticipantsRemovedReason, String)? in
                 guard let stringValue = eventType.stringValue else { return nil }
                 return (eventType, stringValue)
             }
@@ -220,10 +220,6 @@ extension ZMUpdateEvent {
 
     @objc(eventTypeStringForUpdateEventType:) public static func eventTypeString(for eventType: ZMUpdateEventType) -> String? {
         return eventType.stringValue
-    }
-    
-    @objc(updateParticipantsRemovedReasonString:) public static func updateParticipantsRemovedReason(for string: String) -> ZMParticipantsRemovedReason {
-        return ZMParticipantsRemovedReason(string: string)
     }
 }
 
