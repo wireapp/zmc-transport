@@ -31,6 +31,37 @@ import WireUtilities
     case download
 }
 
+@objc public enum ZMParticipantsRemovedReason : Int16, CaseIterable {
+    case none = 0
+    case legalHoldPolicyConflict /// Users don't want / support LH
+}
+
+public extension ZMParticipantsRemovedReason {
+    
+    var stringValue: String? {
+        switch self {
+        case .none:
+            return nil
+        case .legalHoldPolicyConflict:
+            return "legalhold-policy-conflict"
+        }
+    }
+    
+    init(string: String) {
+        let result = ZMParticipantsRemovedReason.allCases.lazy
+            .compactMap { eventType -> (ZMParticipantsRemovedReason, String)? in
+                guard let stringValue = eventType.stringValue else { return nil }
+                return (eventType, stringValue)
+            }
+            .first(where: { (_, stringValue) -> Bool in
+                return stringValue == string
+            })?.0
+        
+        self = result ?? .none
+    }
+    
+}
+
 @objc public enum ZMUpdateEventType : UInt, CaseIterable {
     case unknown = 0
     case conversationAssetAdd = 1
@@ -188,6 +219,10 @@ extension ZMUpdateEvent {
 
     @objc(eventTypeStringForUpdateEventType:) public static func eventTypeString(for eventType: ZMUpdateEventType) -> String? {
         return eventType.stringValue
+    }
+    
+    @objc(updateParticipantsRemovedReasonString:) public static func updateParticipantsRemovedReason(for string: String) -> ZMParticipantsRemovedReason {
+        return ZMParticipantsRemovedReason(string: string)
     }
 }
 
