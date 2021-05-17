@@ -47,18 +47,9 @@ public extension ParticipantsRemovedReason {
             return "legalhold-policy-conflict"
         }
     }
-    
-    init(string: String) {
-        let result = ParticipantsRemovedReason.allCases.lazy
-            .compactMap { eventType -> (ParticipantsRemovedReason, String)? in
-                guard let stringValue = eventType.stringValue else { return nil }
-                return (eventType, stringValue)
-            }
-            .first(where: { (_, stringValue) -> Bool in
-                return stringValue == string
-            })?.0
-        
-        self = result ?? .none
+
+    init(_ string: String) {
+      self = Self.allCases.first(where: { $0.stringValue == string }) ?? .none
     }
     
 }
