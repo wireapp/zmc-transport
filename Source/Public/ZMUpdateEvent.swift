@@ -31,7 +31,8 @@ import WireUtilities
     case download
 }
 
-@objc public enum ZMParticipantsRemovedReason : Int16, CaseIterable {
+@objc(ZMParticipantsRemovedReason)
+public enum ParticipantsRemovedReason : Int16, CaseIterable {
     case none = 0
     case legalHoldPolicyConflict /// Users don't want / support LH
 }
