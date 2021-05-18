@@ -128,11 +128,9 @@ static NSString* ZMLogTag = ZMT_LOG_TAG_PUSHCHANNEL;
         id<ZMPushChannelConsumer> consumer = self.consumer;
         self.consumer = nil;
         
-        ZMPushChannelConnection *channel = self;
-        
         [self stopPingTimer];
         [queue performGroupedBlock:^{
-            [consumer pushChannelDidClose:channel withResponse:response error:error];
+            [consumer pushChannelDidCloseWithResponse:response error:error];
         }];
     }
 }
@@ -209,7 +207,7 @@ static NSString* ZMLogTag = ZMT_LOG_TAG_PUSHCHANNEL;
     ZM_WEAK(self);
     [self.consumerQueue performGroupedBlock:^{
         ZM_STRONG(self);
-        [self.consumer pushChannelDidOpen:self withResponse:response];
+        [self.consumer pushChannelDidOpenWithResponse:response];
     }];
 }
 
@@ -231,7 +229,7 @@ static NSString* ZMLogTag = ZMT_LOG_TAG_PUSHCHANNEL;
         ZM_WEAK(self);
         [self.consumerQueue performGroupedBlock:^{
             ZM_STRONG(self);
-            [self.consumer pushChannel:self didReceiveTransportData:transportData];
+            [self.consumer pushChannelDidReceiveTransportData:transportData];
         }];
     }
 }

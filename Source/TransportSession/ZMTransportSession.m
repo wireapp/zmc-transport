@@ -65,7 +65,7 @@ static NSInteger const DefaultMaximumRequests = 6;
 @property (nonatomic) BOOL tornDown;
 @property (nonatomic) NSString *applicationGroupIdentifier;
 
-@property (nonatomic) ZMTransportPushChannel *transportPushChannel;
+@property (nonatomic) id<PushChannelType> transportPushChannel;
 
 @property (nonatomic, weak) id<ZMPushChannelConsumer> pushChannelConsumer;
 @property (nonatomic, weak) id<ZMSGroupQueue> pushChannelGroupQueue;
@@ -260,12 +260,19 @@ static NSInteger const DefaultMaximumRequests = 6;
         }
         
         self.maximumConcurrentRequests = DefaultMaximumRequests;
-        
-        self.firstRequestFired = NO;
-        if (pushChannelClass == nil) {
-            pushChannelClass = ZMTransportPushChannel.class;
+
+        if (@available(iOS 13.0, *)) {
+            self.transportPushChannel = [[NativePushChannel alloc] initWithEnvironment:environment];
+        } else {
+            if (pushChannelClass == nil) {
+                pushChannelClass = ZMTransportPushChannel.class;
+            }
+            self.transportPushChannel = [[pushChannelClass alloc] initWithScheduler:self.requestScheduler
+                                                                    userAgentString:userAgent
+                                                                        environment:environment];
         }
-        self.transportPushChannel = [[pushChannelClass alloc] initWithScheduler:self.requestScheduler userAgentString:userAgent environment:environment];
+
+        self.firstRequestFired = NO;
         self.accessTokenHandler = [[ZMAccessTokenHandler alloc] initWithBaseURL:self.baseURL
                                                                   cookieStorage:self.cookieStorage
                                                                        delegate:self
@@ -752,6 +759,16 @@ static NSInteger const DefaultMaximumRequests = 6;
     ZMLogDebug(@"Detected unsafe connection to %@", host);    
     [self.requestScheduler setSchedulerState:ZMTransportRequestSchedulerStateOffline];
     [self.weakNetworkStateDelegate didGoOffline];
+}
+
+- (void)URLSessionDidOpenWebsocket:(ZMURLSession *)URLSession
+{
+
+}
+
+- (void)URLSessionDidCloseWebsocket:(ZMURLSession *)URLSession
+{
+
 }
 
 @end

@@ -190,19 +190,19 @@ ZM_EMPTY_ASSERTING_INIT();
 
 @implementation ZMTransportPushChannel (Consumer)
 
-- (void)pushChannel:(ZMPushChannelConnection *)channel didReceiveTransportData:(id<ZMTransportData>)data;
+- (void)pushChannelDidReceiveTransportData:(id<ZMTransportData>)data;
 {
     ZMLogInfo(@"Received payload on push channel.");
 
     [self.networkStateDelegate didReceiveData];
     
     [self.consumerQueue performGroupedBlock:^{
-        [self.consumer pushChannel:channel didReceiveTransportData:data];
+        [self.consumer pushChannelDidReceiveTransportData:data];
     }];
     
 }
 
-- (void)pushChannelDidClose:(ZMPushChannelConnection *)channel withResponse:(NSHTTPURLResponse *)response error:(nullable NSError *)error
+- (void)pushChannelDidCloseWithResponse:(NSHTTPURLResponse *)response error:(nullable NSError *)error
 {
     ZMLogInfo(@"Push channel did close.");
     
@@ -210,7 +210,7 @@ ZM_EMPTY_ASSERTING_INIT();
     [self attemptToOpenPushChannelConnection];
     
     [self.consumerQueue performGroupedBlock:^{
-        [self.consumer pushChannelDidClose:channel withResponse:response error:error];
+        [self.consumer pushChannelDidCloseWithResponse:response error:error];
     }];
     
     if (response != nil) {
@@ -218,18 +218,16 @@ ZM_EMPTY_ASSERTING_INIT();
     } else if (error != nil) {
         [self.scheduler processWebSocketError:error];
     }
-    
-    if (channel == self.pushChannel) {
-        self.pushChannel = nil;
-    }
+
+    self.pushChannel = nil;
 }
 
-- (void)pushChannelDidOpen:(ZMPushChannelConnection *)channel withResponse:(NSHTTPURLResponse *)response;
+- (void)pushChannelDidOpenWithResponse:(NSHTTPURLResponse *)response;
 {
     ZMLogInfo(@"Push channel did open.");
 
     [self.consumerQueue performGroupedBlock:^{
-        [self.consumer pushChannelDidOpen:channel withResponse:response];
+        [self.consumer pushChannelDidOpenWithResponse:response];
     }];
     
     if (response != nil) {
