@@ -261,16 +261,16 @@ static NSInteger const DefaultMaximumRequests = 6;
         
         self.maximumConcurrentRequests = DefaultMaximumRequests;
 
-        if (@available(iOS 13.0, *)) {
-            self.transportPushChannel = [[NativePushChannel alloc] initWithEnvironment:environment];
-        } else {
-            if (pushChannelClass == nil) {
+        if (pushChannelClass == nil) {
+            if (@available(iOS 13.0, *)) {
+                pushChannelClass = NativePushChannel.class;
+            } else {
                 pushChannelClass = ZMTransportPushChannel.class;
             }
-            self.transportPushChannel = [[pushChannelClass alloc] initWithScheduler:self.requestScheduler
-                                                                    userAgentString:userAgent
-                                                                        environment:environment];
         }
+        self.transportPushChannel = [[pushChannelClass alloc] initWithScheduler:self.requestScheduler
+                                                                userAgentString:userAgent
+                                                                    environment:environment];
 
         self.firstRequestFired = NO;
         self.accessTokenHandler = [[ZMAccessTokenHandler alloc] initWithBaseURL:self.baseURL
@@ -301,6 +301,7 @@ static NSInteger const DefaultMaximumRequests = 6;
     [self.transportPushChannel close];
     [self.workGroup enter];
     [self.workQueue addOperationWithBlock:^{
+        [self.requestScheduler tearDown];
         [self.sessionsDirectory tearDown];
         [self.workGroup leave];
     }];
@@ -662,7 +663,7 @@ static NSInteger const DefaultMaximumRequests = 6;
 - (void)sendSchedulerItem:(id<ZMTransportRequestSchedulerItemAsRequest>)item;
 {
     if (item.isPushChannelRequest) {
-        [self.transportPushChannel scheduleOpen];
+        [self.transportPushChannel open];
     } else {
         [self sendTransportRequest:item.transportRequest];
     }

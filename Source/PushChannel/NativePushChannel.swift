@@ -38,19 +38,20 @@ class NativePushChannel: NSObject, PushChannelType {
             }
         }
     }
-    let environement: BackendEnvironment
+    let environment: BackendEnvironmentProvider
     var session: URLSession?
     var websocketTask: URLSessionWebSocketTask?
     var consumer: ZMPushChannelConsumer?
     var consumerQueue: ZMSGroupQueue?
     var pingTimer: Timer?
 
-
-    init(environment: BackendEnvironment) {
-        self.environement = environment
+    required init(scheduler: ZMTransportRequestScheduler,
+                  userAgentString: String,
+                  environment: BackendEnvironmentProvider) {
+        self.environment = environment
 
         super.init()
-        
+
         self.session = URLSession(configuration: .ephemeral, delegate: self, delegateQueue: .main)
     }
 
@@ -96,7 +97,7 @@ class NativePushChannel: NSObject, PushChannelType {
     }
 
     var websocketURL: URL? {
-        let url = environement.backendWSURL.appendingPathComponent("/await")
+        let url = environment.backendWSURL.appendingPathComponent("/await")
         var urlComponents = URLComponents(url: url, resolvingAgainstBaseURL: false)
         urlComponents?.queryItems = [URLQueryItem(name: "client", value: clientID)]
 

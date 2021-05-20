@@ -204,28 +204,27 @@ static NSString *JSONContentType = @"application/json";
 //
 //////////////////////////////////////////////////
 
-@interface FakePushChannel : NSObject <ZMPushChannel>
+@interface FakePushChannel : NSObject <ZMPushChannelType>
 
-- (instancetype)initWithScheduler:(ZMTransportRequestScheduler *)scheduler userAgentString:(NSString *)userAgentString environment:(id<BackendEnvironmentProvider>)environment;
+//- (instancetype)initWithScheduler:(ZMTransportRequestScheduler *)scheduler userAgentString:(NSString *)userAgentString environment:(id<BackendEnvironmentProvider>)environment;
 
-- (void)setPushChannelConsumer:(id<ZMPushChannelConsumer>)consumer groupQueue:(id<ZMSGroupQueue>)groupQueue;
+//- (void)setPushChannelConsumer:(id<ZMPushChannelConsumer>)consumer groupQueue:(id<ZMSGroupQueue>)groupQueue;
+//
+//- (void)closeAndRemoveConsumer;
+//- (void)reachabilityDidChange:(ZMReachability *)reachability;
 
-- (void)closeAndRemoveConsumer;
-- (void)reachabilityDidChange:(ZMReachability *)reachability;
 
-
-@property (nonatomic, weak) id <ZMNetworkStateDelegate> networkStateDelegate;
+//@property (nonatomic, weak) id <ZMNetworkStateDelegate> networkStateDelegate;
 @property (nonatomic) ZMTransportRequestScheduler *scheduler;
 @property (nonatomic, copy) NSString *userAgentString;
 @property (nonatomic) NSURL *URL;
-@property (nonatomic) BOOL keepOpen;
+//@property (nonatomic) BOOL keepOpen;
 
 @property (nonatomic) ZMAccessToken *lastAccessToken;
 @property (nonatomic) NSString *lastClientID;
 
 @property (nonatomic) NSUInteger createPushChannelCount;
 @property (nonatomic) NSUInteger setConsumerCount;
-@property (nonatomic) NSUInteger closeAndRemoveConsumerCount;
 @property (nonatomic) NSUInteger closeCount;
 @property (nonatomic) NSUInteger scheduleOpenPushChannelCount;
 @property (nonatomic) NSUInteger reachabilityChangeCount;
@@ -237,26 +236,49 @@ static FakePushChannel *currentFakePushChannel;
 
 @implementation FakePushChannel
 
-- (instancetype)initWithScheduler:(ZMTransportRequestScheduler *)scheduler userAgentString:(NSString *)userAgentString environment:(id<BackendEnvironmentProvider>)environment;
+@synthesize keepOpen;
+
+- (instancetype)init
+{
+    self = [super init];
+    if (self) {
+
+    }
+    return self;
+}
+
+- (instancetype)initWithScheduler:(ZMTransportRequestScheduler *)scheduler userAgentString:(NSString *)userAgentString environment:(id<BackendEnvironmentProvider>)environment
 {
     self = [super init];
     if (self) {
         self.scheduler = scheduler;
         self.userAgentString = userAgentString;
         self.URL = environment.backendWSURL;
+        currentFakePushChannel = self;
     }
-    currentFakePushChannel = self;
     return self;
 }
 
-- (void)setPushChannelConsumer:(id<ZMPushChannelConsumer>)consumer groupQueue:(id<ZMSGroupQueue>)groupQueue;
+//- (instancetype)initWithScheduler:(ZMTransportRequestScheduler *)scheduler userAgentString:(NSString *)userAgentString environment:(id<BackendEnvironmentProvider>)environment;
+//{
+//    self = [super init];
+//    if (self) {
+//        self.scheduler = scheduler;
+//        self.userAgentString = userAgentString;
+//        self.URL = environment.backendWSURL;
+//    }
+//    currentFakePushChannel = self;
+//    return self;
+//}
+
+- (void)setPushChannelConsumer:(id<ZMPushChannelConsumer>)consumer queue:(id<ZMSGroupQueue>)groupQueue;
 {
     NOT_USED(consumer);
     NOT_USED(groupQueue);
     self.setConsumerCount++;
 }
 
-- (void)establishConnection
+- (void)open
 {
     self.createPushChannelCount++;
 }
@@ -264,6 +286,11 @@ static FakePushChannel *currentFakePushChannel;
 - (void)setAccessToken:(ZMAccessToken *)accessToken
 {
     self.lastAccessToken = accessToken;
+}
+
+- (ZMAccessToken *)accessToken
+{
+    return self.lastAccessToken;
 }
 
 - (void)setClientID:(NSString *)clientID
@@ -276,17 +303,12 @@ static FakePushChannel *currentFakePushChannel;
     return self.lastClientID;
 }
 
-- (void)closeAndRemoveConsumer;
-{
-    self.closeAndRemoveConsumerCount++;
-}
-
 - (void)close;
 {
     self.closeCount++;
 }
 
-- (void)attemptToOpenPushChannelConnection
+- (void)scheduleOpen
 {
     self.scheduleOpenPushChannelCount++;
 }
@@ -296,6 +318,7 @@ static FakePushChannel *currentFakePushChannel;
     NOT_USED(reachability);
     self.reachabilityChangeCount++;
 }
+
 @end
 
 //////////////////////////////////////////////////

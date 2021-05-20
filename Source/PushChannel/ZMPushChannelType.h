@@ -19,11 +19,17 @@
 #import <Foundation/Foundation.h>
 
 @class ZMAccessToken;
+@class ZMTransportRequestScheduler;
+@protocol BackendEnvironmentProvider;
 
 NS_SWIFT_NAME(PushChannelType)
 @protocol ZMPushChannelType<ZMReachabilityObserver, ZMPushChannel>
 
 @property (nonatomic, nullable) ZMAccessToken *accessToken;
+
+- (instancetype _Nonnull )initWithScheduler:(ZMTransportRequestScheduler * _Nonnull)scheduler
+                            userAgentString:(NSString * _Nonnull)userAgentString
+                                environment:(id <BackendEnvironmentProvider> _Nonnull)environment;
 
 /// Set the consumer of push channel messsages.
 ///
