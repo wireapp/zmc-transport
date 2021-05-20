@@ -18,19 +18,6 @@
 
 import Foundation
 
-
-@objc
-protocol PushChannelType: class, ZMPushChannel {
-
-    var accessToken: AccessToken? { get set }
-
-    func closeAndRemoveConsumer()
-    func attemptToOpenPushChannelConnection()
-    func establishConnection()
-    func reachabilityDidChange(_ reachability: ZMReachability)
-    func setPushChannelConsumer(_ consumer: ZMPushChannelConsumer?, groupQueue: ZMSGroupQueue)
-}
-
 @objc
 public protocol TransportSessionType: class, ZMBackgroundable, ZMRequestCancellation, TearDownCapable {
     

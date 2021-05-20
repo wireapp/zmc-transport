@@ -25,21 +25,26 @@ class NativePushChannel: NSObject, PushChannelType {
     var clientID: String?
     var accessToken: AccessToken? {
         didSet {
-            establishConnection()
+            open()
         }
     }
 
-    var keepOpen: Bool = false
+    var keepOpen: Bool = false {
+        didSet {
+            if keepOpen {
+                open()
+            } else {
+                close()
+            }
+        }
+    }
     let environement: BackendEnvironment
     var session: URLSession?
     var websocketTask: URLSessionWebSocketTask?
     var consumer: ZMPushChannelConsumer?
+    var consumerQueue: ZMSGroupQueue?
     var pingTimer: Timer?
-    var groupQueue: ZMSGroupQueue?
 
-    var canOpenConnection: Bool {
-        return accessToken != nil && clientID != nil && keepOpen
-    }
 
     init(environment: BackendEnvironment) {
         self.environement = environment
@@ -49,38 +54,33 @@ class NativePushChannel: NSObject, PushChannelType {
         self.session = URLSession(configuration: .ephemeral, delegate: self, delegateQueue: .main)
     }
 
-    func closeAndRemoveConsumer() {
+    func close() {
         consumer = nil
         websocketTask?.cancel()
     }
 
-    func attemptToOpenPushChannelConnection() {
-        guard canOpenConnection else {
-            return
-        }
-
-        establishConnection()
+    func reachabilityDidChange(_ reachability: ReachabilityProvider) {
+        // TODO jacob - try to open connection?
     }
 
-    func reachabilityDidChange(_ reachability: ZMReachability) {
-
-    }
-
-    func setPushChannelConsumer(_ consumer: ZMPushChannelConsumer?, groupQueue: ZMSGroupQueue) {
-        self.groupQueue = groupQueue
+    func setPushChannelConsumer(_ consumer: ZMPushChannelConsumer?, queue: ZMSGroupQueue) {
+        self.consumerQueue = queue
         self.consumer = consumer
 
         if consumer == nil {
-            closeAndRemoveConsumer()
+            close()
         } else {
-            attemptToOpenPushChannelConnection()
+            open()
         }
     }
 
-    func establishConnection() {
-        guard websocketTask == nil,
-              let accessToken = accessToken,
-              let websocketURL = websocketURL else {
+    func open() {
+        guard
+            keepOpen,
+            websocketTask == nil,
+            let accessToken = accessToken,
+            let websocketURL = websocketURL
+        else {
             return
         }
 
@@ -89,6 +89,10 @@ class NativePushChannel: NSObject, PushChannelType {
 
         websocketTask = session?.webSocketTask(with: connectionRequest)
         websocketTask?.resume()
+    }
+
+    func scheduleOpen() {
+        open()
     }
 
     var websocketURL: URL? {
@@ -109,7 +113,7 @@ class NativePushChannel: NSObject, PushChannelType {
                 switch message {
                 case .data(let data):
                     if let transportData = try? JSONSerialization.jsonObject(with: data, options: []) as? ZMTransportData {
-                        self?.groupQueue?.performGroupedBlock({
+                        self?.consumerQueue?.performGroupedBlock({
                             self?.consumer?.pushChannelDidReceive(transportData)
                         })
                     }
@@ -149,8 +153,8 @@ extension NativePushChannel: URLSessionWebSocketDelegate {
         listen()
         startPingTimer()
 
-        groupQueue?.performGroupedBlock({
-            self.consumer?.pushChannelDidOpen(with: nil)
+        consumerQueue?.performGroupedBlock({
+            self.consumer?.pushChannelDidOpen()
         })
 
     }
@@ -161,8 +165,8 @@ extension NativePushChannel: URLSessionWebSocketDelegate {
         websocketTask = nil
         pingTimer = nil
 
-        groupQueue?.performGroupedBlock {
-            self.consumer?.pushChannelDidClose(with: nil, error: nil)
+        consumerQueue?.performGroupedBlock {
+            self.consumer?.pushChannelDidClose()
         }
 
     }

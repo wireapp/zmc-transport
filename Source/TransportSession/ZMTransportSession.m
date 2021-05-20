@@ -65,7 +65,7 @@ static NSInteger const DefaultMaximumRequests = 6;
 @property (nonatomic) BOOL tornDown;
 @property (nonatomic) NSString *applicationGroupIdentifier;
 
-@property (nonatomic) id<PushChannelType> transportPushChannel;
+@property (nonatomic) id<ZMPushChannelType> transportPushChannel;
 
 @property (nonatomic, weak) id<ZMPushChannelConsumer> pushChannelConsumer;
 @property (nonatomic, weak) id<ZMSGroupQueue> pushChannelGroupQueue;
@@ -298,7 +298,7 @@ static NSInteger const DefaultMaximumRequests = 6;
     self.tornDown = YES;
     
     self.reachabilityObserverToken = nil;
-    [self.transportPushChannel closeAndRemoveConsumer];
+    [self.transportPushChannel close];
     [self.workGroup enter];
     [self.workQueue addOperationWithBlock:^{
         [self.sessionsDirectory tearDown];
@@ -662,7 +662,7 @@ static NSInteger const DefaultMaximumRequests = 6;
 - (void)sendSchedulerItem:(id<ZMTransportRequestSchedulerItemAsRequest>)item;
 {
     if (item.isPushChannelRequest) {
-        [self.transportPushChannel establishConnection];
+        [self.transportPushChannel scheduleOpen];
     } else {
         [self sendTransportRequest:item.transportRequest];
     }
@@ -683,7 +683,7 @@ static NSInteger const DefaultMaximumRequests = 6;
 - (void)schedulerIncreasedMaximumNumberOfConcurrentRequests:(ZMTransportRequestScheduler *)scheduler;
 {
     ZMLogDebug(@"%@ Notify new request" , NSStringFromSelector(_cmd));
-    [self.transportPushChannel attemptToOpenPushChannelConnection];
+    [self.transportPushChannel scheduleOpen];
     [ZMTransportSession notifyNewRequestsAvailable:scheduler];
 }
 
@@ -823,7 +823,7 @@ static NSInteger const DefaultMaximumRequests = 6;
 
 - (void)configurePushChannelWithConsumer:(id<ZMPushChannelConsumer>)consumer groupQueue:(id<ZMSGroupQueue>)groupQueue;
 {
-    [self.transportPushChannel setPushChannelConsumer:consumer groupQueue:groupQueue];
+    [self.transportPushChannel setPushChannelConsumer:consumer queue:groupQueue];
 
 }
 
