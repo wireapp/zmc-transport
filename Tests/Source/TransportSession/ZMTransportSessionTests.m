@@ -206,19 +206,9 @@ static NSString *JSONContentType = @"application/json";
 
 @interface FakePushChannel : NSObject <ZMPushChannelType>
 
-//- (instancetype)initWithScheduler:(ZMTransportRequestScheduler *)scheduler userAgentString:(NSString *)userAgentString environment:(id<BackendEnvironmentProvider>)environment;
-
-//- (void)setPushChannelConsumer:(id<ZMPushChannelConsumer>)consumer groupQueue:(id<ZMSGroupQueue>)groupQueue;
-//
-//- (void)closeAndRemoveConsumer;
-//- (void)reachabilityDidChange:(ZMReachability *)reachability;
-
-
-//@property (nonatomic, weak) id <ZMNetworkStateDelegate> networkStateDelegate;
 @property (nonatomic) ZMTransportRequestScheduler *scheduler;
 @property (nonatomic, copy) NSString *userAgentString;
 @property (nonatomic) NSURL *URL;
-//@property (nonatomic) BOOL keepOpen;
 
 @property (nonatomic) ZMAccessToken *lastAccessToken;
 @property (nonatomic) NSString *lastClientID;
@@ -228,7 +218,6 @@ static NSString *JSONContentType = @"application/json";
 @property (nonatomic) NSUInteger closeCount;
 @property (nonatomic) NSUInteger scheduleOpenPushChannelCount;
 @property (nonatomic) NSUInteger reachabilityChangeCount;
-
 
 @end
 
@@ -258,18 +247,6 @@ static FakePushChannel *currentFakePushChannel;
     }
     return self;
 }
-
-//- (instancetype)initWithScheduler:(ZMTransportRequestScheduler *)scheduler userAgentString:(NSString *)userAgentString environment:(id<BackendEnvironmentProvider>)environment;
-//{
-//    self = [super init];
-//    if (self) {
-//        self.scheduler = scheduler;
-//        self.userAgentString = userAgentString;
-//        self.URL = environment.backendWSURL;
-//    }
-//    currentFakePushChannel = self;
-//    return self;
-//}
 
 - (void)setPushChannelConsumer:(id<ZMPushChannelConsumer>)consumer queue:(id<ZMSGroupQueue>)groupQueue;
 {

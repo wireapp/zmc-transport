@@ -762,16 +762,6 @@ static NSInteger const DefaultMaximumRequests = 6;
     [self.weakNetworkStateDelegate didGoOffline];
 }
 
-- (void)URLSessionDidOpenWebsocket:(ZMURLSession *)URLSession
-{
-
-}
-
-- (void)URLSessionDidCloseWebsocket:(ZMURLSession *)URLSession
-{
-
-}
-
 @end
 
 
