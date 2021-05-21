@@ -41,7 +41,7 @@ class NativePushChannel: NSObject, PushChannelType {
     let environment: BackendEnvironmentProvider
     var session: URLSession?
     var websocketTask: URLSessionWebSocketTask?
-    var consumer: ZMPushChannelConsumer?
+    weak var consumer: ZMPushChannelConsumer?
     var consumerQueue: ZMSGroupQueue?
     var pingTimer: Timer?
 
@@ -56,12 +56,17 @@ class NativePushChannel: NSObject, PushChannelType {
     }
 
     func close() {
-        consumer = nil
+        Logging.pushChannel.debug("Push channel was closed")
+
         websocketTask?.cancel()
+        onClose()
     }
 
     func reachabilityDidChange(_ reachability: ReachabilityProvider) {
-        // TODO jacob - try to open connection?
+        let didGoOnline = reachability.mayBeReachable && !reachability.oldMayBeReachable
+        guard didGoOnline else { return }
+
+        open()
     }
 
     func setPushChannelConsumer(_ consumer: ZMPushChannelConsumer?, queue: ZMSGroupQueue) {
@@ -129,7 +134,30 @@ class NativePushChannel: NSObject, PushChannelType {
         })
     }
 
-    func startPingTimer() {
+    private func onClose() {
+        websocketTask = nil
+        stopPingTimer()
+
+        consumerQueue?.performGroupedBlock {
+            self.consumer?.pushChannelDidClose()
+        }
+    }
+
+    private func onOpen() {
+        listen()
+        startPingTimer()
+
+        consumerQueue?.performGroupedBlock({
+            self.consumer?.pushChannelDidOpen()
+        })
+    }
+
+    private func stopPingTimer() {
+        pingTimer?.invalidate()
+        pingTimer = nil
+    }
+
+    private func startPingTimer() {
         let timer = Timer(timeInterval: 30, repeats: true) { [weak self] (_) in
             Logging.pushChannel.debug("Sending ping")
             self?.websocketTask?.sendPing(pongReceiveHandler: { error in
@@ -151,24 +179,12 @@ extension NativePushChannel: URLSessionWebSocketDelegate {
     func urlSession(_ session: URLSession, webSocketTask: URLSessionWebSocketTask, didOpenWithProtocol protocol: String?) {
         Logging.pushChannel.debug("Push channel did open with protocol \(`protocol` ?? "n/a")")
 
-        listen()
-        startPingTimer()
-
-        consumerQueue?.performGroupedBlock({
-            self.consumer?.pushChannelDidOpen()
-        })
-
+        onOpen()
     }
 
     func urlSession(_ session: URLSession, webSocketTask: URLSessionWebSocketTask, didCloseWith closeCode: URLSessionWebSocketTask.CloseCode, reason: Data?) {
         Logging.pushChannel.debug("Push channel did close with code \(closeCode), reason: \(reason ?? Data())")
 
-        websocketTask = nil
-        pingTimer = nil
-
-        consumerQueue?.performGroupedBlock {
-            self.consumer?.pushChannelDidClose()
-        }
-
+        onClose()
     }
 }

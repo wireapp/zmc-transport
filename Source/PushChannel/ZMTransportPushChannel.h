@@ -33,8 +33,6 @@
 /// This class is responsible for opening and closing the push channel connection to the backend.
 @interface ZMTransportPushChannel : NSObject <ZMReachabilityObserver, ZMPushChannel, ZMPushChannelType>
 
-/// When set not to nil an attempt open the push channel will be made
-//@property (nonatomic, nullable) ZMAccessToken *accessToken;
 @property (nonatomic, weak, nullable) id <ZMNetworkStateDelegate> networkStateDelegate;
 
 - (instancetype _Nonnull )initWithScheduler:(ZMTransportRequestScheduler * _Nonnull)scheduler
