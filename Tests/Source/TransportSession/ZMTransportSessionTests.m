@@ -227,15 +227,6 @@ static FakePushChannel *currentFakePushChannel;
 
 @synthesize keepOpen;
 
-- (instancetype)init
-{
-    self = [super init];
-    if (self) {
-
-    }
-    return self;
-}
-
 - (instancetype)initWithScheduler:(ZMTransportRequestScheduler *)scheduler userAgentString:(NSString *)userAgentString environment:(id<BackendEnvironmentProvider>)environment
 {
     self = [super init];
