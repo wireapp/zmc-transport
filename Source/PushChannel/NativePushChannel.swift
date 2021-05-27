@@ -25,12 +25,14 @@ class NativePushChannel: NSObject, PushChannelType {
     var clientID: String?
     var accessToken: AccessToken? {
         didSet {
+            Logging.pushChannel.debug("Setting access token")
             open()
         }
     }
 
     var keepOpen: Bool = false {
         didSet {
+            Logging.pushChannel.debug("Setting keepOpen = \(keepOpen)")
             if keepOpen {
                 open()
             } else {
@@ -70,6 +72,8 @@ class NativePushChannel: NSObject, PushChannelType {
     }
 
     func setPushChannelConsumer(_ consumer: ZMPushChannelConsumer?, queue: ZMSGroupQueue) {
+        Logging.pushChannel.debug("Updating push channel consumer: \(consumer != nil ? "adding" : "removing")")
+
         self.consumerQueue = queue
         self.consumer = consumer
 
@@ -87,8 +91,11 @@ class NativePushChannel: NSObject, PushChannelType {
             let accessToken = accessToken,
             let websocketURL = websocketURL
         else {
+            Logging.pushChannel.debug("Conditions for opening not fulfilled, waiting...")
             return
         }
+
+        Logging.pushChannel.debug("Opening...")
 
         var connectionRequest = URLRequest(url: websocketURL)
         connectionRequest.setValue("\(accessToken.type) \(accessToken.token)", forHTTPHeaderField: "Authorization")
