@@ -111,7 +111,7 @@ static NSInteger const DefaultMaximumRequests = 6;
     // RFC 2616 recommends no more than 2 connections per host when using pipelining.
     // https://tools.ietf.org/html/rfc2616
     configuration.HTTPShouldUsePipelining = NO;
-    configuration.HTTPMaximumConnectionsPerHost = 2;
+    configuration.HTTPMaximumConnectionsPerHost = 4;
     
     configuration.TLSMinimumSupportedProtocol = kTLSProtocol12;
     
