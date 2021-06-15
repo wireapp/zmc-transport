@@ -25,7 +25,7 @@ class NativePushChannel: NSObject, PushChannelType {
     var clientID: String? {
         didSet {
             Logging.pushChannel.debug("Setting client ID")
-            scheduleOpenInternal()
+            scheduleOpen()
         }
     }
     
@@ -38,7 +38,7 @@ class NativePushChannel: NSObject, PushChannelType {
     var keepOpen: Bool = false {
         didSet {
             if keepOpen {
-                scheduleOpenInternal()
+                scheduleOpen()
             } else {
                 self.close()
             }
@@ -94,7 +94,7 @@ class NativePushChannel: NSObject, PushChannelType {
         if consumer == nil {
             close()
         } else {
-            scheduleOpenInternal()
+            scheduleOpen()
         }
     }
 
@@ -115,13 +115,13 @@ class NativePushChannel: NSObject, PushChannelType {
         websocketTask?.resume()
     }
 
-    func scheduleOpenInternal() {
-        scheduler.performGroupedBlock {
-            self.scheduleOpen()
+    func scheduleOpen() {
+        scheduler.performGroupedBlock { [weak self] in
+            self?.scheduleOpenInternal()
         }
     }
 
-    func scheduleOpen() {
+    private func scheduleOpenInternal() {
         guard canOpenConnection else {
             Logging.pushChannel.debug("Conditions for scheduling opening not fulfilled, waiting...")
             return
