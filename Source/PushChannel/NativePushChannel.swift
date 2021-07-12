@@ -72,9 +72,10 @@ class NativePushChannel: NSObject, PushChannelType {
     }
 
     func close() {
-        Logging.pushChannel.debug("Push channel was closed")
+        Logging.pushChannel.debug("Closing")
 
         scheduler.performGroupedBlock { [weak self] in
+            Logging.pushChannel.debug("Cancelling websocket task: \(String(describing: self?.websocketTask))")
             self?.websocketTask?.cancel()
             self?.onClose()
         }
@@ -112,6 +113,9 @@ class NativePushChannel: NSObject, PushChannelType {
         connectionRequest.setValue("\(accessToken.type) \(accessToken.token)", forHTTPHeaderField: "Authorization")
 
         websocketTask = session?.webSocketTask(with: connectionRequest)
+
+        Logging.pushChannel.debug("Resuming websocket task: \(String(describing: websocketTask))")
+
         websocketTask?.resume()
     }
 
@@ -146,6 +150,8 @@ class NativePushChannel: NSObject, PushChannelType {
                 Logging.pushChannel.debug("Failed to receive message \(error)")
                 self?.onClose()
             case .success(let message):
+                Logging.pushChannel.debug("Received message")
+
                 guard
                     case .data(let data) = message,
                     let transportData = try? JSONSerialization.jsonObject(with: data, options: []) as? ZMTransportData
@@ -235,7 +241,7 @@ extension NativePushChannel: URLSessionWebSocketDelegate {
 extension NativePushChannel: URLSessionDataDelegate {
 
     func urlSession(_ session: URLSession, task: URLSessionTask, didCompleteWithError error: Error?) {
-        Logging.pushChannel.debug("Websocket open connection task did fail: \(error.map({ String(describing: $0)}) ?? "n/a" )")
+        Logging.pushChannel.debug("Websocket task did fail: \(error.map({ String(describing: $0)}) ?? "n/a" )")
 
         websocketTask = nil
     }
