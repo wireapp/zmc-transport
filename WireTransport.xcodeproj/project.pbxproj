@@ -114,17 +114,12 @@
 		A93DCD7A23B6654100AD8575 /* AccessToken.swift in Sources */ = {isa = PBXBuildFile; fileRef = A93DCD7923B6654100AD8575 /* AccessToken.swift */; };
 		A93DCD7C23B668A800AD8575 /* AccessTokenTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = A93DCD7B23B668A800AD8575 /* AccessTokenTests.swift */; };
 		A96E0106265FF7D10034A057 /* WireSystem.xcframework in Frameworks */ = {isa = PBXBuildFile; fileRef = A96E0104265FF7D10034A057 /* WireSystem.xcframework */; };
-		A96E0107265FF7D10034A057 /* WireSystem.xcframework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = A96E0104265FF7D10034A057 /* WireSystem.xcframework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		A96E0108265FF7D10034A057 /* WireUtilities.xcframework in Frameworks */ = {isa = PBXBuildFile; fileRef = A96E0105265FF7D10034A057 /* WireUtilities.xcframework */; };
-		A96E0109265FF7D10034A057 /* WireUtilities.xcframework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = A96E0105265FF7D10034A057 /* WireUtilities.xcframework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		A96E010D265FF7D90034A057 /* WireTesting.xcframework in Frameworks */ = {isa = PBXBuildFile; fileRef = A96E010B265FF7D90034A057 /* WireTesting.xcframework */; };
-		A96E010E265FF7D90034A057 /* WireTesting.xcframework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = A96E010B265FF7D90034A057 /* WireTesting.xcframework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		A96E010F265FF7D90034A057 /* OCMock.xcframework in Frameworks */ = {isa = PBXBuildFile; fileRef = A96E010C265FF7D90034A057 /* OCMock.xcframework */; };
-		A96E0110265FF7D90034A057 /* OCMock.xcframework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = A96E010C265FF7D90034A057 /* OCMock.xcframework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		AF9D8F9E1F20D9B700ABF225 /* TestTrustVerificator.swift in Sources */ = {isa = PBXBuildFile; fileRef = AF9D8F9C1F20D99500ABF225 /* TestTrustVerificator.swift */; };
 		BF3A7A641D8AD5430034FF40 /* SwiftStructs+TransportEncoding.swift in Sources */ = {isa = PBXBuildFile; fileRef = BF3A7A631D8AD5430034FF40 /* SwiftStructs+TransportEncoding.swift */; };
 		BF3A7A6C1D8C04550034FF40 /* WireTransport.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 3E88BCA71B1F35DF00232589 /* WireTransport.framework */; };
-		BF3A7A6D1D8C04550034FF40 /* WireTransport.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 3E88BCA71B1F35DF00232589 /* WireTransport.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		BF3EDB251F2619820015D158 /* ZMPersistentCookieStorage+Label.swift in Sources */ = {isa = PBXBuildFile; fileRef = BF3EDB241F2619820015D158 /* ZMPersistentCookieStorage+Label.swift */; };
 		BF453F1A1CC6377200403E1C /* ZMRequestCancellation.h in Headers */ = {isa = PBXBuildFile; fileRef = BF453F191CC6377200403E1C /* ZMRequestCancellation.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		BF453F1D1CC63C4800403E1C /* ZMTaskIdentifier.h in Headers */ = {isa = PBXBuildFile; fileRef = BF453F1B1CC63C4800403E1C /* ZMTaskIdentifier.h */; settings = {ATTRIBUTES = (Public, ); }; };
@@ -196,31 +191,6 @@
 			dstSubfolderSpec = 10;
 			files = (
 			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
-		A96E010A265FF7D10034A057 /* Embed Frameworks */ = {
-			isa = PBXCopyFilesBuildPhase;
-			buildActionMask = 2147483647;
-			dstPath = "";
-			dstSubfolderSpec = 10;
-			files = (
-				A96E0107265FF7D10034A057 /* WireSystem.xcframework in Embed Frameworks */,
-				A96E0109265FF7D10034A057 /* WireUtilities.xcframework in Embed Frameworks */,
-			);
-			name = "Embed Frameworks";
-			runOnlyForDeploymentPostprocessing = 0;
-		};
-		BF3A7A701D8C04550034FF40 /* Embed Frameworks */ = {
-			isa = PBXCopyFilesBuildPhase;
-			buildActionMask = 2147483647;
-			dstPath = "";
-			dstSubfolderSpec = 10;
-			files = (
-				A96E0110265FF7D90034A057 /* OCMock.xcframework in Embed Frameworks */,
-				BF3A7A6D1D8C04550034FF40 /* WireTransport.framework in Embed Frameworks */,
-				A96E010E265FF7D90034A057 /* WireTesting.xcframework in Embed Frameworks */,
-			);
-			name = "Embed Frameworks";
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXCopyFilesBuildPhase section */
@@ -913,7 +883,6 @@
 				09A218621B790D330076547A /* Sources */,
 				09A218631B790D330076547A /* Frameworks */,
 				09A218641B790D330076547A /* Resources */,
-				BF3A7A701D8C04550034FF40 /* Embed Frameworks */,
 			);
 			buildRules = (
 			);
@@ -933,7 +902,6 @@
 				3E88BCA31B1F35DF00232589 /* Frameworks */,
 				3E88BCA41B1F35DF00232589 /* Headers */,
 				3E88BCA51B1F35DF00232589 /* Resources */,
-				A96E010A265FF7D10034A057 /* Embed Frameworks */,
 			);
 			buildRules = (
 			);
