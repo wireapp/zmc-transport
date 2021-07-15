@@ -451,6 +451,10 @@ static NSInteger const DefaultMaximumRequests = 6;
                           usingBackgroundSession:session.isBackgroundSession];
     
     [self.accessTokenHandler checkIfRequest:request needsToFetchAccessTokenInURLRequest:URLRequest];
+
+    if (request.needsAuthenticationCookie) {
+        [self.cookieStorage setRequestHeaderFieldsOnRequest:URLRequest];
+    }
     
     NSData *bodyData = URLRequest.HTTPBody;
     URLRequest.HTTPBody = nil;

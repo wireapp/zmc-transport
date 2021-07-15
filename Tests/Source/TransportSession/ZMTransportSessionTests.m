@@ -1163,6 +1163,33 @@ static XCTestCase *currentTestCase;
 
 @implementation ZMTransportSessionTests (AccessTokens_Cookies_Login)
 
+- (void)testThatARequestsThatNeedAuthenticationCookieGeneratesAuthenticationCookieHeaders
+{
+    // given
+    ZMTransportRequest *transportRequest = [[ZMTransportRequest alloc] initWithPath:self.dummyPath method:ZMMethodGET payload:nil authentication:ZMTransportRequestAuthNeedsAccessAndCookie];
+
+    [self setAuthenticationCookieData];
+    self.sut.accessToken = [[ZMAccessToken alloc] initWithToken:@"token-213" type:@"tokentype" expiresInSeconds:100000];
+
+    NSURLSessionTask *task = [OCMockObject niceMockForClass:FakeDataTask.class];
+    __block NSURLRequest *request;
+    [(ZMURLSession *)[[(id) self.URLSession expect] andReturn:task] taskWithRequest:ZM_ARG_SAVE(request) bodyData:nil transportRequest:transportRequest];
+
+    // when
+    [self.sut sendSchedulerItem:transportRequest];
+    [self.queue waitUntilAllOperationsAreFinishedWithTimeout:0.2];
+
+    // then
+    XCTAssertNotNil(request);
+    NSDictionary *headers = [request allHTTPHeaderFields];
+    XCTAssertNotNil(headers);
+    NSString *authHeader = headers[@"Authorization"];
+    XCTAssertNotNil(authHeader);
+    XCTAssertEqualObjects(authHeader, self.sut.accessToken.httpHeaders[@"Authorization"]);
+    NSString *cookieHeader = headers[@"Cookie"];
+    XCTAssertNotNil(cookieHeader);
+    XCTAssertEqualObjects(cookieHeader, @"zuid=bar");
+}
 
 - (void)testThatARequestsThatNeedAuthenticationGeneratesAuthenticationHeaders
 {
@@ -1186,6 +1213,7 @@ static XCTestCase *currentTestCase;
     NSString *authHeader = headers[@"Authorization"];
     XCTAssertNotNil(authHeader);
     XCTAssertEqualObjects(authHeader, self.sut.accessToken.httpHeaders[@"Authorization"]);
+    XCTAssertNil(headers[@"Cookie"]);
 }
 
 - (void)testThatARequestsThatDoesNotNeedAuthenticationDoesNotGenerateAuthenticationHeaders
@@ -1208,6 +1236,7 @@ static XCTestCase *currentTestCase;
     NSDictionary *headers = [request allHTTPHeaderFields];
     XCTAssertNotNil(headers);
     XCTAssertNil(headers[@"Authorization"]);
+    XCTAssertNil(headers[@"Cookie"]);
 }
 
 - (void)testThatARequestThatCreatesAnAccessTokenDoesNotGenerateAuthenticationHeaders

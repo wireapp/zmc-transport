@@ -139,6 +139,7 @@ typedef NS_ENUM(NSUInteger, ZMTransportRequestSessionType) {
 @property (nonatomic) NSMutableArray <ZMCompletionHandler *> *completionHandlers;
 @property (nonatomic) NSMutableArray <ZMTaskProgressHandler *> *progressHandlers;
 @property (nonatomic) BOOL needsAuthentication;
+@property (nonatomic) BOOL needsAuthenticationCookie;
 @property (nonatomic) BOOL responseWillContainAccessToken;
 @property (nonatomic) BOOL responseWillContainCookie;
 @property (nonatomic) ZMTransportAccept acceptedResponseMediaTypes; ///< C.f. RFC 7231 section 5.3.2 <http://tools.ietf.org/html/rfc7231#section-5.3.2>
@@ -170,14 +171,19 @@ typedef NS_ENUM(NSUInteger, ZMTransportRequestSessionType) {
     return [self initWithPath:path method:method payload:payload authentication:ZMTransportRequestAuthNeedsAccess shouldCompress:shouldCompress];
 }
 
-- (instancetype)initWithPath:(NSString *)path method:(ZMTransportRequestMethod)method payload:(id <ZMTransportData>)payload authentication:(ZMTransportRequestAuth)authentication shouldCompress:(BOOL)shouldCompress;
+- (instancetype)initWithPath:(NSString *)path
+                      method:(ZMTransportRequestMethod)method
+                     payload:(id <ZMTransportData>)payload
+              authentication:(ZMTransportRequestAuth)authentication
+              shouldCompress:(BOOL)shouldCompress;
 {
     self = [super init];
     if (self) {
         self.payload = payload;
         self.path = path;
         self.method = method;
-        self.needsAuthentication = (authentication == ZMTransportRequestAuthNeedsAccess);
+        self.needsAuthentication = (authentication == ZMTransportRequestAuthNeedsAccess || authentication == ZMTransportRequestAuthNeedsAccessAndCookie);
+        self.needsAuthenticationCookie = (authentication == ZMTransportRequestAuthNeedsAccessAndCookie);
         self.responseWillContainAccessToken = (authentication == ZMTransportRequestAuthCreatesCookieAndAccessToken);
         self.responseWillContainCookie = (authentication == ZMTransportRequestAuthCreatesCookieAndAccessToken);
         self.acceptedResponseMediaTypes = ZMTransportAcceptTransportData;
@@ -258,6 +264,7 @@ typedef NS_ENUM(NSUInteger, ZMTransportRequestSessionType) {
         self.binaryDataType = type;
         self.contentDisposition = contentDisposition;
         self.needsAuthentication = YES;
+        self.needsAuthenticationCookie = NO;
         self.responseWillContainAccessToken = NO;
         self.acceptedResponseMediaTypes = ZMTransportAcceptTransportData;
         self.shouldCompress = shouldCompress;
